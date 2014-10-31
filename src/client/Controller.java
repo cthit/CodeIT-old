@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import network.Connection;
 
 import java.io.File;
 
@@ -13,9 +14,10 @@ public class Controller {
 
     private Stage stage;
     @FXML private TextField team_name;
-    @FXML private TextField adress;
+    @FXML private TextField address;
     @FXML private TextField port;
     @FXML private TextField project_path;
+    private Connection connection;
 
     public void setStageAndDoSetup(Stage stage) {
         this.stage = stage;
@@ -42,10 +44,12 @@ public class Controller {
 
     @FXML
     private void sendCodeClicked() {
+        connection = new Connection( address.getText(), Integer.parseInt(port.getText()) );
+        connection.sendMessage(team_name.getText());
         System.out.println(String.format(
                 "%s\n%s\n%s\n%s",
                 team_name.getText(),
-                adress.getText(),
+                address.getText(),
                 port.getText(),
                 project_path.getText()
         ));
