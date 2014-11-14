@@ -8,16 +8,15 @@ import java.net.*;
  */
 public class Connection {
 
-    InetAddress inetAddress;
-    int port;
+    private final InetAddress inetAddress;
+    private final int port;
 
     public Connection(String address, int port) {
         this.port = port;
         try {
             this.inetAddress = InetAddress.getByName(address);
         } catch (UnknownHostException e) {
-            System.out.println("UNKNOWN HOST!");
-            e.printStackTrace();
+            throw new RuntimeException("Unknown Host: " + address + ":" + port, e);
         }
     }
 
