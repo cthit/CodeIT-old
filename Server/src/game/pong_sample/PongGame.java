@@ -2,8 +2,16 @@ package game.pong_sample;
 
 import game.Game;
 import game.GameMechanic;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by tejp on 01/11/14.
@@ -11,10 +19,12 @@ import java.awt.geom.Point2D;
 public class PongGame implements Game {
 
     private final GameMechanic<PongGame, PongMove> leftPaddleLogic, rightPaddleLogic;
-    private Paddle leftPaddle = new Paddle(new Point2D.Double(200, 100), 40), rightPaddle = new Paddle(new Point2D.Double(200, 100), 40);
+    private Rectangle leftPaddle = new Rectangle(10, 40, Color.BLUE);
+    private Rectangle rightPaddle = new Rectangle(10, 40, Color.GREEN);
     private final int width, height;
     private final Ball ball = new Ball(200, 100);
 
+    List<Shape> gameElements = new ArrayList<>();
 
     public PongGame(GameMechanic<PongGame, PongMove> leftPaddleLogic, GameMechanic<PongGame, PongMove> rightPaddleLogic) {
         this(leftPaddleLogic, rightPaddleLogic, 400, 200);
@@ -25,6 +35,9 @@ public class PongGame implements Game {
         this.rightPaddleLogic = rightPaddleLogic;
         this.width = width;
         this.height = height;
+
+        gameElements.add(leftPaddle);
+        gameElements.add(rightPaddle);
     }
 
     @Override
@@ -33,26 +46,26 @@ public class PongGame implements Game {
         movePaddle(leftPaddleLogic, leftPaddle);
         movePaddle(rightPaddleLogic, rightPaddle);
 
-        if (ball.pos.y < 0 || ball.pos.y > height){
+        if (ball.getCenterY() < 0 || ball.getCenterY() > height){
             ball.velocity.y = -ball.velocity.y;
         }
     }
 
-    private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Paddle paddle) {
+    private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
         int direction = paddleLogic.onGameTick(this).getDirection();
-        paddle.moveY(direction);
+        paddle.yProperty().add(direction);
     }
 
     @Override
     public boolean isGameOver() {
-        return ball.pos.x < 0 || ball.pos.x > width;
+        return ball.getCenterX() < 0 || ball.getCenterX() > width;
     }
 
     @Override
     public GameMechanic<?, ?> getWinner() {
-        if (ball.pos.x < 0){
+        if (ball.getCenterX() < 0){
             return leftPaddleLogic;
-        } else if (ball.pos.x > width)
+        } else if (ball.getCenterX() > width)
             return rightPaddleLogic;
         return null;
     }
@@ -62,12 +75,16 @@ public class PongGame implements Game {
         return who == getWinner() ? 1 : 0;
     }
 
-    private static class Ball {
-        Point2D.Double pos;
-        Point2D.Double velocity;
+    @Override
+    public List<Shape> getScreenElements() {
+        return gameElements;
+    }
+
+    private static class Ball extends Circle {
+        private Point2D.Double velocity;
 
         public Ball(Point2D.Double pos, Point2D.Double velocity) {
-            this.pos = pos;
+            super(pos.x, pos.y, 3, Color.BLACK);
             this.velocity = velocity;
         }
 
@@ -76,24 +93,9 @@ public class PongGame implements Game {
         }
 
         public void move() {
-            pos.x += velocity.x;
-            pos.y += velocity.y;
+            centerXProperty().add(velocity.x);
+            centerYProperty().add(velocity.y);
         }
 
-    }
-
-    private static class Paddle {
-        //middle of paddle
-        Point2D.Double pos;
-        double length;
-
-        public Paddle(Point2D.Double pos, double length) {
-            this.pos = pos;
-            this.length = length;
-        }
-
-        public void moveY(double offset) {
-            pos.y += offset;
-        }
     }
 }

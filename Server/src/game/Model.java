@@ -1,8 +1,6 @@
 package game;
 
-import game.pong_sample.PongGame;
-import game.pong_sample.PongMove;
-import game.pong_sample.PongPaddle;
+import game.view.NewGameListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +12,8 @@ import java.util.function.BiFunction;
 public class Model<T, M> {
     private final BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory;
     private final List<Competitor<T, M>> competitors = new ArrayList<>();
+    private Game game;
+    private NewGameListener newGameListener;
 
     public boolean addCompetitor(Competitor competitor) {
         return competitors.add(competitor);
@@ -27,11 +27,16 @@ public class Model<T, M> {
         this.gameFactory = gameFactory;
     }
 
+    public void setNewGameListener(NewGameListener newGameListener) {
+        this.newGameListener = newGameListener;
+    }
+
     public void play() {
         for (Competitor<T, M> player1 : competitors) {
             for (Competitor<T, M> player2 : competitors) {
                 if (player1 != player2) {
                     Game game = gameFactory.apply(player1, player2);
+                    newGameListener.newGameCreated(game);
                     while (!game.isGameOver()) {
                         game.play();
                     }
@@ -42,14 +47,7 @@ public class Model<T, M> {
         }
     }
 
-    public static void main(String[] args) {
-        Model<PongGame, PongMove> model = new Model((a, b) -> new PongGame(((Competitor<PongGame, PongMove>)a).getGameMechanic(), ((Competitor<PongGame, PongMove>)b).getGameMechanic()));
-        Competitor<PongGame, PongMove> competitor1 = new Competitor("Team1", new PongPaddle());
-        Competitor<PongGame, PongMove> competitor2 = new Competitor("Team1", new PongPaddle());
-        System.out.println("1: " + competitor1);
-        System.out.println("2: " + competitor2);
-        model.addCompetitor(competitor1);
-        model.addCompetitor(competitor2);
-        model.play();
+    public Game getGame() {
+        return game;
     }
 }
