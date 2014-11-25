@@ -9,8 +9,6 @@ import javafx.scene.shape.Shape;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -31,6 +29,7 @@ public class PongGame implements Game {
     }
 
     public PongGame(GameMechanic<PongGame, PongMove> leftPaddleLogic, GameMechanic<PongGame, PongMove> rightPaddleLogic, int width, int height) {
+        System.out.println("Play!*");
         this.leftPaddleLogic = leftPaddleLogic;
         this.rightPaddleLogic = rightPaddleLogic;
         this.width = width;
@@ -53,7 +52,7 @@ public class PongGame implements Game {
 
     private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
         int direction = paddleLogic.onGameTick(this).getDirection();
-        paddle.yProperty().add(direction);
+        paddle.setY(paddle.getY() + direction);
     }
 
     @Override
@@ -93,8 +92,8 @@ public class PongGame implements Game {
         }
 
         public void move() {
-            centerXProperty().add(velocity.x);
-            centerYProperty().add(velocity.y);
+            setCenterX(getCenterX() + velocity.x);
+            setCenterY(getCenterY() + velocity.y);
         }
 
     }
