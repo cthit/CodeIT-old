@@ -16,4 +16,8 @@ public class Competitor<T, M> {
     public GameMechanic<T, M> getGameMechanic() {
         return gameMechanic;
     }
+
+    public String getTeamName() {
+        return teamName;
+    }
 }
