@@ -4,6 +4,7 @@ import game.Game;
 import game.GameMechanic;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
@@ -22,7 +23,7 @@ public class PongGame implements Game {
     private final int width, height;
     private final Ball ball = new Ball(200, 100);
 
-    List<Shape> gameElements = new ArrayList<>();
+    private List<Shape> gameElements = new ArrayList<>();
 
     public PongGame(GameMechanic<PongGame, PongMove> leftPaddleLogic, GameMechanic<PongGame, PongMove> rightPaddleLogic) {
         this(leftPaddleLogic, rightPaddleLogic, 400, 200);
@@ -40,10 +41,26 @@ public class PongGame implements Game {
         gameElements.add(leftPaddle);
         gameElements.add(rightPaddle);
         gameElements.add(ball);
+        gameElements.add(new Line(0, 1, width, 1));
+        gameElements.add(new Line(0, height-1, width, height-1));
+        gameElements.add(new Line(1, 0, 1, height));
+        gameElements.add(new Line(width, 0, width, height));
+    }
+
+    public Rectangle getPaddle(GameMechanic<PongGame, PongMove> paddleLogic) {
+        return paddleLogic == leftPaddleLogic ? leftPaddle : rightPaddle;
     }
 
     public Ball getBall() {
         return ball;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     @Override
@@ -65,6 +82,11 @@ public class PongGame implements Game {
     private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
         int direction = paddleLogic.onGameTick(this).getDirection();
         paddle.setY(paddle.getY() + direction);
+
+        if (paddle.getY() < 0)
+            paddle.setY(0);
+        else if(paddle.getY() + paddle.getHeight() > height)
+            paddle.setY(width - paddle.getHeight());
     }
 
     @Override
@@ -91,7 +113,7 @@ public class PongGame implements Game {
         return gameElements;
     }
 
-    private static class Ball extends Circle {
+    public static class Ball extends Circle {
         private Point2D.Double velocity;
 
         public Ball(Point2D.Double pos, Point2D.Double velocity) {
@@ -108,5 +130,8 @@ public class PongGame implements Game {
             setCenterY(getCenterY() + velocity.y);
         }
 
+        public Point2D.Double getVelocity() {
+            return velocity;
+        }
     }
 }
