@@ -10,8 +10,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -19,9 +17,8 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.Date;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.function.BiFunction;
 
 /**
  * Created by tejp on 14/11/14.
@@ -39,18 +36,16 @@ public class MainView extends Application implements NewGameListener {
         canvas.getChildren().addAll(game.getScreenElements());
     }
 
-    public MainView() {
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
 
-        Model<PongGame, PongMove> model = new Model((a, b) -> new PongGame(((Competitor<PongGame, PongMove>)a).getGameMechanic(), ((Competitor<PongGame, PongMove>)b).getGameMechanic()));
         Competitor<PongGame, PongMove> competitor1 = new Competitor("Team1", new PongPaddle());
-        Competitor<PongGame, PongMove> competitor2 = new Competitor("Team1", new PongPaddle());
-        model.addCompetitor(competitor1);
-        model.addCompetitor(competitor2);
+        Competitor<PongGame, PongMove> competitor2 = new Competitor("Team2", new PongPaddle());
+
+        BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a,b) -> new PongGame(a.getGameMechanic(), b.getGameMechanic());
+
+        Model<PongGame, PongMove> model = new Model(100, gameFactory, competitor1, competitor2);
         model.setNewGameListener(this);
 
         primaryStage.setTitle("Game");
@@ -61,22 +56,28 @@ public class MainView extends Application implements NewGameListener {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        new Thread(() -> model.play()).start();
+        Model.CompetitorPairIterator pairIterator = model.getCompetitorPairIterator();
 
+        model.createNewGame(pairIterator.next());
+        game = model.getGame();
 
-        final Timeline loop = new Timeline(new KeyFrame(Duration.millis(10), new EventHandler<ActionEvent>() {
+        final Timeline loop = new Timeline(new KeyFrame(Duration.millis(10), t -> {
 
-            @Override
-            public void handle(final ActionEvent t) {
-//                System.out.println("When does this happen? " + new Date().getTime());
+            if (game.isGameOver()) {
+                //TODO grab rating from players and save it to a challenger map which matches rating with challenger
+                if (pairIterator.hasNext()) {
+                    model.createNewGame(pairIterator.next());
+                    game = model.getGame();
+                }
+            } else {
+                game.play();
+                //TODO paint stuff?
+
             }
+
         }));
         loop.setCycleCount(Timeline.INDEFINITE);
         loop.play();
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 
     @Override
@@ -88,5 +89,9 @@ public class MainView extends Application implements NewGameListener {
             canvas.getChildren().addAll(screenElements);
         });
 
+    }
+
+    public static void main(String[] args) {
+        launch();
     }
 }
