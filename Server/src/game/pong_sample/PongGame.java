@@ -17,8 +17,8 @@ import java.util.List;
 public class PongGame implements Game {
 
     private final GameMechanic<PongGame, PongMove> leftPaddleLogic, rightPaddleLogic;
-    private Rectangle leftPaddle = new Rectangle(10, 40, Color.BLUE);
-    private Rectangle rightPaddle = new Rectangle(10, 40, Color.GREEN);
+    private Rectangle leftPaddle = new Rectangle(0, 100, 10, 40);
+    private Rectangle rightPaddle = new Rectangle(400, 100, 10, 40);
     private final int width, height;
     private final Ball ball = new Ball(200, 100);
 
@@ -26,10 +26,12 @@ public class PongGame implements Game {
 
     public PongGame(GameMechanic<PongGame, PongMove> leftPaddleLogic, GameMechanic<PongGame, PongMove> rightPaddleLogic) {
         this(leftPaddleLogic, rightPaddleLogic, 400, 200);
+        leftPaddle.setFill(Color.GREEN);
+        rightPaddle.setFill(Color.BLUE);
     }
 
     public PongGame(GameMechanic<PongGame, PongMove> leftPaddleLogic, GameMechanic<PongGame, PongMove> rightPaddleLogic, int width, int height) {
-        System.out.println("Play!*");
+        System.out.println("PongGameCreated");
         this.leftPaddleLogic = leftPaddleLogic;
         this.rightPaddleLogic = rightPaddleLogic;
         this.width = width;
@@ -37,11 +39,21 @@ public class PongGame implements Game {
 
         gameElements.add(leftPaddle);
         gameElements.add(rightPaddle);
+        gameElements.add(ball);
+    }
+
+    public Ball getBall() {
+        return ball;
     }
 
     @Override
     public void play() {
         ball.move();
+        System.out.println();
+        System.out.println(String.format("(%f;%f)", ball.getCenterX(), ball.getCenterY()));
+        System.out.println(String.format("(%f,%f)", leftPaddle.getX(), leftPaddle.getY()));
+        System.out.println(String.format("(%f,%f)", rightPaddle.getX(), rightPaddle.getY()));
+        System.out.println();
         movePaddle(leftPaddleLogic, leftPaddle);
         movePaddle(rightPaddleLogic, rightPaddle);
 
