@@ -1,64 +1,52 @@
 package game;
 
 import com.sun.xml.internal.ws.addressing.model.ActionNotSupportedException;
-import game.pong_sample.PongGame;
-import game.pong_sample.PongMove;
 import game.view.NewGameListener;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 /**
  * Created by tejp on 01/11/14.
  */
 public class Model<T, M> {
     private final BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory;
-    private final List<Competitor<T, M>> competitors = new ArrayList<>();
+    private final Map<Competitor<T,M>, Double> competitorScoreMap = new HashMap<>();
+    private final CompetitorPairIterator<T,M> competitorPairIterator;
     private Game game;
     private NewGameListener newGameListener;
+    private int roundsPerPair;
 
-    public boolean addCompetitor(Competitor competitor) {
-        return competitors.add(competitor);
-    }
-
-    public boolean removeCompetitor(Competitor competitor) {
-        return competitors.remove(competitor);
-    }
-
-    public Model(BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory) {
+    public Model(int roundsPerPair, BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory, Competitor<T,M>... competitors) {
+        this.roundsPerPair = roundsPerPair;
         this.gameFactory = gameFactory;
+
+        competitorPairIterator = new CompetitorPairIterator<>(Arrays.asList(competitors));
+    }
+
+    public CompetitorPairIterator getCompetitorPairIterator() {
+        return competitorPairIterator;
     }
 
     public void setNewGameListener(NewGameListener newGameListener) {
         this.newGameListener = newGameListener;
     }
 
-    public void createNewGame(Competitor<T,M> competitor1, Competitor<T,M> competitor2) {
-        game = gameFactory.apply(competitor1, competitor2);
+    public void createNewGame(CompetitorPair pair) {
+        game = gameFactory.apply(pair.competitor1, pair.competitor2);
+        newGameListener.newGameCreated(game);
     }
 
     public void gameLoop() {
-        if ( ! game.isGameOver())
+        if (game.isGameOver()) {
+            storeRating();
+        } else {
             game.play();
+        }
     }
 
-    public void play() {
-        for (Competitor<T, M> player1 : competitors) {
-            for (Competitor<T, M> player2 : competitors) {
-                if (player1 != player2) {
-                    Game game = gameFactory.apply(player1, player2);
-                    newGameListener.newGameCreated(game);
-                    while (!game.isGameOver()) {
-                        game.play();
-                    }
-                    System.out.println("Rating: " + game.getWinner() + " " + game.getRating(game.getWinner()));
+    private void storeRating() {
 
-                }
-            }
-        }
     }
 
     public Game getGame() {
@@ -66,25 +54,43 @@ public class Model<T, M> {
     }
 
 
-    public static class Round<T,M> {
-        private final Competitor<T,M> competitor1;
-        private final Competitor<T,M> competitor2;
+    public static class CompetitorPair<T,M> {
+        public final Competitor<T,M> competitor1;
+        public final Competitor<T,M> competitor2;
 
-        public Round(Competitor<T,M> competitor1, Competitor<T,M> competitor2) {
-            this.competitor1 = competitor1;
-            this.competitor2 = competitor2;
+        public CompetitorPair(Competitor<T, M> competitor1, Competitor<T, M> competitor2) {
+            this.competitor1 = Objects.requireNonNull(competitor1);
+            this.competitor2 = Objects.requireNonNull(competitor2);
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
 
+            CompetitorPair that = (CompetitorPair) o;
+
+            if (!competitor1.equals(that.competitor1)) return false;
+            if (!competitor2.equals(that.competitor2)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = competitor1.hashCode();
+            result = 31 * result + competitor2.hashCode();
+            return result;
+        }
     }
-    public static class RoundIterator<T,M> implements Iterator<Round> {
+    public static class CompetitorPairIterator<T,M> implements Iterator<CompetitorPair<T,M>> {
 
         private List<Competitor<T,M>> competitors = new ArrayList<>();
         private int competitor1 = 0;
         private int competitor2 = 1;
 
-        public RoundIterator(List<Competitor<T,M>> competitors) {
-            this.competitors = competitors;
+        public CompetitorPairIterator(Collection<Competitor<T, M>> competitors) {
+            this.competitors.addAll(competitors);
         }
 
         @Override
@@ -93,8 +99,12 @@ public class Model<T, M> {
         }
 
         @Override
-        public Round next() {
-            Round round = new Round(competitors.get(competitor1), competitors.get(competitor2));
+        public CompetitorPair next() {
+            if (! hasNext()){
+                throw new NoSuchElementException();
+            }
+
+            CompetitorPair round = new CompetitorPair(competitors.get(competitor1), competitors.get(competitor2));
 
             if (competitor2 >= competitors.size() - 1) {
                 competitor1++;
@@ -107,11 +117,6 @@ public class Model<T, M> {
         @Override
         public void remove() {
             throw new ActionNotSupportedException("Can't remove Round from iterator");
-        }
-
-        @Override
-        public void forEachRemaining(Consumer<? super Round> action) {
-
         }
     }
 }
