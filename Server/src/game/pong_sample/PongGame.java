@@ -74,8 +74,12 @@ public class PongGame implements Game {
         movePaddle(leftPaddleLogic, leftPaddle);
         movePaddle(rightPaddleLogic, rightPaddle);
 
-        if (ball.getCenterY() < 0 || ball.getCenterY() > height){
+        if (ball.getCenterY() < 0 || ball.getCenterY() > height) {
             ball.velocity.y = -ball.velocity.y;
+        }
+
+        if (leftPaddle.intersects(ball.boundsInLocalProperty().get()) || rightPaddle.intersects(ball.boundsInLocalProperty().get())) {
+            ball.getVelocity().x = -ball.getVelocity().x;
         }
     }
 
@@ -86,7 +90,8 @@ public class PongGame implements Game {
         if (paddle.getY() < 0)
             paddle.setY(0);
         else if(paddle.getY() + paddle.getHeight() > height)
-            paddle.setY(width - paddle.getHeight());
+            paddle.setY(height - paddle.getHeight());
+
     }
 
     @Override
