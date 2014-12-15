@@ -14,27 +14,15 @@ public class PongPaddle implements GameMechanic<PongGame, PongMove> {
     @Override
     public PongMove onGameTick(PongGame game) {
 
-        if (! yPosFound) {
-            yPos = 42;
-            yPosFound = true;
-        }
-        /*
-        PongGame.Ball ball = game.getBall();
+//        if (! yPosFound) {
+//
+//            yPosFound = true;
+//        }
 
-        double ticsToWall = ball.getCenterX() / ball.getVelocity().x;
-
-        double yHitPos = ball.getVelocity().y * ticsToWall;
-
-        yHitPos %= game.getHeight();
-        System.out.println("yhitpos: " + yHitPos);
-
-        */
-
-//        return yHitPos < game.getLeftPaddle().getX() ? PongMove.UP : PongMove.DOWN;
 
         Rectangle paddle = game.getPaddle(this);
 
-        return getDirectionToGo(paddle.getX() + paddle.getHeight() / 2, yPos);
+        return getDirectionToGo(paddle.getY() + paddle.getHeight() / 2, game.getBall().getCenterY());
     }
 
     PongMove getDirectionToGo(double paddleLocation, double goalPos) {
