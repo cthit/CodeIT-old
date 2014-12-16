@@ -25,6 +25,12 @@ public class ServerConnection {
                 String s = new String(data, 0, incomingPacket.getLength());
 
                 System.out.println(incomingPacket.getAddress() + " : " + incomingPacket.getPort() + " - " + s);
+
+                if ("GiveSources".equals(s)){
+                    System.out.println("GiveSources");
+                } else if ("RecieveModule".equals(s)){
+                    System.out.println("RevieceModule");
+                }
             }
 
         } catch (IOException e) {

@@ -76,9 +76,10 @@ public class Controller {
 
     @FXML
     private void sendCodeClicked() {
+        setupConnection();
 
-        connection = new Connection( address.getText(), Integer.parseInt(port.getText()) );
-        connection.sendMessage(team_name.getText());
+        connection.sendMessage("RecieveModule");
+        /*connection.sendMessage(team_name.getText());
         System.out.println(String.format(
                 "%s\n%s\n%s\n%s",
                 team_name.getText(),
@@ -86,10 +87,17 @@ public class Controller {
                 port.getText(),
                 project_path.getText()
         ));
+        */
     }
 
     @FXML
     private void downloadSourcesClicked() {
-        //logic for downloading soruces from server
+        setupConnection();
+        connection.sendMessage("GiveSources");
+    }
+
+    private void setupConnection() {
+        if ( connection == null)
+            connection = new Connection( address.getText(), Integer.parseInt(port.getText()) );
     }
 }

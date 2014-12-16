@@ -10,6 +10,7 @@ public class Connection {
 
     private final InetAddress inetAddress;
     private final int port;
+    private DatagramSocket ds;
 
     public Connection(String address, int port) {
         this.port = port;
@@ -20,10 +21,17 @@ public class Connection {
         }
     }
 
+    public String getPort() {
+        return port+"";
+    }
+
+    public String getInetAddress() {
+        return inetAddress.getHostAddress();
+    }
+
     public void sendMessage(String message) {
         try {
-            DatagramSocket ds = new DatagramSocket();
-
+            ds = new DatagramSocket();
 
             byte[] byteMessage = message.getBytes();
 
@@ -33,6 +41,10 @@ public class Connection {
             e.printStackTrace();
         }
 
+    }
+
+    public void close() {
+        ds.close();
     }
 
 }
