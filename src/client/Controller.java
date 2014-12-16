@@ -87,4 +87,9 @@ public class Controller {
                 project_path.getText()
         ));
     }
+
+    @FXML
+    private void downloadSourcesClicked() {
+        //logic for downloading soruces from server
+    }
 }
