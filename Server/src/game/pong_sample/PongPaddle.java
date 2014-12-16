@@ -8,17 +8,8 @@ import javafx.scene.shape.Rectangle;
  */
 public class PongPaddle implements GameMechanic<PongGame, PongMove> {
 
-    boolean yPosFound = false;
-    int yPos = 0;
-
     @Override
     public PongMove onGameTick(PongGame game) {
-
-//        if (! yPosFound) {
-//
-//            yPosFound = true;
-//        }
-
 
         Rectangle paddle = game.getPaddle(this);
 
