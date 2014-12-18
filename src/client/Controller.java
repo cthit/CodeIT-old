@@ -5,16 +5,17 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
 import javafx.scene.effect.InnerShadow;
-import javafx.scene.effect.Shadow;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import network.Connection;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class Controller {
 
@@ -77,27 +78,33 @@ public class Controller {
     @FXML
     private void sendCodeClicked() {
         setupConnection();
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        String s = null;
+        try {
+            s = new String(Files.readAllBytes(getFileToSend().toPath()));
 
-        connection.sendMessage("RecieveModule");
-        /*connection.sendMessage(team_name.getText());
-        System.out.println(String.format(
-                "%s\n%s\n%s\n%s",
-                team_name.getText(),
-                address.getText(),
-                port.getText(),
-                project_path.getText()
-        ));
-        */
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println();
+
+        connection.sendMessage("RecieveModule\0" + team_name.getText() + "\0" + s);
     }
 
     @FXML
     private void downloadSourcesClicked() {
         setupConnection();
-        connection.sendMessage("GiveSources");
+        connection.sendMessage("RequestSources");
     }
 
     private void setupConnection() {
         if ( connection == null)
             connection = new Connection( address.getText(), Integer.parseInt(port.getText()) );
+    }
+
+    public File getFileToSend() {
+        return new File("TempFanceFile");
     }
 }

@@ -23,7 +23,7 @@ import java.util.function.BiFunction;
 /**
  * Created by tejp on 14/11/14.
  */
-public class MainView extends Application implements NewGameListener {
+public class ServerView extends Application implements NewGameListener {
 
     private Stage primaryStage;
     Pane canvas = new Pane();

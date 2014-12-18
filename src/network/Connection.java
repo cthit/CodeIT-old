@@ -1,6 +1,8 @@
 package network;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.*;
 
 /**
@@ -10,7 +12,7 @@ public class Connection {
 
     private final InetAddress inetAddress;
     private final int port;
-    private DatagramSocket ds;
+    private Socket socket;
 
     public Connection(String address, int port) {
         this.port = port;
@@ -31,20 +33,24 @@ public class Connection {
 
     public void sendMessage(String message) {
         try {
-            ds = new DatagramSocket();
-
-            byte[] byteMessage = message.getBytes();
-
-            DatagramPacket dp = new DatagramPacket(byteMessage, byteMessage.length, inetAddress, port);
-            ds.send(dp);
+            socket = new Socket(inetAddress, port);
+            sendData(message.getBytes());
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
-    public void close() {
-        ds.close();
+    public void sendData(byte[] byteMessage) throws IOException {
+        OutputStream os = socket.getOutputStream();
+        BufferedOutputStream bos = new BufferedOutputStream(os);
+        for (int i = 0 ; i < byteMessage.length ; i++) {
+            bos.write(byteMessage[i]);
+        }
+        bos.flush();
+
+        bos.close();
+        os.close();
     }
 
 }
