@@ -1,6 +1,7 @@
 package game.view;
 
-import game.Game;
+
+import it.tejp.codeit.api.Game;
 
 public interface NewGameListener {
         void newGameCreated(Game game);

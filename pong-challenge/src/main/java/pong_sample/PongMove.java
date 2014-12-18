@@ -1,6 +1,7 @@
-package game.pong_sample;
+package pong_sample;
 
-import game.Move;
+
+import it.tejp.codeit.api.Move;
 
 /**
  * Created by tejp on 01/11/14.

@@ -1,6 +1,6 @@
-package game.pong_sample;
+package pong_sample;
 
-import game.GameMechanic;
+import it.tejp.codeit.api.GameMechanic;
 import javafx.scene.shape.Rectangle;
 
 /**

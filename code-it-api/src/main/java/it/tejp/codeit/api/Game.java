@@ -1,4 +1,4 @@
-package game;
+package it.tejp.codeit.api;
 
 import javafx.scene.shape.Shape;
 

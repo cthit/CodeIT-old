@@ -1,7 +1,7 @@
-package game.pong_sample;
+package pong_sample;
 
-import game.Game;
-import game.GameMechanic;
+import it.tejp.codeit.api.Game;
+import it.tejp.codeit.api.GameMechanic;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;

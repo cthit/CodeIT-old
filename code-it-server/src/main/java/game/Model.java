@@ -1,7 +1,8 @@
 package game;
 
-import com.sun.xml.internal.ws.addressing.model.ActionNotSupportedException;
 import game.view.NewGameListener;
+import it.tejp.codeit.api.Competitor;
+import it.tejp.codeit.api.Game;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -116,7 +117,7 @@ public class Model<T, M> {
 
         @Override
         public void remove() {
-            throw new ActionNotSupportedException("Can't remove Round from iterator");
+            throw new UnsupportedOperationException("Can't remove Round from iterator");
         }
     }
 }

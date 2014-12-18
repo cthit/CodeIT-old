@@ -24,7 +24,7 @@ public class GamePractice extends Application {
         canvas = new Pane();
         final Scene scene = new Scene(canvas, 800, 600);
 
-        primaryStage.setTitle("Game");
+        primaryStage.setTitle("it.tejp.codeit.api.Game");
         primaryStage.setScene(scene);
         primaryStage.show();
 

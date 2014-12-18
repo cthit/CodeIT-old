@@ -1,4 +1,4 @@
-package game.pong_sample;
+package pong_sample;
 
 public final class Vector2D {
 

@@ -1,11 +1,8 @@
 package game.view;
 
-import game.Competitor;
-import game.Game;
 import game.Model;
-import game.pong_sample.PongGame;
-import game.pong_sample.PongMove;
-import game.pong_sample.PongPaddle;
+import it.tejp.codeit.api.Competitor;
+import it.tejp.codeit.api.Game;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -16,6 +13,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import pong_sample.PongGame;
+import pong_sample.PongMove;
+import pong_sample.PongPaddle;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -48,7 +48,7 @@ public class ServerView extends Application implements NewGameListener {
         Model<PongGame, PongMove> model = new Model(100, gameFactory, competitor1, competitor2);
         model.setNewGameListener(this);
 
-        primaryStage.setTitle("Game");
+        primaryStage.setTitle("it.tejp.codeit.api.Game");
 
         Group root = new Group();
 
