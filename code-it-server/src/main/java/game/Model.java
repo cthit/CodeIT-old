@@ -53,7 +53,7 @@ public class Model<T, M> {
             Double addedRating = competitorScoreEntry.getValue();
 
             if (competitorScoreMap.containsKey(competitorScoreEntry.getKey())) {
-                Double newRating = competitorScoreMap.get(competitorScoreEntry) + addedRating;
+                Double newRating = competitorScoreMap.get(competitorScoreEntry.getKey()) + addedRating;
 
                 competitorScoreMap.replace(
                         competitorScoreEntry.getKey(),

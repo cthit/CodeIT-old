@@ -65,14 +65,24 @@ public class PongGame implements Game<PongGame, PongMove> {
         return height;
     }
 
+
     @Override
     public void play() {
+        System.out.println(ball.getVelocity().x);
+        double leftX = leftPaddle.getX() + leftPaddle.getWidth();
+        double rightX = rightPaddle.getX();
+        Line leftPaddleLine = new Line(leftX, leftPaddle.getY(), leftX, leftPaddle.getY() + leftPaddle.getHeight());
+        Line rightPaddleLine = new Line(rightX, rightPaddle.getY(), rightX, rightPaddle.getY() + leftPaddle.getHeight());
+
+        Line ballLine = new Line(ball.getCenterX(), ball.getCenterY(), ball.getCenterX() + ball.getVelocity().x, ball.getCenterY() + ball.getVelocity().y);
+
+        if (leftPaddleLine.intersects(ballLine.boundsInLocalProperty().get()) || rightPaddleLine.intersects(ballLine.boundsInLocalProperty().get())) {
+            ball.getVelocity().x = -ball.getVelocity().x*1.1; //todo Magic numbers. they mean increase speed by 10% in both x and y velocity.
+            ball.getVelocity().y = ball.getVelocity().y*1.1;
+        }
+
+        //############################################################3
         ball.move();
-        System.out.println();
-        System.out.println(String.format("(%f;%f)", ball.getCenterX(), ball.getCenterY()));
-        System.out.println(String.format("(%f,%f)", leftPaddle.getX(), leftPaddle.getY()));
-        System.out.println(String.format("(%f,%f)", rightPaddle.getX(), rightPaddle.getY()));
-        System.out.println();
         movePaddle(leftCompetitor.getGameMechanic(), leftPaddle);
         movePaddle(rightCompetitor.getGameMechanic(), rightPaddle);
 
@@ -80,9 +90,8 @@ public class PongGame implements Game<PongGame, PongMove> {
             ball.velocity.y = -ball.velocity.y;
         }
 
-        if (leftPaddle.intersects(ball.boundsInLocalProperty().get()) || rightPaddle.intersects(ball.boundsInLocalProperty().get())) {
-            ball.getVelocity().x = -ball.getVelocity().x;
-        }
+
+
     }
 
     private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
@@ -124,6 +133,7 @@ public class PongGame implements Game<PongGame, PongMove> {
 
         public Ball(double x, double y) {
             this(new Point2D.Double(x, y), new Point2D.Double(Math.random()*2 - 1, Math.random()*2 - 1 ));
+//            this(new Point2D.Double(x, y), new Point2D.Double(Math.random()*2 - 1, 0 ));
         }
 
         public void move() {
