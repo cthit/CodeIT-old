@@ -1,5 +1,6 @@
 package pong_sample;
 
+import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
 import it.tejp.codeit.api.GameMechanic;
 import javafx.scene.paint.Color;
@@ -9,32 +10,33 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by tejp on 01/11/14.
  */
-public class PongGame implements Game {
+public class PongGame implements Game<PongGame, PongMove> {
 
-    private final GameMechanic<PongGame, PongMove> leftPaddleLogic, rightPaddleLogic;
+    private final Competitor<PongGame, PongMove> leftCompetitor, rightCompetitor;
     private Rectangle leftPaddle = new Rectangle(0, 100, 10, 40);
     private Rectangle rightPaddle = new Rectangle(400, 100, 10, 40);
+    private Double leftPaddleScore = new Double(0);
+    private Double rightPaddleScore = new Double(0);
     private final int width, height;
     private final Ball ball = new Ball(200, 100);
 
     private List<Shape> gameElements = new ArrayList<>();
 
-    public PongGame(GameMechanic<PongGame, PongMove> leftPaddleLogic, GameMechanic<PongGame, PongMove> rightPaddleLogic) {
-        this(leftPaddleLogic, rightPaddleLogic, 400, 200);
+    public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor) {
+        this(leftCompetitor, rightCompetitor, 400, 200);
         leftPaddle.setFill(Color.GREEN);
         rightPaddle.setFill(Color.BLUE);
     }
 
-    public PongGame(GameMechanic<PongGame, PongMove> leftPaddleLogic, GameMechanic<PongGame, PongMove> rightPaddleLogic, int width, int height) {
+    public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor, int width, int height) {
         System.out.println("PongGameCreated");
-        this.leftPaddleLogic = leftPaddleLogic;
-        this.rightPaddleLogic = rightPaddleLogic;
+        this.leftCompetitor = leftCompetitor;
+        this.rightCompetitor = rightCompetitor;
         this.width = width;
         this.height = height;
 
@@ -42,13 +44,13 @@ public class PongGame implements Game {
         gameElements.add(rightPaddle);
         gameElements.add(ball);
         gameElements.add(new Line(0, 1, width, 1));
-        gameElements.add(new Line(0, height-1, width, height-1));
+        gameElements.add(new Line(0, height - 1, width, height - 1));
         gameElements.add(new Line(1, 0, 1, height));
         gameElements.add(new Line(width, 0, width, height));
     }
 
     public Rectangle getPaddle(GameMechanic<PongGame, PongMove> paddleLogic) {
-        return paddleLogic == leftPaddleLogic ? leftPaddle : rightPaddle;
+        return paddleLogic == leftCompetitor.getGameMechanic() ? leftPaddle : rightPaddle;
     }
 
     public Ball getBall() {
@@ -71,8 +73,8 @@ public class PongGame implements Game {
         System.out.println(String.format("(%f,%f)", leftPaddle.getX(), leftPaddle.getY()));
         System.out.println(String.format("(%f,%f)", rightPaddle.getX(), rightPaddle.getY()));
         System.out.println();
-        movePaddle(leftPaddleLogic, leftPaddle);
-        movePaddle(rightPaddleLogic, rightPaddle);
+        movePaddle(leftCompetitor.getGameMechanic(), leftPaddle);
+        movePaddle(rightCompetitor.getGameMechanic(), rightPaddle);
 
         if (ball.getCenterY() < 0 || ball.getCenterY() > height) {
             ball.velocity.y = -ball.velocity.y;
@@ -100,17 +102,11 @@ public class PongGame implements Game {
     }
 
     @Override
-    public GameMechanic<?, ?> getWinner() {
-        if (ball.getCenterX() < 0){
-            return leftPaddleLogic;
-        } else if (ball.getCenterX() > width)
-            return rightPaddleLogic;
-        return null;
-    }
-
-    @Override
-    public int getRating(GameMechanic<?, ?> who) {
-        return who == getWinner() ? 1 : 0;
+    public Map<Competitor<PongGame,PongMove>, Double> getResults() {
+        Map<Competitor<PongGame,PongMove>, Double> results = new HashMap<>();
+        results.put(leftCompetitor, leftPaddleScore);
+        results.put(rightCompetitor, rightPaddleScore);
+        return results;
     }
 
     @Override

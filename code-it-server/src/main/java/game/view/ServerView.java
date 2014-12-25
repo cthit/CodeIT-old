@@ -43,7 +43,7 @@ public class ServerView extends Application implements NewGameListener {
         Competitor<PongGame, PongMove> competitor1 = new Competitor("Team1", new PongPaddle());
         Competitor<PongGame, PongMove> competitor2 = new Competitor("Team2", new PongPaddle());
 
-        BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a,b) -> new PongGame(a.getGameMechanic(), b.getGameMechanic());
+        BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a,b) -> new PongGame(a, b);
 
         Model<PongGame, PongMove> model = new Model(100, gameFactory, competitor1, competitor2);
         model.setNewGameListener(this);
@@ -58,16 +58,15 @@ public class ServerView extends Application implements NewGameListener {
 
         Model.CompetitorPairIterator pairIterator = model.getCompetitorPairIterator();
 
-        model.createNewGame(pairIterator.next());
-        game = model.getGame();
+        game = model.createNewGame(pairIterator.next());
 
         final Timeline loop = new Timeline(new KeyFrame(Duration.millis(10), t -> {
 
             if (game.isGameOver()) {
-                //TODO grab rating from players and save it to a challenger map which matches rating with challenger
+                model.storeRating(game);
+
                 if (pairIterator.hasNext()) {
-                    model.createNewGame(pairIterator.next());
-                    game = model.getGame();
+                    game = model.createNewGame(pairIterator.next());
                 }
             } else {
                 game.play();

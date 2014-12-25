@@ -14,7 +14,7 @@ public class Model<T, M> {
     private final BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory;
     private final Map<Competitor<T,M>, Double> competitorScoreMap = new HashMap<>();
     private final CompetitorPairIterator<T,M> competitorPairIterator;
-    private Game game;
+    private Game<T, M> game;
     private NewGameListener newGameListener;
     private int roundsPerPair;
 
@@ -33,27 +33,39 @@ public class Model<T, M> {
         this.newGameListener = newGameListener;
     }
 
-    public void createNewGame(CompetitorPair pair) {
+    public Game createNewGame(CompetitorPair pair) {
         game = gameFactory.apply(pair.competitor1, pair.competitor2);
         newGameListener.newGameCreated(game);
-    }
-
-    public void gameLoop() {
-        if (game.isGameOver()) {
-            storeRating();
-        } else {
-            game.play();
-        }
-    }
-
-    private void storeRating() {
-
-    }
-
-    public Game getGame() {
         return game;
     }
 
+    /**
+     *
+     * iterates through all competitors in the game and adds their score to the score map.
+     * if competitors wasn't previously in the score map then add them and their score
+     * @param game: game containging competitors from which to take score from. OBS game.isGameOver() must return true
+     */
+    public void storeRating(Game<T, M> game) {
+        if ( ! game.isGameOver()){
+            throw new IllegalStateException("Game isn't over");
+        }
+        for (Map.Entry<Competitor<T, M>, Double> competitorScoreEntry : game.getResults().entrySet()) {
+            Double addedRating = competitorScoreEntry.getValue();
+
+            if (competitorScoreMap.containsKey(competitorScoreEntry.getKey())) {
+                Double newRating = competitorScoreMap.get(competitorScoreEntry) + addedRating;
+
+                competitorScoreMap.replace(
+                        competitorScoreEntry.getKey(),
+                        newRating
+                );
+
+            } else {
+                competitorScoreMap.put(competitorScoreEntry.getKey(), competitorScoreEntry.getValue());
+
+            }
+        }
+    }
 
     public static class CompetitorPair<T,M> {
         public final Competitor<T,M> competitor1;
