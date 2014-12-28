@@ -82,7 +82,7 @@ public class Controller {
         BufferedInputStream bis = null;
         String s = null;
         try {
-            s = new String(Files.readAllBytes(getFileToSend().toPath()));
+            s = new String(Files.readAllBytes(new File(file_path.getText()).toPath()));
 
         } catch (IOException e) {
             e.printStackTrace();
