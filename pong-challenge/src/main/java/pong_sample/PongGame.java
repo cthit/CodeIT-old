@@ -81,7 +81,7 @@ public class PongGame implements Game<PongGame, PongMove> {
             ball.getVelocity().y = ball.getVelocity().y*1.1;
         }
 
-        //############################################################3
+        //############################################################
         ball.move();
         movePaddle(leftCompetitor.getGameMechanic(), leftPaddle);
         movePaddle(rightCompetitor.getGameMechanic(), rightPaddle);

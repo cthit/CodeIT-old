@@ -43,4 +43,12 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>it.tejp</groupId>
+            <artifactId>code-it-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
 </project>

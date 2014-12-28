@@ -20,6 +20,7 @@
       <Label layoutX="200.0" layoutY="269.0" text="Project Path:" />
       <Button id="green" layoutX="200.0" layoutY="322.0" mnemonicParsing="false" onAction="#sendCodeClicked" text="Send code" />
       <Button layoutX="339.0" layoutY="322.0" mnemonicParsing="false" onAction="#downloadSourcesClicked" text="Download Sources" />
+      <Button layoutX="200.0" layoutY="372.0" mnemonicParsing="false" onAction="#testMyAIClicked" prefHeight="25.0" prefWidth="280.0" text="Test my AI" />
       <Label fx:id="feedback_team_name" layoutX="477.0" layoutY="195.0" />
       <Label fx:id="feedback_connection" layoutX="477.0" layoutY="233.0" />
       <Label fx:id="feedback_project_path" layoutX="477.0" layoutY="269.0" />

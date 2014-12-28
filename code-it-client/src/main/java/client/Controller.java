@@ -99,6 +99,11 @@ public class Controller {
         connection.sendMessage("RequestSources");
     }
 
+    @FXML
+    private void testMyAIClicked() {
+        System.out.println("Tjenna");
+    }
+
     private void setupConnection() {
         if ( connection == null)
             connection = new Connection( address.getText(), Integer.parseInt(port.getText()) );
