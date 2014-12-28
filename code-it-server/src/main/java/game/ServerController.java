@@ -24,7 +24,7 @@ public class ServerController {
     public void start() {
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a, b) -> new PongGame(a, b);
 
-        Model<PongGame, PongMove> model = new Model(100, gameFactory, competitor1, competitor2);
+        Model<PongGame, PongMove> model = new Model(100, gameFactory);
 
 
         Model.CompetitorPairIterator pairIterator = model.getCompetitorPairIterator();
@@ -34,8 +34,6 @@ public class ServerController {
         final Timeline loop = new Timeline(new KeyFrame(Duration.millis(10), t -> {
 
             if (game.isGameOver()) {
-                game.storeRating();
-
                 if (pairIterator.hasNext()) {
                     game = model.createNewGame(pairIterator.next());
                 }

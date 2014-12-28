@@ -73,13 +73,19 @@ public class PongGame implements Game<PongGame, PongMove> {
         leftPaddle.setY(middleY);
         rightPaddle.setY(middleY);
         ball.setCenterY(middleY);
-        ball.setCenterX(width/2);
+        ball.setCenterX(width / 2);
+        ball.getVelocity().y = Math.random()*2 - 1;
 
+        double startX = Math.random();
+        // i want 0.5 < |startX| < 1
+        ball.getVelocity().x = startX < 0.5 ? -0.5-startX : startX;
+
+        System.out.println("Left: " + leftCompetitor.getScore());
+        System.out.println("Right: " + rightCompetitor.getScore());
     }
 
     @Override
     public void play() {
-        System.out.println(ball.getVelocity().x);
         double leftX = leftPaddle.getX() + leftPaddle.getWidth();
         double rightX = rightPaddle.getX();
         Line leftPaddleLine = new Line(leftX, leftPaddle.getY(), leftX, leftPaddle.getY() + leftPaddle.getHeight());
@@ -104,9 +110,11 @@ public class PongGame implements Game<PongGame, PongMove> {
         if (ball.getCenterX() < 0) {
             rightCompetitor.addScore(1);
             roundsPlayed++;
+            initializeGame();
         } else if (width < ball.getCenterX()) {
             leftCompetitor.addScore(1);
             roundsPlayed++;
+            initializeGame();
         }
 
     }
@@ -143,7 +151,7 @@ public class PongGame implements Game<PongGame, PongMove> {
         }
 
         public Ball(double x, double y) {
-            this(new Point2D.Double(x, y), new Point2D.Double(Math.random()*2 - 1, Math.random()*2 - 1 ));
+            this(new Point2D.Double(x, y), new Point2D.Double(0, 0));
         }
 
         public void move() {
