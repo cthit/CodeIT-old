@@ -12,12 +12,12 @@
       <TextField fx:id="team_name" layoutX="300.0" layoutY="190.0" promptText="IT-Crowd" />
       <TextField fx:id="address" layoutX="300.0" layoutY="228.0" prefHeight="25.0" prefWidth="116.0" promptText="192.168.0.26" />
       <TextField fx:id="port" layoutX="416.0" layoutY="228.0" prefHeight="25.0" prefWidth="54.0" promptText="4242" />
-      <TextField fx:id="project_path" layoutX="300.0" layoutY="264.0" prefHeight="25.0" prefWidth="131.0" promptText="Path to project" />
+      <TextField fx:id="file_path" layoutX="300.0" layoutY="264.0" prefHeight="25.0" prefWidth="131.0" promptText="Path to file" />
       <Button layoutX="431.0" layoutY="264.0" mnemonicParsing="false" onAction="#browseClicked" prefHeight="25.0" prefWidth="40.0" text="Button" />
       <Text id="title" layoutX="200.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CodeChallenge" />
       <Label layoutX="200.0" layoutY="195.0" text="Team Name:" />
       <Label layoutX="200.0" layoutY="233.0" text="Connection:" />
-      <Label layoutX="200.0" layoutY="269.0" text="Project Path:" />
+      <Label layoutX="200.0" layoutY="269.0" text="File path:" />
       <Button id="green" layoutX="200.0" layoutY="322.0" mnemonicParsing="false" onAction="#sendCodeClicked" text="Send code" />
       <Button layoutX="339.0" layoutY="322.0" mnemonicParsing="false" onAction="#downloadSourcesClicked" text="Download Sources" />
       <Button layoutX="200.0" layoutY="372.0" mnemonicParsing="false" onAction="#testMyAIClicked" prefHeight="25.0" prefWidth="280.0" text="Test my AI" />
