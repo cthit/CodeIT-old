@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
  */
 public class Model<T, M> {
     private final BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory;
-    private final Map<Competitor<T,M>, Double> competitorScoreMap = new HashMap<>();
+    private final List<Competitor<T, M>> competitors = new ArrayList<>();
     private final CompetitorPairIterator<T,M> competitorPairIterator;
     private Game<T, M> game;
     private NewGameListener newGameListener;
@@ -25,46 +25,22 @@ public class Model<T, M> {
         competitorPairIterator = new CompetitorPairIterator<>(Arrays.asList(competitors));
     }
 
-    public CompetitorPairIterator getCompetitorPairIterator() {
-        return competitorPairIterator;
-    }
-
-    public void setNewGameListener(NewGameListener newGameListener) {
-        this.newGameListener = newGameListener;
-    }
-
     public Game createNewGame(CompetitorPair pair) {
         game = gameFactory.apply(pair.competitor1, pair.competitor2);
         newGameListener.newGameCreated(game);
         return game;
     }
 
-    /**
-     *
-     * iterates through all competitors in the game and adds their score to the score map.
-     * if competitors wasn't previously in the score map then add them and their score
-     * @param game: game containging competitors from which to take score from. OBS game.isGameOver() must return true
-     */
-    public void storeRating(Game<T, M> game) {
-        if ( ! game.isGameOver()){
-            throw new IllegalStateException("Game isn't over");
-        }
-        for (Map.Entry<Competitor<T, M>, Double> competitorScoreEntry : game.getResults().entrySet()) {
-            Double addedRating = competitorScoreEntry.getValue();
+    public void addNewCompetitor(Competitor<T, M> competitor) {
+        competitors.add(competitor);
+    }
 
-            if (competitorScoreMap.containsKey(competitorScoreEntry.getKey())) {
-                Double newRating = competitorScoreMap.get(competitorScoreEntry.getKey()) + addedRating;
+    public CompetitorPairIterator getCompetitorPairIterator() {
+        return competitorPairIterator;
+    }
 
-                competitorScoreMap.replace(
-                        competitorScoreEntry.getKey(),
-                        newRating
-                );
-
-            } else {
-                competitorScoreMap.put(competitorScoreEntry.getKey(), competitorScoreEntry.getValue());
-
-            }
-        }
+    public void setNewGameListener(NewGameListener newGameListener) {
+        this.newGameListener = newGameListener;
     }
 
     public static class CompetitorPair<T,M> {

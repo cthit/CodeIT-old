@@ -20,25 +20,28 @@ public class PongGame implements Game<PongGame, PongMove> {
     private final Competitor<PongGame, PongMove> leftCompetitor, rightCompetitor;
     private Rectangle leftPaddle = new Rectangle(0, 100, 10, 40);
     private Rectangle rightPaddle = new Rectangle(400, 100, 10, 40);
-    private Double leftPaddleScore = new Double(0);
-    private Double rightPaddleScore = new Double(0);
+    private int roundsPerGame;
+    private int roundsPlayed;
     private final int width, height;
     private final Ball ball = new Ball(200, 100);
 
     private List<Shape> gameElements = new ArrayList<>();
 
     public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor) {
-        this(leftCompetitor, rightCompetitor, 400, 200);
+        this(leftCompetitor, rightCompetitor,1000,  400, 200);
         leftPaddle.setFill(Color.GREEN);
         rightPaddle.setFill(Color.BLUE);
     }
 
-    public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor, int width, int height) {
+    public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor, int roundsPerGame, int width, int height) {
         System.out.println("PongGameCreated");
         this.leftCompetitor = leftCompetitor;
         this.rightCompetitor = rightCompetitor;
+        this.roundsPerGame = roundsPerGame;
         this.width = width;
         this.height = height;
+
+        initializeGame();
 
         gameElements.add(leftPaddle);
         gameElements.add(rightPaddle);
@@ -65,6 +68,14 @@ public class PongGame implements Game<PongGame, PongMove> {
         return height;
     }
 
+    private void initializeGame() {
+        double middleY = height/2;
+        leftPaddle.setY(middleY);
+        rightPaddle.setY(middleY);
+        ball.setCenterY(middleY);
+        ball.setCenterX(width/2);
+
+    }
 
     @Override
     public void play() {
@@ -90,9 +101,17 @@ public class PongGame implements Game<PongGame, PongMove> {
             ball.velocity.y = -ball.velocity.y;
         }
 
-
+        if (ball.getCenterX() < 0) {
+            rightCompetitor.addScore(1);
+            roundsPlayed++;
+        } else if (width < ball.getCenterX()) {
+            leftCompetitor.addScore(1);
+            roundsPlayed++;
+        }
 
     }
+
+
 
     private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
         int direction = paddleLogic.onGameTick(this).getDirection();
@@ -111,14 +130,6 @@ public class PongGame implements Game<PongGame, PongMove> {
     }
 
     @Override
-    public Map<Competitor<PongGame,PongMove>, Double> getResults() {
-        Map<Competitor<PongGame,PongMove>, Double> results = new HashMap<>();
-        results.put(leftCompetitor, leftPaddleScore);
-        results.put(rightCompetitor, rightPaddleScore);
-        return results;
-    }
-
-    @Override
     public List<Shape> getScreenElements() {
         return gameElements;
     }
@@ -133,7 +144,6 @@ public class PongGame implements Game<PongGame, PongMove> {
 
         public Ball(double x, double y) {
             this(new Point2D.Double(x, y), new Point2D.Double(Math.random()*2 - 1, Math.random()*2 - 1 ));
-//            this(new Point2D.Double(x, y), new Point2D.Double(Math.random()*2 - 1, 0 ));
         }
 
         public void move() {

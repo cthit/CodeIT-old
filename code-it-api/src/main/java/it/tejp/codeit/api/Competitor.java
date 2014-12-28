@@ -6,6 +6,7 @@ package it.tejp.codeit.api;
 public class Competitor<T, M> {
 
     private final String teamName;
+    private double score;
     private final GameMechanic<T, M> gameMechanic;
 
     public Competitor(String teamName, GameMechanic<T, M> gameMechanic) {
@@ -19,5 +20,13 @@ public class Competitor<T, M> {
 
     public String getTeamName() {
         return teamName;
+    }
+
+    public double getScore() {
+        return score;
+    }
+
+    public void addScore(double score) {
+        this.score += score;
     }
 }

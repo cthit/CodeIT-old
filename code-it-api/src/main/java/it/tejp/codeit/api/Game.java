@@ -11,6 +11,5 @@ import java.util.Map;
 public interface Game<T, M> {
     void play();
     boolean isGameOver();
-    Map<Competitor<T, M>, Double> getResults();
     List<Shape> getScreenElements();
 }

@@ -63,7 +63,7 @@ public class ServerView extends Application implements NewGameListener {
         final Timeline loop = new Timeline(new KeyFrame(Duration.millis(10), t -> {
 
             if (game.isGameOver()) {
-                model.storeRating(game);
+                game.storeRating();
 
                 if (pairIterator.hasNext()) {
                     game = model.createNewGame(pairIterator.next());
