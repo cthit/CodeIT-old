@@ -2,9 +2,7 @@ package game;
 
 import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
+import network.ServerConnection;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
 
@@ -15,6 +13,7 @@ import java.util.function.BiFunction;
  */
 public class ServerController {
 
+    private ServerConnection connection;
     private Game game;
 
     public void setGame(Game game) {
@@ -31,21 +30,16 @@ public class ServerController {
 
         game = model.createNewGame(pairIterator.next());
 
-        final Timeline loop = new Timeline(new KeyFrame(Duration.millis(10), t -> {
-
+        while (true) {
             if (game.isGameOver()) {
                 if (pairIterator.hasNext()) {
                     game = model.createNewGame(pairIterator.next());
                 }
             } else {
                 game.play();
-                //TODO paint stuff?
-
             }
 
-        }));
-        loop.setCycleCount(Timeline.INDEFINITE);
-        loop.play();
+        }
     }
 
 }

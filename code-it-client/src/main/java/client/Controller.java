@@ -11,9 +11,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import network.Connection;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
@@ -64,6 +62,11 @@ public class Controller {
         };
 
         address.textProperty().addListener(listener);
+
+        team_name.setText("qwerty");
+        address.setText("127.0.0.1");
+        port.setText("7777");
+        file_path.setText("/home/tejp/projects/ohmsitsmaterial/CodeIT/TempFanceFile");
     }
 
     @FXML
@@ -78,8 +81,6 @@ public class Controller {
     @FXML
     private void sendCodeClicked() {
         setupConnection();
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
         String s = null;
         try {
             s = new String(Files.readAllBytes(new File(file_path.getText()).toPath()));
@@ -96,7 +97,7 @@ public class Controller {
     @FXML
     private void downloadSourcesClicked() {
         setupConnection();
-        connection.sendMessage("RequestSources");
+        connection.recieveSources();
     }
 
     @FXML

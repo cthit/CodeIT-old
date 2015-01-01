@@ -2,6 +2,7 @@ package network;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 
@@ -41,6 +42,30 @@ public class Connection {
         }
     }
 
+    public void recieveSources() {
+        try {
+            socket = new Socket(inetAddress, port);
+            sendData("RequestSources".getBytes());
+
+            InputStream is = null;
+
+            is = socket.getInputStream();
+            byte[] bytes = new byte[512];
+
+            StringBuilder strBuilder = new StringBuilder();
+
+            int count;
+            while ((count = is.read(bytes)) > 0) {
+                strBuilder.append(new String(bytes, 0, count)); // TODO it's a little bit ugly to use a stringbuilder and still initialize new string objects every time.
+            }
+            is.close();
+            socket.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendData(byte[] byteMessage) throws IOException {
         OutputStream os = socket.getOutputStream();
         BufferedOutputStream bos = new BufferedOutputStream(os);
@@ -49,8 +74,5 @@ public class Connection {
         }
         bos.flush();
 
-        bos.close();
-        os.close();
     }
-
 }

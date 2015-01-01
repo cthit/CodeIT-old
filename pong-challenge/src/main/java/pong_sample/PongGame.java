@@ -94,7 +94,7 @@ public class PongGame implements Game<PongGame, PongMove> {
         Line ballLine = new Line(ball.getCenterX(), ball.getCenterY(), ball.getCenterX() + ball.getVelocity().x, ball.getCenterY() + ball.getVelocity().y);
 
         if (leftPaddleLine.intersects(ballLine.boundsInLocalProperty().get()) || rightPaddleLine.intersects(ballLine.boundsInLocalProperty().get())) {
-            ball.getVelocity().x = -ball.getVelocity().x*1.1; //todo Magic numbers. they mean increase speed by 10% in both x and y velocity.
+            ball.getVelocity().x = -ball.getVelocity().x*1.1; //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
             ball.getVelocity().y = ball.getVelocity().y*1.1;
         }
 
