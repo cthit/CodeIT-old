@@ -11,13 +11,13 @@ public class ServerConnection {
     private Socket socket = null;
     private InputStream is = null;
     private OutputStream os = null;
-//    private FileOutputStream fos = null;
-//    private BufferedOutputStream bos = null;
     private int bufferSize = 0;
+    private NewFileFromClientListener newFileFromClientListener;
 
     private File sourceFile;
 
-    public ServerConnection(File sourceFile) {
+    public ServerConnection(File sourceFile, NewFileFromClientListener newFileFromClientListener) {
+        this.newFileFromClientListener = newFileFromClientListener;
         this.sourceFile = sourceFile;
         try {
             serverSocket = new ServerSocket(7777);
@@ -66,10 +66,9 @@ public class ServerConnection {
 //            strBuilder.append(new String(bytes, 0, count)); // TODO it's a little bit ugly to use a stringbuilder and still initialize new string objects every time.
 //        }
 
-        do {
-            count = is.read(bytes);
+        while ((count = is.read(bytes)) > 0) {
             strBuilder.append(new String(bytes,0,count));
-        } while (count > 0);
+        }
 
         handleMessage(strBuilder.toString());
 
@@ -82,9 +81,28 @@ public class ServerConnection {
         String[] splitMessage = message.split("\0");
 
         if ("RecieveModule".equals(splitMessage[0])) {
-            for (String s1 : splitMessage) {
-                System.out.println(s1);
-            }
+//            for (String s1 : splitMessage) {
+//                System.out.println(s1);
+//            }
+                /**
+                 * Get name of team. and create the sourcefile
+                 * call for newFileRecievedListener and announce the new file
+                 */
+            String filePath = "plugin/" + splitMessage[1] + ".java";
+            System.out.println("NewFilePath: " + filePath);
+
+                try {
+                    PrintWriter p = new PrintWriter(filePath, "UTF-8");
+                    p.write(splitMessage[2]);
+                    p.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+                newFileFromClientListener.newFileRecieved(splitMessage[1], new File(filePath));
+
             // handle the file that is beeing sent and combine it with the specified team-name
         } else if ("RequestSources".equals(splitMessage[0])) {
             // Send sources jar file to client
@@ -117,8 +135,4 @@ public class ServerConnection {
         this.sourceFile = sourceFile;
     }
 
-    public static void main(String[] args) {
-        ServerConnection serverConnection = new ServerConnection(new File("/home/tejp/SourceFile"));
-        serverConnection.startServering();
-    }
 }
