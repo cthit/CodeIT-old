@@ -28,13 +28,15 @@ public class ServerConnection {
     }
 
     public void startServering() {
-        while (true) {
-            try {
-                serverLoop();
-            } catch (IOException e) {
-                e.printStackTrace();
+        new Thread(() -> {
+            while (true) {
+                try {
+                    serverLoop();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        }).start();
     }
 
     public void serverLoop() throws IOException {
@@ -59,18 +61,15 @@ public class ServerConnection {
 
         byte[] bytes = new byte[512];
 
-        StringBuilder strBuilder = new StringBuilder();
 
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         int count;
-//        while ((count = is.read(bytes)) > 0) {
-//            strBuilder.append(new String(bytes, 0, count)); // TODO it's a little bit ugly to use a stringbuilder and still initialize new string objects every time.
-//        }
 
         while ((count = is.read(bytes)) > 0) {
-            strBuilder.append(new String(bytes,0,count));
+            byteStream.write(bytes, 0, count);
         }
 
-        handleMessage(strBuilder.toString());
+        handleMessage(byteStream.toString());
 
         is.close();
         os.close();
