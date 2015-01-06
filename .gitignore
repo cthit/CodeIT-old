@@ -70,3 +70,6 @@ pom.xml.versionsBackup
 pom.xml.next
 release.properties
 
+
+# plugin folder. specific to serverside of project
+/plugin/
