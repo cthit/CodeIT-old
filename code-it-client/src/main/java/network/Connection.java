@@ -1,10 +1,9 @@
 package network;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.*;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Created by tejp on 31/10/14.
@@ -52,11 +51,12 @@ public class Connection {
             is = socket.getInputStream();
             byte[] bytes = new byte[512];
 
-            StringBuilder strBuilder = new StringBuilder();
 
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             int count;
+            
             while ((count = is.read(bytes)) > 0) {
-                strBuilder.append(new String(bytes, 0, count)); // TODO it's a little bit ugly to use a stringbuilder and still initialize new string objects every time.
+                byteStream.write(bytes, 0, count);
             }
             is.close();
             socket.close();
