@@ -83,6 +83,14 @@ public class ServerConnection {
         String[] splitMessage = message.split("\0");
 
         if ("RecieveModule".equals(splitMessage[0])) {
+//            for (String s1 : splitMessage) {
+//                System.out.println(s1);
+//            }
+                /**
+                 * Get name of team. and create the sourcefile
+                 * call for newFileRecievedListener and announce the new file
+                 */
+            new File("plugin").mkdir();
             String filePath = "plugin/" + splitMessage[1] + ".java";
             System.out.println("NewFilePath: " + filePath);
 
