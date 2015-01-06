@@ -54,12 +54,16 @@ public class Connection {
 
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             int count;
-            
+
             while ((count = is.read(bytes)) > 0) {
                 byteStream.write(bytes, 0, count);
             }
             is.close();
             socket.close();
+
+            PrintWriter pw = new PrintWriter("source.jar");
+            pw.write(byteStream.toString());
+            pw.close();
 
         } catch (IOException e) {
             e.printStackTrace();
