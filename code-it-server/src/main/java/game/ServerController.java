@@ -2,12 +2,16 @@ package game;
 
 import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
+import it.tejp.codeit.api.GameMechanic;
 import network.NewFileFromClientListener;
 import network.ServerConnection;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
+import pong_sample.PongPaddle;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
 
 /**
@@ -16,11 +20,18 @@ import java.util.function.BiFunction;
 public class ServerController implements NewFileFromClientListener {
 
     private ServerConnection connection;
+    private Model model;
     private Game game;
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     public ServerController() {
         this.connection = new ServerConnection(new File("TempFanceFile"), this);
         connection.startServering();
+// TODO        executor.shutdown(); // executorn skapar ej fler trådar
+//        executor.shutdownNow();   // executorn dödar allat hejvilt
+//        if (Thread.interrupted()) {
+//            throw new RuntimeException("interrupted");
+//        }
     }
 
     public void setGame(Game game) {
@@ -30,7 +41,7 @@ public class ServerController implements NewFileFromClientListener {
     public void start() {
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a, b) -> new PongGame(a, b);
 
-        Model<PongGame, PongMove> model = new Model(100, gameFactory);
+        model = new Model(100, gameFactory);
 
 
 //        Model.CompetitorPairIterator pairIterator = model.getCompetitorPairIterator();
@@ -55,8 +66,14 @@ public class ServerController implements NewFileFromClientListener {
 
     @Override
     public void newFileRecieved(String teamName, File f) {
-        //Check to se if teamname is already present. If it is. Replace it's file with the new one
+        //TODO create gameMechanic (i.e pongPaddle) from file
+        GameMechanic<PongGame,PongMove> pongPaddle = new PongPaddle();
+
+        executor.submit(() -> {
+            model.handleContributionFromCompetitor(teamName, pongPaddle);
+        });
         System.out.println("Notified of new file in ServerControll. Fance");
+
     }
 
     public static void main(String[] args) {

@@ -3,6 +3,7 @@ package game;
 import game.view.NewGameListener;
 import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
+import it.tejp.codeit.api.GameMechanic;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -31,12 +32,35 @@ public class Model<T, M> {
         return game;
     }
 
+    @Deprecated
     public void addNewCompetitor(Competitor<T, M> competitor) {
         competitors.add(competitor);
     }
 
+    /**
+     *
+     * @param teamName
+     * @param gameMechanic:
+     *
+     * add new competitor if teamName isn't already claimed.
+     * if it is clamed by a previous competitor then replace that competitors gameMechanic
+     */
+    public void handleContributionFromCompetitor(String teamName, GameMechanic<T,M> gameMechanic) {
+        for (Competitor<T, M> competitor : competitors) {
+            if (teamName.equals(competitor.getTeamName())) {
+                competitor.setGameMechanic(gameMechanic);
+                return;
+            }
+        }
+        competitors.add(new Competitor<>(teamName, gameMechanic));
+    }
+
     public CompetitorPairIterator getCompetitorPairIterator() {
         return competitorPairIterator;
+    }
+
+    public List<Competitor<T,M>> getCompetitors() {
+        return competitors;
     }
 
     public void setNewGameListener(NewGameListener newGameListener) {

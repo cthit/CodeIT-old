@@ -7,7 +7,7 @@ public class Competitor<T, M> {
 
     private final String teamName;
     private double score;
-    private final GameMechanic<T, M> gameMechanic;
+    private GameMechanic<T, M> gameMechanic;
 
     public Competitor(String teamName, GameMechanic<T, M> gameMechanic) {
         this.teamName = teamName;
@@ -16,6 +16,10 @@ public class Competitor<T, M> {
 
     public GameMechanic<T, M> getGameMechanic() {
         return gameMechanic;
+    }
+
+    public void setGameMechanic(GameMechanic<T, M> gameMechanic) {
+        this.gameMechanic = gameMechanic;
     }
 
     public String getTeamName() {
