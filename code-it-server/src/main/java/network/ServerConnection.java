@@ -22,7 +22,7 @@ public class ServerConnection {
         try {
             serverSocket = new ServerSocket(7777);
         } catch (IOException ex) {
-            System.out.println("Can't setup server on this port number. ");
+            throw new RuntimeException("Could not create server socket. Perhaps server is already running?");
         }
 
     }
