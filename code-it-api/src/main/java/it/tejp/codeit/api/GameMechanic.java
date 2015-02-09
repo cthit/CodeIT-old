@@ -5,4 +5,5 @@ package it.tejp.codeit.api;
  */
 public interface GameMechanic<T, M> {
     M onGameTick(T game);
+    T createTestGame();
 }

@@ -1,5 +1,6 @@
 package client;
 
+import it.tejp.codeit.api.GameMechanic;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -10,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import network.Connection;
+import utils.JavaSourceFromString;
+import view.AITestScene;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,10 +36,10 @@ public class Controller {
         team_name.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (! newValue.matches("[\\w\\d(-_.^*')]+")) {
+                if (! newValue.matches("[\\w\\d(\\-_^*')]+")) {
                     team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
                     System.out.println("BAD VALUE!");
-                    feedback_team_name.setText("Plz match this -> [\\w\\d(-_.^*')]+");
+                    feedback_team_name.setText("Plz match this -> [\\w\\d(\\-_^*')]+");
                     feedback_team_name.setTextFill(Color.DARKRED);
                 } else {
                     team_name.setEffect(new InnerShadow(0, Color.WHITE));
@@ -66,7 +69,7 @@ public class Controller {
         team_name.setText("qwerty");
         address.setText("127.0.0.1");
         port.setText("7777");
-        file_path.setText("/home/tejp/projects/ohmsitsmaterial/CodeIT/TempFanceFile");
+        file_path.setText("/home/tejp/projects/ohmsitsmaterial/CodeIT/pong-challenge/src/main/java/pong_sample/PongPaddle.java");
     }
 
     @FXML
@@ -102,7 +105,29 @@ public class Controller {
 
     @FXML
     private void testMyAIClicked() {
-        System.out.println("Tjenna");
+        File file = new File(file_path.getText());
+        String s = null;
+        Object instanceObj = null;
+        try {
+            s = new String(Files.readAllBytes(file.toPath()));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            instanceObj = JavaSourceFromString.compile(s, file.getName(), "pong_sample");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (instanceObj == null) {
+            throw new IllegalArgumentException("instanceObj is null");
+        }
+        GameMechanic<?,?> instance = (GameMechanic<?,?>)instanceObj;
+        Stage stage = new Stage();
+        AITestScene testScene = new AITestScene(instance);
+        stage.setScene(testScene);
+        stage.show();
+        testScene.play();
     }
 
     private void setupConnection() {
