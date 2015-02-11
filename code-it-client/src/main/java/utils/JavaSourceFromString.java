@@ -1,5 +1,7 @@
 package utils;
 
+import it.tejp.codeit.api.GameMechanic;
+
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -53,7 +55,7 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         sb.append(compilationPath.getAbsolutePath());
         options.add(sb.toString());
 
-//    options.stream().forEach(e -> System.out.println(" " + e + " "));
+    options.stream().forEach(e -> System.out.println(" " + e + " "));
 
         StringWriter output = new StringWriter();
         boolean success = jc.getTask(output, null, null, options, null, fileObjects).call().booleanValue();
@@ -62,16 +64,28 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         }
 
         System.out.println("Class has been successfully compiled");
-        String packageFolder = packageName.replace('.', '/');
-        File clazz = new File(new StringBuilder().append("compiled/").append(packageFolder).append("/").append(className.substring(0, className.indexOf("."))).append(".class").toString());
-        File clazzFolder = new File(new StringBuilder().append("compiled/").append(packageFolder).append("/").toString());
-        System.out.println(new StringBuilder().append("Class: ").append(clazz.getPath()).append(", exists: ").append(clazz.exists()).append(", folder exists: ").append(clazzFolder.exists()).toString());
+        File root = new File("compiled");
+        // Load and instantiate compiled class.
+        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
+        Class<?> cls = Class.forName("pong_sample.PongPaddle", true, classLoader); // Should print "hello".
+        Object instance = cls.newInstance();
 
-        URLClassLoader loader = URLClassLoader.newInstance(new URL[] { clazzFolder.toURL() });
 
-        Object newInstance = Class.forName(new StringBuilder().append(packageName).append(".").append(className.substring(0, className.indexOf("."))).toString(), true, loader).newInstance();
-        System.out.println(newInstance);
-        return newInstance;
+        System.out.println("tjenna " + ((GameMechanic)instance).createTestGame());
+
+        return instance;
+
+//        String packageFolder = packageName.replace('.', '/');
+//        File clazz = new File(new StringBuilder().append("compiled/").append(packageFolder).append("/").append(className.substring(0, className.indexOf("."))).append(".class").toString());
+//        File clazzFolder = new File(new StringBuilder().append("compiled/").append(packageFolder).append("/").toString());
+//        System.out.println(new StringBuilder().append("Class: ").append(clazz.getPath()).append(", exists: ").append(clazz.exists()).append(", folder exists: ").append(clazzFolder.exists()).toString());
+
+//        URLClassLoader loader = URLClassLoader.newInstance(new URL[] { clazzFolder.toURL() });
+//
+//        System.out.println("Tjnna: " + new StringBuilder().append(packageName).append(".").append(className.substring(0, className.indexOf("."))).toString());
+//        Object newInstance = Class.forName(new StringBuilder().append(packageName).append(".").append(className.substring(0, className.indexOf("."))).toString(), true, loader).newInstance();
+//        System.out.println(newInstance);
+//        return newInstance;
     }
 
     public static void main(String[] args)

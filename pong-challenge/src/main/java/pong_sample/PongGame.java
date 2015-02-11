@@ -119,8 +119,6 @@ public class PongGame implements Game<PongGame, PongMove> {
 
     }
 
-
-
     private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
         int direction = paddleLogic.onGameTick(this).getDirection();
         paddle.setY(paddle.getY() + direction);

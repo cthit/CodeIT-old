@@ -15,8 +15,13 @@ import utils.JavaSourceFromString;
 import view.AITestScene;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class Controller {
 
@@ -50,17 +55,13 @@ public class Controller {
         });
 
 
-        ChangeListener<String> listener= new ChangeListener<String>() {
-
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (newValue.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
-                    feedback_connection.setText("Wow very address");
-                    feedback_connection.setTextFill(Color.GREEN);
-                } else {
-                    feedback_connection.setText("Nah, plz fex.");
-                    feedback_connection.setTextFill(Color.DARKRED);
-                }
+        ChangeListener<String> listener= (observable, oldValue, newValue) -> {
+            if (newValue.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
+                feedback_connection.setText("Wow very address");
+                feedback_connection.setTextFill(Color.GREEN);
+            } else {
+                feedback_connection.setText("Nah, plz fex.");
+                feedback_connection.setTextFill(Color.DARKRED);
             }
         };
 
@@ -99,8 +100,13 @@ public class Controller {
 
     @FXML
     private void downloadSourcesClicked() {
-        setupConnection();
-        connection.recieveSources();
+//        setupConnection();
+//        connection.recieveSources();
+        try {
+            unzipJar("compiled", "source.jar");
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to unzip jar. Check paths please. call for Tejp!");
+        }
     }
 
     @FXML
@@ -137,5 +143,45 @@ public class Controller {
 
     public File getFileToSend() {
         return new File("TempFanceFile");
+    }
+
+    public static void unzipJar(String destinationDir, String jarPath) throws IOException {
+        File file = new File(jarPath);
+        JarFile jar = new JarFile(file);
+
+        // fist get all directories,
+        // then make those directory on the destination Path
+        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();) {
+            JarEntry entry = enums.nextElement();
+
+            String fileName = destinationDir + File.separator + entry.getName();
+            File f = new File(fileName);
+
+            if (fileName.endsWith("/")) {
+                f.mkdirs();
+            }
+
+        }
+
+        //now create all files
+        for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();) {
+            JarEntry entry = enums.nextElement();
+
+            String fileName = destinationDir + File.separator + entry.getName();
+            File f = new File(fileName);
+
+            if (!fileName.endsWith("/")) {
+                InputStream is = jar.getInputStream(entry);
+                FileOutputStream fos = new FileOutputStream(f);
+
+                // write contents of 'is' to 'fos'
+                while (is.available() > 0) {
+                    fos.write(is.read());
+                }
+
+                fos.close();
+                is.close();
+            }
+        }
     }
 }
