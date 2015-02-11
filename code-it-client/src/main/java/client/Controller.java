@@ -70,7 +70,7 @@ public class Controller {
         team_name.setText("qwerty");
         address.setText("127.0.0.1");
         port.setText("7777");
-        file_path.setText("/home/tejp/projects/ohmsitsmaterial/CodeIT/pong-challenge/src/main/java/pong_sample/PongPaddle.java");
+        file_path.setText("pong-challenge/src/main/java/pong_sample/PongPaddle.java");
     }
 
     @FXML
