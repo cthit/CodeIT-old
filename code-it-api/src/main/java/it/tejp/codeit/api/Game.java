@@ -12,4 +12,5 @@ public interface Game<T, M> {
     void play();
     boolean isGameOver();
     List<Shape> getScreenElements();
+    Map<Competitor<T,M>, Double> getResults();
 }

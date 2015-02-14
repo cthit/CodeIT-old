@@ -32,18 +32,14 @@ public class Model<T, M> {
         return game;
     }
 
-    @Deprecated
-    public void addNewCompetitor(Competitor<T, M> competitor) {
-        competitors.add(competitor);
-    }
-
     /**
      *
      * @param teamName
      * @param gameMechanic:
      *
      * add new competitor if teamName isn't already claimed.
-     * if it is clamed by a previous competitor then replace that competitors gameMechanic
+     * if it is claimed by a previous competitor, replace that competitors gameMechanic
+     *
      */
     public void handleContributionFromCompetitor(String teamName, GameMechanic<T,M> gameMechanic) {
         for (Competitor<T, M> competitor : competitors) {
@@ -53,6 +49,30 @@ public class Model<T, M> {
             }
         }
         competitors.add(new Competitor<>(teamName, gameMechanic));
+    }
+
+    public void evaluateCompetitor(Competitor<T,M> competitor) {
+        List<Game<T,M>> newGamesToEvaluate = new ArrayList<>();
+        for (Competitor<T, M> c : competitors) {
+            if (! c.equals(competitor)) {
+
+                new Thread(() -> {
+                    Game<T,M> game = createNewGame(new CompetitorPair(competitor, c));
+
+                    while ( ! game.isGameOver() ) {
+                        game.play();
+                    }
+
+                    // Each entry is a (Key)Competitor paired with it's (entry)score earned in the game played.
+                    //
+                    game.getResults().entrySet().forEach( e -> e.getKey().addScore( e.getValue() ));
+                    
+                }).start();
+
+            }
+        }
+
+
     }
 
     public CompetitorPairIterator getCompetitorPairIterator() {

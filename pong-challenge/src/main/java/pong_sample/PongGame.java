@@ -20,6 +20,8 @@ public class PongGame implements Game<PongGame, PongMove> {
     private final Competitor<PongGame, PongMove> leftCompetitor, rightCompetitor;
     private Rectangle leftPaddle = new Rectangle(0, 100, 10, 40);
     private Rectangle rightPaddle = new Rectangle(400, 100, 10, 40);
+    private double leftCompetitorScore;
+    private double rightCompetitorScore;
     private int roundsPerGame;
     private int roundsPlayed;
     private final int width, height;
@@ -108,11 +110,11 @@ public class PongGame implements Game<PongGame, PongMove> {
         }
 
         if (ball.getCenterX() < 0) {
-            rightCompetitor.addScore(1);
+            rightCompetitorScore++;
             roundsPlayed++;
             initializeGame();
         } else if (width < ball.getCenterX()) {
-            leftCompetitor.addScore(1);
+            leftCompetitorScore++;
             roundsPlayed++;
             initializeGame();
         }
@@ -138,6 +140,14 @@ public class PongGame implements Game<PongGame, PongMove> {
     @Override
     public List<Shape> getScreenElements() {
         return gameElements;
+    }
+
+    @Override
+    public Map<Competitor<PongGame,PongMove>, Double> getResults() {
+        Map<Competitor<PongGame,PongMove>, Double> scoreMap = new HashMap<>();
+        scoreMap.put(leftCompetitor, leftCompetitorScore);
+        scoreMap.put(rightCompetitor, rightCompetitorScore);
+        return scoreMap;
     }
 
     public static class Ball extends Circle {
