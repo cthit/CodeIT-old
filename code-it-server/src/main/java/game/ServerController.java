@@ -45,24 +45,6 @@ public class ServerController implements NewFileFromClientListener {
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a, b) -> new PongGame(a, b);
         model = new Model(gameFactory);
 
-//        Model.CompetitorPairIterator pairIterator = model.getCompetitorPairIterator();
-
-//        game = model.createNewGame(pairIterator.next());
-
-        /**
-         * wait for new competitors to be added. and make sure every new competitor plays agains every other competitor
-         */
-
-        while (true) {
-//            if (game.isGameOver()) {
-//                if (pairIterator.hasNext()) {
-//                    game = model.createNewGame(pairIterator.next());
-//                }
-//            } else {
-//                game.play();
-//            }
-
-        }
     }
 
     @Override

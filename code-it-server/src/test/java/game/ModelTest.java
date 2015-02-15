@@ -34,9 +34,6 @@ public class ModelTest {
 
     @Test
     public void testHandleContributionFromCompetitor() throws Exception {
-        model.setNewGameListener(game -> {
-            //
-        });
 
         model.handleContributionFromCompetitor("team1", new PongPaddle1());
         model.handleContributionFromCompetitor("team2", new PongPaddle2());
