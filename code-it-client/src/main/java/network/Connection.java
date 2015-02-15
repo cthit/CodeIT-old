@@ -62,7 +62,7 @@ public class Connection {
             Files.write(new File("source.jar").toPath(), byteStream.toByteArray());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Couldn't connect to server");
         }
     }
 

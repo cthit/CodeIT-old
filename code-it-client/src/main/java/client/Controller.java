@@ -113,7 +113,16 @@ public class Controller {
     @FXML
     private void downloadSourcesClicked() {
         setupConnection();
-        connection.recieveSources();
+        try {
+            connection.recieveSources();
+        } catch(RuntimeException e) {
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Network error")
+                    .masthead(e.getMessage())
+                    .message("Couldn't download source.jar make sure the IP address is correct: " + address.getText())
+                    .showError();
+        }
         try {
             unzipJar("compiled", "source.jar");
         } catch (IOException e) {
