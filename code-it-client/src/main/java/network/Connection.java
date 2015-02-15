@@ -38,7 +38,7 @@ public class Connection {
             sendData(message.getBytes());
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Couldn't connect to server");
         }
     }
 

@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import network.Connection;
+import org.controlsfx.dialog.Dialogs;
 import utils.JavaSourceFromString;
 import view.AITestScene;
 
@@ -43,7 +44,6 @@ public class Controller {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (! newValue.matches("[\\w\\d(\\-_^*')]+")) {
                     team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
-                    System.out.println("BAD VALUE!");
                     feedback_team_name.setText("Plz match this -> [\\w\\d(\\-_^*')]+");
                     feedback_team_name.setTextFill(Color.DARKRED);
                 } else {
@@ -85,17 +85,29 @@ public class Controller {
     @FXML
     private void sendCodeClicked() {
         setupConnection();
-        String s = null;
+        String code = null;
         try {
-            s = new String(Files.readAllBytes(new File(file_path.getText()).toPath()));
+            code = new String(Files.readAllBytes(new File(file_path.getText()).toPath()));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Dialogs.create()
+                    .owner(stage)
+                    .title("File error")
+                    .masthead("Couldn't read file")
+                    .message(("Path: " + file_path.getText()))
+                    .showError();
+            return;
         }
-
-        System.out.println();
-
-        connection.sendMessage("RecieveModule\0" + team_name.getText() + "\0" + s);
+        try {
+            connection.sendMessage("RecieveModule\0" + team_name.getText() + "\0" + code);
+        } catch (RuntimeException e) {
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Network error")
+                    .masthead(e.getMessage())
+                    .message("Make sure this address is right: " + connection.getInetAddress())
+                    .showError();
+        }
     }
 
     @FXML
@@ -140,10 +152,6 @@ public class Controller {
     private void setupConnection() {
         if ( connection == null)
             connection = new Connection( address.getText(), Integer.parseInt(port.getText()) );
-    }
-
-    public File getFileToSend() {
-        return new File("TempFanceFile");
     }
 
     public static void unzipJar(String destinationDir, String jarPath) throws IOException {
