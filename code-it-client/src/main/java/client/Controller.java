@@ -117,7 +117,12 @@ public class Controller {
         try {
             unzipJar("compiled", "source.jar");
         } catch (IOException e) {
-            throw new RuntimeException("Unable to unzip jar. Check paths please. Call for Tejp!");
+            Dialogs.create()
+                    .owner(stage)
+                    .title("File error")
+                    .masthead("Couldn't unzip jarfile")
+                    .message("Path: compiler/source.jar")
+                    .showError();
         }
     }
 
@@ -130,16 +135,34 @@ public class Controller {
             code = new String(Files.readAllBytes(file.toPath()));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Dialogs.create()
+                    .owner(stage)
+                    .title("File error")
+                    .masthead("Couldn't read file")
+                    .message(("Path: " + file_path.getText()))
+                    .showError();
+            return;
         }
+        code = code.replaceFirst("package\\s+.+?;", "package pong_sample;");
         try {
-            code = code.replaceFirst("package\\s+.+?;", "package pong_sample;");
             instanceObj = JavaSourceFromString.compile(code, file.getName(), "pong_sample");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (RuntimeException e) {
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Compiler error")
+                    .masthead("Couldn't compile class")
+                    .message("Error: " + e.getMessage())
+                    .showError();
+            return;
         }
         if (instanceObj == null) {
-            throw new IllegalArgumentException("instanceObj is null");
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Compiler error")
+                    .masthead("Couldn't instantiate class")
+                    .message(("instanceObj == null"))
+                    .showError();
+            return;
         }
         GameMechanic<?,?> instance = (GameMechanic<?,?>)instanceObj;
         Stage stage = new Stage();
