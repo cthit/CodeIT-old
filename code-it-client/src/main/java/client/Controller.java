@@ -105,7 +105,7 @@ public class Controller {
                     .owner(stage)
                     .title("Network error")
                     .masthead(e.getMessage())
-                    .message("Make sure this address is right: " + connection.getInetAddress())
+                    .message("Make sure the IP address is correct: " + address.getText())
                     .showError();
         }
     }
@@ -173,7 +173,7 @@ public class Controller {
     }
 
     private void setupConnection() {
-        if ( connection == null)
+        if (connection == null || !connection.getInetAddress().equals(address.getText()))
             connection = new Connection( address.getText(), Integer.parseInt(port.getText()) );
     }
 
