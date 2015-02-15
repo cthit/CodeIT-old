@@ -8,9 +8,7 @@ import it.tejp.codeit.api.GameMechanic;
 import java.util.*;
 import java.util.function.BiFunction;
 
-/**
- * Created by tejp on 01/11/14.
- */
+
 public class Model<T, M> {
     private final BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory;
     private final List<Competitor<T, M>> competitors = new ArrayList<>();
@@ -28,7 +26,7 @@ public class Model<T, M> {
         return createNewGame(pair.competitor1, pair.competitor2);
     }
 
-    public Game createNewGame(Competitor<T,M> competitor1, Competitor<T,M> competitor2) {
+    public Game<T,M> createNewGame(Competitor<T,M> competitor1, Competitor<T,M> competitor2) {
         game = gameFactory.apply(competitor1, competitor2);
         newGameListener.newGameCreated(game);
         return game;
@@ -56,29 +54,26 @@ public class Model<T, M> {
             competitorToEvaluate = new Competitor<>(teamName, gameMechanic);
         }
         competitors.add(competitorToEvaluate);
-        // rating algorithm needs to run mutiple times.
+        // rating algorithm needs to run multiple times.
         for (int i = 0; i < 10; i++)
             evaluateCompetitor(competitorToEvaluate);
     }
 
     public void evaluateCompetitor(Competitor<T,M> competitor) {
-        for (Competitor<T, M> competitor2 : competitors) {
-            if (! competitor2.equals(competitor)) {
-                Game<T,M> game = createNewGame(competitor, competitor2);
+        competitors.stream().filter(competitor2 -> ! competitor2.equals(competitor)).forEach(competitor2 -> {
+            Game<T, M> game = createNewGame(competitor, competitor2);
 
-                while ( ! game.isGameOver() ) {
-                    game.play();
-                }
-
-                double[] results = game.getResults();
-                Rating.ratingBetapet(new double[]{competitor.getRating(), competitor2.getRating()}, results);
+            while (!game.isGameOver()) {
+                game.play();
             }
-        }
+
+            double[] results = game.getResults();
+            Rating.ratingBetapet(new double[]{competitor.getRating(), competitor2.getRating()}, results);
+        });
     }
 
     public void evaluateCompetitors() {
-        for (Competitor<T, M> competitor : competitors)
-            evaluateCompetitor(competitor);
+        competitors.forEach(this::evaluateCompetitor);
 
     }
 
@@ -110,10 +105,8 @@ public class Model<T, M> {
 
             CompetitorPair that = (CompetitorPair) o;
 
-            if (!competitor1.equals(that.competitor1)) return false;
-            if (!competitor2.equals(that.competitor2)) return false;
+            return competitor1.equals(that.competitor1) && competitor2.equals(that.competitor2);
 
-            return true;
         }
 
         @Override
