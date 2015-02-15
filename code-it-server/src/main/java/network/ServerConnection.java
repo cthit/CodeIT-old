@@ -12,12 +12,12 @@ public class ServerConnection {
     private InputStream is = null;
     private OutputStream os = null;
     private int bufferSize = 0;
-    private NewFileFromClientListener newFileFromClientListener;
+    private NetworkEventListener networkEventListener;
 
     private File sourceFile;
 
-    public ServerConnection(File sourceFile, NewFileFromClientListener newFileFromClientListener) {
-        this.newFileFromClientListener = newFileFromClientListener;
+    public ServerConnection(File sourceFile, NetworkEventListener networkEventListener) {
+        this.networkEventListener = networkEventListener;
         this.sourceFile = sourceFile;
         try {
             serverSocket = new ServerSocket(7777);
@@ -104,7 +104,7 @@ public class ServerConnection {
                     e.printStackTrace();
                 }
 
-                newFileFromClientListener.newFileRecieved(splitMessage[1], new File(filePath));
+                networkEventListener.newFileRecieved(splitMessage[1], new File(filePath));
 
         } else if ("RequestSources".equals(splitMessage[0])) {
             // Send sources jar file to client

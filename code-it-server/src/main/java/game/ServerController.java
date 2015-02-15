@@ -3,7 +3,7 @@ package game;
 import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
 import it.tejp.codeit.api.GameMechanic;
-import network.NewFileFromClientListener;
+import network.NetworkEventListener;
 import network.ServerConnection;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
@@ -19,7 +19,7 @@ import java.util.function.BiFunction;
 /**
  * Created by tejp on 28/12/14.
  */
-public class ServerController implements NewFileFromClientListener {
+public class ServerController implements NetworkEventListener {
 
     private ServerConnection connection;
     private Model model;
