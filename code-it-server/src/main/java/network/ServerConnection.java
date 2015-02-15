@@ -108,15 +108,14 @@ public class ServerConnection {
 
         } else if ("RequestSources".equals(splitMessage[0])) {
             // Send sources jar file to client
-            String s = null;
+            byte[] bytes = null;
             try {
-                s = new String(Files.readAllBytes(sourceFile.toPath()));
-
+                bytes = Files.readAllBytes(sourceFile.toPath());
             } catch (IOException e) {
                 e.printStackTrace();
             }
             try {
-                sendData(s.getBytes());
+                sendData(bytes);
             } catch (IOException e) {
                 e.printStackTrace();
                 throw null;
@@ -126,9 +125,7 @@ public class ServerConnection {
 
     public void sendData(byte[] byteMessage) throws IOException {
         BufferedOutputStream bos = new BufferedOutputStream(os);
-        for (int i = 0 ; i < byteMessage.length ; i++) {
-            bos.write(byteMessage[i]);
-        }
+        bos.write(byteMessage);
         bos.flush();
         bos.close();
     }

@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 
 /**
  * Created by tejp on 31/10/14.
@@ -46,24 +47,19 @@ public class Connection {
             socket = new Socket(inetAddress, port);
             sendData("RequestSources".getBytes());
 
-            InputStream is = null;
-
-            is = socket.getInputStream();
+            InputStream is = socket.getInputStream();
             byte[] bytes = new byte[512];
 
 
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             int count;
-
             while ((count = is.read(bytes)) > 0) {
                 byteStream.write(bytes, 0, count);
             }
             is.close();
             socket.close();
 
-            PrintWriter pw = new PrintWriter("source.jar");
-            pw.write(byteStream.toString());
-            pw.close();
+            Files.write(new File("source.jar").toPath(), byteStream.toByteArray());
 
         } catch (IOException e) {
             e.printStackTrace();
