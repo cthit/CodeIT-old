@@ -55,20 +55,23 @@ public class Model<T, M> {
         }
         competitors.add(competitorToEvaluate);
         // rating algorithm needs to run multiple times.
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 100; i++)
             evaluateCompetitor(competitorToEvaluate);
     }
 
     public void evaluateCompetitor(Competitor<T,M> competitor) {
-        competitors.stream().filter(competitor2 -> ! competitor2.equals(competitor)).forEach(competitor2 -> {
-            Game<T, M> game = createNewGame(competitor, competitor2);
+        competitors.stream().filter(otherCompetitor -> !competitor.equals(otherCompetitor)).forEach(otherCompetitor -> {
+            Game<T, M> game = createNewGame(competitor, otherCompetitor);
 
             while (!game.isGameOver()) {
                 game.play();
             }
 
             double[] results = game.getResults();
-            Rating.ratingBetapet(new double[]{competitor.getRating(), competitor2.getRating()}, results);
+//            final double[] calculatedRating = Rating.ratingBetapet(new double[]{competitor.getRating(), otherCompetitor.getRating()}, results);
+            final double[] calculatedRating = Rating.ratingELO(new double[]{competitor.getRating(), otherCompetitor.getRating()}, results);
+            competitor.addRating(calculatedRating[0]);
+            otherCompetitor.addRating(calculatedRating[1]);
         });
     }
 

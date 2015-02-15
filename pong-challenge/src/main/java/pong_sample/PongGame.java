@@ -68,6 +68,7 @@ public class PongGame implements Game<PongGame, PongMove> {
     }
 
     private void initializeGame() {
+        roundsLeft--;
         double middleY = height/2;
         leftPaddle.setY(middleY);
         rightPaddle.setY(middleY);
@@ -79,8 +80,8 @@ public class PongGame implements Game<PongGame, PongMove> {
         // i want 0.5 < |startX| < 1
         ball.getVelocity().x = startX < 0.5 ? -0.5-startX : startX;
 
-        System.out.println("Left: " + leftCompetitor.getRating());
-        System.out.println("Right: " + rightCompetitor.getRating());
+//        System.out.println("Left: " + leftCompetitor.getRating());
+//        System.out.println("Right: " + rightCompetitor.getRating());
     }
 
     @Override
@@ -108,11 +109,9 @@ public class PongGame implements Game<PongGame, PongMove> {
 
         if (ball.getCenterX() < 0) {
             scoreArr[1]++;
-            roundsLeft--;
             initializeGame();
         } else if (width < ball.getCenterX()) {
             scoreArr[0]++;
-            roundsLeft--;
             initializeGame();
         }
 
@@ -131,7 +130,7 @@ public class PongGame implements Game<PongGame, PongMove> {
 
     @Override
     public boolean isGameOver() {
-        return ball.getCenterX() < 0 || ball.getCenterX() > width;
+        return roundsLeft <= 0;
     }
 
     @Override
@@ -141,7 +140,7 @@ public class PongGame implements Game<PongGame, PongMove> {
 
     @Override
     public double[] getResults() {
-        return scoreArr;
+        return scoreArr.clone();
     }
 
     public static class Ball extends Circle {
