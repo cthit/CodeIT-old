@@ -14,7 +14,7 @@
       <TextField fx:id="port" layoutX="416.0" layoutY="228.0" prefHeight="25.0" prefWidth="54.0" promptText="4242" />
       <TextField fx:id="file_path" layoutX="300.0" layoutY="264.0" prefHeight="25.0" prefWidth="131.0" promptText="Path to file" />
       <Button layoutX="431.0" layoutY="264.0" mnemonicParsing="false" onAction="#browseClicked" prefHeight="25.0" prefWidth="40.0" text="Button" />
-      <Text id="title" layoutX="200.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CodeChallenge" />
+      <Text id="title" layoutX="200.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CodeIT" />
       <Label layoutX="200.0" layoutY="195.0" text="Team Name:" />
       <Label layoutX="200.0" layoutY="233.0" text="Connection:" />
       <Label layoutX="200.0" layoutY="269.0" text="File path:" />
