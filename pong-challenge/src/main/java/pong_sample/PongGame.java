@@ -20,26 +20,23 @@ public class PongGame implements Game<PongGame, PongMove> {
     private final Competitor<PongGame, PongMove> leftCompetitor, rightCompetitor;
     private Rectangle leftPaddle = new Rectangle(0, 100, 10, 40);
     private Rectangle rightPaddle = new Rectangle(400, 100, 10, 40);
-    private double leftCompetitorScore;
-    private double rightCompetitorScore;
-    private int roundsPerGame;
-    private int roundsPlayed;
+    private final double scoreArr[] = new double[2];
+    private int roundsLeft;
     private final int width, height;
     private final Ball ball = new Ball(200, 100);
 
     private List<Shape> gameElements = new ArrayList<>();
 
     public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor) {
-        this(leftCompetitor, rightCompetitor,1000,  400, 200);
+        this(leftCompetitor, rightCompetitor, 10, 400, 200);
         leftPaddle.setFill(Color.GREEN);
         rightPaddle.setFill(Color.BLUE);
     }
 
-    public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor, int roundsPerGame, int width, int height) {
-        System.out.println("PongGameCreated");
+    public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor, int roundsLeft, int width, int height) {
         this.leftCompetitor = leftCompetitor;
         this.rightCompetitor = rightCompetitor;
-        this.roundsPerGame = roundsPerGame;
+        this.roundsLeft = roundsLeft;
         this.width = width;
         this.height = height;
 
@@ -82,8 +79,8 @@ public class PongGame implements Game<PongGame, PongMove> {
         // i want 0.5 < |startX| < 1
         ball.getVelocity().x = startX < 0.5 ? -0.5-startX : startX;
 
-        System.out.println("Left: " + leftCompetitor.getScore());
-        System.out.println("Right: " + rightCompetitor.getScore());
+        System.out.println("Left: " + leftCompetitor.getRating());
+        System.out.println("Right: " + rightCompetitor.getRating());
     }
 
     @Override
@@ -110,12 +107,12 @@ public class PongGame implements Game<PongGame, PongMove> {
         }
 
         if (ball.getCenterX() < 0) {
-            rightCompetitorScore++;
-            roundsPlayed++;
+            scoreArr[1]++;
+            roundsLeft--;
             initializeGame();
         } else if (width < ball.getCenterX()) {
-            leftCompetitorScore++;
-            roundsPlayed++;
+            scoreArr[0]++;
+            roundsLeft--;
             initializeGame();
         }
 
@@ -143,11 +140,8 @@ public class PongGame implements Game<PongGame, PongMove> {
     }
 
     @Override
-    public Map<Competitor<PongGame,PongMove>, Double> getResults() {
-        Map<Competitor<PongGame,PongMove>, Double> scoreMap = new HashMap<>();
-        scoreMap.put(leftCompetitor, leftCompetitorScore);
-        scoreMap.put(rightCompetitor, rightCompetitorScore);
-        return scoreMap;
+    public double[] getResults() {
+        return scoreArr;
     }
 
     public static class Ball extends Circle {

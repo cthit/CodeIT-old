@@ -27,7 +27,11 @@ public class Model<T, M> {
     }
 
     public Game createNewGame(CompetitorPair pair) {
-        game = gameFactory.apply(pair.competitor1, pair.competitor2);
+        return createNewGame(pair.competitor1, pair.competitor2);
+    }
+
+    public Game createNewGame(Competitor<T,M> competitor1, Competitor<T,M> competitor2) {
+        game = gameFactory.apply(competitor1, competitor2);
         newGameListener.newGameCreated(game);
         return game;
     }
@@ -51,28 +55,26 @@ public class Model<T, M> {
         competitors.add(new Competitor<>(teamName, gameMechanic));
     }
 
-    public void evaluateCompetitor(Competitor<T,M> competitor) {
-        List<Game<T,M>> newGamesToEvaluate = new ArrayList<>();
-        for (Competitor<T, M> c : competitors) {
-            if (! c.equals(competitor)) {
+    public void evaluateCompetitors() {
+        for (Competitor<T, M> competitor1 : competitors)
+            for (Competitor<T, M> competitor2 : competitors) {
+                if (! competitor2.equals(competitor1)) {
 
-                new Thread(() -> {
-                    Game<T,M> game = createNewGame(new CompetitorPair(competitor, c));
+                    new Thread(() -> {
+                        Game<T,M> game = createNewGame(competitor1, competitor2);
 
-                    while ( ! game.isGameOver() ) {
-                        game.play();
-                    }
+                        while ( ! game.isGameOver() ) {
+                            game.play();
+                        }
 
-                    // Each entry is a (Key)Competitor paired with it's (entry)score earned in the game played.
-                    //
-                    game.getResults().entrySet().forEach( e -> e.getKey().addScore( e.getValue() ));
-                    
-                }).start();
+                        double[] results = game.getResults();
+                        competitor1.addRating(results[0]);
+                        competitor2.addRating(results[1]);
 
+                    }).start();
+
+                }
             }
-        }
-
-
     }
 
     public CompetitorPairIterator getCompetitorPairIterator() {

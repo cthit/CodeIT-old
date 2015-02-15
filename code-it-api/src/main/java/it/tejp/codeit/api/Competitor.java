@@ -6,7 +6,7 @@ package it.tejp.codeit.api;
 public class Competitor<T, M> {
 
     private final String teamName;
-    private double score;
+    private double rating = 1500;
     private GameMechanic<T, M> gameMechanic;
 
     public Competitor(String teamName, GameMechanic<T, M> gameMechanic) {
@@ -26,11 +26,25 @@ public class Competitor<T, M> {
         return teamName;
     }
 
-    public double getScore() {
-        return score;
+    public double getRating() {
+        return rating;
     }
 
-    public void addScore(double score) {
-        this.score += score;
+    public void addRating(double score) {
+        this.rating += score;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Competitor that = (Competitor) o;
+
+        if (Double.compare(that.rating, this.rating) != 0) return false;
+        if (this.gameMechanic != null ? !this.gameMechanic.equals(that.gameMechanic) : that.gameMechanic != null) return false;
+        if (this.teamName != null ? !this.teamName.equals(that.teamName) : that.teamName != null) return false;
+
+        return true;
     }
 }
