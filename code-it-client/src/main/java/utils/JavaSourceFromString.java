@@ -5,6 +5,7 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,10 +28,12 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         return this.code;
     }
 
-    public static Object compile(String code, String className, String packageName) throws Exception {
+    public static Object compile(String code, String className, String packageName) {
         File compilationPath = new File("compiled/");
-        JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
-        if (jc == null) throw new Exception("Compiler unavailable");
+        JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
+        if (javaCompiler == null) {
+            throw new RuntimeException("Couldn't instantiate the java compiler");
+        }
 
         JavaSourceFromString jsfs = new JavaSourceFromString(className, code);
 
@@ -50,25 +53,36 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         options.add(sb.toString());
 
         StringWriter output = new StringWriter();
-        boolean success = jc.getTask(output, null, null, options, null, fileObjects).call().booleanValue();
+        boolean success = javaCompiler.getTask(output, null, null, options, null, fileObjects).call().booleanValue();
         if (!success) {
-            throw new Exception(new StringBuilder().append("Compilation failed :").append(output).toString());
+            throw new RuntimeException(new StringBuilder().append("Compilation failed :").append(output).toString());
         }
 
         System.out.println("Class has been successfully compiled");
         File root = new File("compiled");
         // Load and instantiate compiled class.
-        URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
+        URLClassLoader classLoader = null;
+        try {
+            classLoader = URLClassLoader.newInstance(new URL[]{root.toURI().toURL()});
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("MalformedURL for path: " + root);
+        }
         className = className.substring(0, className.indexOf("."));
-        Class<?> cls = Class.forName(packageName + "." + className, true, classLoader);
-        Object instance = cls.newInstance();
+        Class<?> cls = null;
+        try {
+            cls = Class.forName(packageName + "." + className, true, classLoader);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Couldn't find class: " + packageName + "." + className);
+        }
+        Object instance = null;
+        try {
+            instance = cls.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Couldn't instantiate class: " + packageName + "." + className);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Access denied for class: " + packageName + "." + className);
+        }
 
         return instance;
-    }
-
-    public static void main(String[] args)
-            throws Exception
-    {
-        compile("public class CustomProcessor { /*custom stuff*/ }", "CustomProcessor", "");
     }
 }
