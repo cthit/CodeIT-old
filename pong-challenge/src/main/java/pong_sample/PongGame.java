@@ -56,7 +56,7 @@ public class PongGame implements Game<PongGame, PongMove> {
     }
 
     public Ball getBall() {
-        return ball;
+        return new Ball(ball);
     }
 
     public int getWidth() {
@@ -150,6 +150,11 @@ public class PongGame implements Game<PongGame, PongMove> {
         public Ball(Point2D.Double pos, Point2D.Double velocity) {
             super(pos.x, pos.y, 3, Color.BLACK);
             this.velocity = velocity;
+        }
+
+        public Ball(Ball ball) {
+            super(ball.getCenterX(), ball.getCenterY(), ball.getRadius(), ball.getFill());
+            this.velocity = ball.getVelocity();
         }
 
         public Ball(double x, double y) {

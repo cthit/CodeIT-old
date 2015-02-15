@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
-import pong_sample.PongPaddle;
+import pong_sample.SimplePongPaddle;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -40,8 +40,8 @@ public class ServerView extends Application implements NewGameListener {
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
 
-        Competitor<PongGame, PongMove> competitor1 = new Competitor("Team1", new PongPaddle());
-        Competitor<PongGame, PongMove> competitor2 = new Competitor("Team2", new PongPaddle());
+        Competitor<PongGame, PongMove> competitor1 = new Competitor("Team1", new SimplePongPaddle());
+        Competitor<PongGame, PongMove> competitor2 = new Competitor("Team2", new SimplePongPaddle());
 
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a,b) -> new PongGame(a, b);
 

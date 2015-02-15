@@ -8,19 +8,15 @@ import it.tejp.codeit.api.GameMechanic;
 import java.util.*;
 import java.util.function.BiFunction;
 
-/**
- * Created by tejp on 01/11/14.
- */
+
 public class Model<T, M> {
     private final BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory;
     private final List<Competitor<T, M>> competitors = new ArrayList<>();
     private final CompetitorPairIterator<T,M> competitorPairIterator;
     private Game<T, M> game;
     private NewGameListener newGameListener;
-    private int roundsPerPair;
 
-    public Model(int roundsPerPair, BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory, Competitor<T,M>... competitors) {
-        this.roundsPerPair = roundsPerPair;
+    public Model(BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory, Competitor<T,M>... competitors) {
         this.gameFactory = gameFactory;
 
         competitorPairIterator = new CompetitorPairIterator<>(Arrays.asList(competitors));
@@ -30,7 +26,7 @@ public class Model<T, M> {
         return createNewGame(pair.competitor1, pair.competitor2);
     }
 
-    public Game createNewGame(Competitor<T,M> competitor1, Competitor<T,M> competitor2) {
+    public Game<T,M> createNewGame(Competitor<T,M> competitor1, Competitor<T,M> competitor2) {
         game = gameFactory.apply(competitor1, competitor2);
         newGameListener.newGameCreated(game);
         return game;
@@ -46,35 +42,39 @@ public class Model<T, M> {
      *
      */
     public void handleContributionFromCompetitor(String teamName, GameMechanic<T,M> gameMechanic) {
+        Competitor<T, M> competitorToEvaluate = null;
         for (Competitor<T, M> competitor : competitors) {
             if (teamName.equals(competitor.getTeamName())) {
                 competitor.setGameMechanic(gameMechanic);
-                return;
+                competitorToEvaluate = competitor;
+                break;
             }
         }
-        competitors.add(new Competitor<>(teamName, gameMechanic));
+        if (competitorToEvaluate == null) {
+            competitorToEvaluate = new Competitor<>(teamName, gameMechanic);
+        }
+        competitors.add(competitorToEvaluate);
+        // rating algorithm needs to run multiple times.
+        for (int i = 0; i < 10; i++)
+            evaluateCompetitor(competitorToEvaluate);
+    }
+
+    public void evaluateCompetitor(Competitor<T,M> competitor) {
+        competitors.stream().filter(competitor2 -> ! competitor2.equals(competitor)).forEach(competitor2 -> {
+            Game<T, M> game = createNewGame(competitor, competitor2);
+
+            while (!game.isGameOver()) {
+                game.play();
+            }
+
+            double[] results = game.getResults();
+            Rating.ratingBetapet(new double[]{competitor.getRating(), competitor2.getRating()}, results);
+        });
     }
 
     public void evaluateCompetitors() {
-        for (Competitor<T, M> competitor1 : competitors)
-            for (Competitor<T, M> competitor2 : competitors) {
-                if (! competitor2.equals(competitor1)) {
+        competitors.forEach(this::evaluateCompetitor);
 
-                    new Thread(() -> {
-                        Game<T,M> game = createNewGame(competitor1, competitor2);
-
-                        while ( ! game.isGameOver() ) {
-                            game.play();
-                        }
-
-                        double[] results = game.getResults();
-                        competitor1.addRating(results[0]);
-                        competitor2.addRating(results[1]);
-
-                    }).start();
-
-                }
-            }
     }
 
     public CompetitorPairIterator getCompetitorPairIterator() {
@@ -105,10 +105,8 @@ public class Model<T, M> {
 
             CompetitorPair that = (CompetitorPair) o;
 
-            if (!competitor1.equals(that.competitor1)) return false;
-            if (!competitor2.equals(that.competitor2)) return false;
+            return competitor1.equals(that.competitor1) && competitor2.equals(that.competitor2);
 
-            return true;
         }
 
         @Override

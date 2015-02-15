@@ -7,7 +7,6 @@ import network.NewFileFromClientListener;
 import network.ServerConnection;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
-import pong_sample.PongPaddle;
 import utils.JavaSourceFromString;
 
 import java.io.File;
@@ -44,7 +43,7 @@ public class ServerController implements NewFileFromClientListener {
         connection.startServering();
 
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a, b) -> new PongGame(a, b);
-        model = new Model(100, gameFactory);
+        model = new Model(gameFactory);
 
 //        Model.CompetitorPairIterator pairIterator = model.getCompetitorPairIterator();
 
