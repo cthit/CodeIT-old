@@ -14,7 +14,7 @@ public class Model<T, M> {
     private final CompetitorPairIterator<T,M> competitorPairIterator;
     private Game<T, M> game;
 
-    private final Map<String, Double> score = new HashMap<>();
+    private final Map<String, Double> rating = new HashMap<>();
 
     public Model(BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory, Competitor<T,M>... competitors) {
         this.gameFactory = gameFactory;
@@ -57,20 +57,20 @@ public class Model<T, M> {
         for (int i = 0; i < 10; i++)
             evaluateCompetitor(competitorToEvaluate);
 
-        updateScore(competitors);
+        updateRating(competitors);
     }
 
-    private synchronized void updateScore(final List<Competitor<T, M>> competitors) {
-        score.clear();
+    private synchronized void updateRating(final List<Competitor<T, M>> competitors) {
+        rating.clear();
         for(Competitor<T, M> competitor : competitors) {
-            score.put(competitor.getTeamName(), competitor.getRating());
+            rating.put(competitor.getTeamName(), competitor.getRating());
             System.out.println("UpdateScore: " + competitor.getTeamName() + " " + competitor.getRating());
         }
     }
 
-    public synchronized Map<String, Double> getScore() {
+    public synchronized Map<String, Double> getRating() {
         Map<String, Double> ret = new HashMap<>();
-        Iterator it = score.entrySet().iterator();
+        Iterator it = rating.entrySet().iterator();
         while(it.hasNext()) {
             Map.Entry<String, Double> pairs = (Map.Entry<String, Double>)it.next();
             ret.put(pairs.getKey(), pairs.getValue());
