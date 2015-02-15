@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -40,13 +41,20 @@ public class RatingVisualizer extends Application {
     }
 
     @Override
-    public void start(Stage stage) {
-        Scene scene = new Scene(new Group());
+    public void start(Stage stage) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
+        Parent root = loader.load();
+//        group.setId("pane");
+        Scene scene = new Scene(root);
         stage.setTitle("Table View Sample");
         stage.setWidth(300);
         stage.setHeight(500);
 
+        System.out.println(this.getClass().getResource("main.css"));
+        scene.getStylesheets().addAll(this.getClass().getResource("main.css").toExternalForm());
+
         final Label label = new Label("RatingTable");
+//        label.setId("title");
         label.setFont(new Font("Arial", 20));
 
         table.setEditable(true);
@@ -91,7 +99,7 @@ public class RatingVisualizer extends Application {
     public Map<String, Double> requestRatingFromServer() {
         InetAddress inetAddress = null;
         try {
-            inetAddress = InetAddress.getByName("10.0.0.231");
+            inetAddress = InetAddress.getByName("127.0.0.1");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

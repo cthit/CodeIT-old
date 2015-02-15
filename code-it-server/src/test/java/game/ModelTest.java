@@ -1,9 +1,6 @@
 package game;
 
-import game.view.NewGameListener;
 import it.tejp.codeit.api.Competitor;
-import it.tejp.codeit.api.Game;
-import it.tejp.codeit.api.GameMechanic;
 import javafx.scene.shape.Rectangle;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +11,7 @@ import pong_sample.PongMove;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class ModelTest {
 
