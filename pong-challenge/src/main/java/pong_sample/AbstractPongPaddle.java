@@ -9,7 +9,7 @@ import it.tejp.codeit.api.GameMechanic;
 public abstract class AbstractPongPaddle implements GameMechanic<PongGame, PongMove>, Cloneable{
 
     @Override
-    public PongGame createTestGame() {
+    public final PongGame createTestGame() {
         try {
             return new PongGame(new Competitor<>("LeftCompetitor", (GameMechanic<PongGame, PongMove>)this.clone()), new Competitor<>("RightCompetitor", this));
         } catch (CloneNotSupportedException e) {
