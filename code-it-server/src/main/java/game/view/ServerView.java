@@ -45,7 +45,7 @@ public class ServerView extends Application implements NewGameListener {
 
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a,b) -> new PongGame(a, b);
 
-        Model<PongGame, PongMove> model = new Model(100, gameFactory, competitor1, competitor2);
+        Model<PongGame, PongMove> model = new Model(gameFactory, competitor1, competitor2);
         model.setNewGameListener(this);
 
         primaryStage.setTitle("it.tejp.codeit.api.Game");
