@@ -25,8 +25,7 @@ public class ServerController implements NewFileFromClientListener {
     private ExecutorService executor = Executors.newCachedThreadPool();
 
     public ServerController() {
-        this.connection = new ServerConnection(new File("TempFanceFile"), this);
-        connection.startServering();
+        this.connection = new ServerConnection(new File("source_server.jar"), this);
 // TODO        executor.shutdown(); // executorn skapar ej fler trådar
 //        executor.shutdownNow();   // executorn dödar allat hejvilt
 //        if (Thread.interrupted()) {
@@ -39,10 +38,10 @@ public class ServerController implements NewFileFromClientListener {
     }
 
     public void start() {
+        connection.startServering();
+
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a, b) -> new PongGame(a, b);
-
         model = new Model(100, gameFactory);
-
 
 //        Model.CompetitorPairIterator pairIterator = model.getCompetitorPairIterator();
 

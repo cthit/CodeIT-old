@@ -100,8 +100,8 @@ public class Controller {
 
     @FXML
     private void downloadSourcesClicked() {
-//        setupConnection();
-//        connection.recieveSources();
+        setupConnection();
+        connection.recieveSources();
         try {
             unzipJar("compiled", "source.jar");
         } catch (IOException e) {
@@ -148,7 +148,6 @@ public class Controller {
     public static void unzipJar(String destinationDir, String jarPath) throws IOException {
         File file = new File(jarPath);
         JarFile jar = new JarFile(file);
-
         // fist get all directories,
         // then make those directory on the destination Path
         for (Enumeration<JarEntry> enums = jar.entries(); enums.hasMoreElements();) {
