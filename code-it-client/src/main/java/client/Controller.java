@@ -70,7 +70,7 @@ public class Controller {
         team_name.setText("qwerty");
         address.setText("127.0.0.1");
         port.setText("7777");
-        file_path.setText("pong-challenge/src/main/java/pong_sample/PongPaddle.java");
+        file_path.setText("pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
     }
 
     @FXML
@@ -105,7 +105,7 @@ public class Controller {
         try {
             unzipJar("compiled", "source.jar");
         } catch (IOException e) {
-            throw new RuntimeException("Unable to unzip jar. Check paths please. call for Tejp!");
+            throw new RuntimeException("Unable to unzip jar. Check paths please. Call for Tejp!");
         }
     }
 

@@ -7,7 +7,7 @@ import network.NewFileFromClientListener;
 import network.ServerConnection;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
-import pong_sample.PongPaddle;
+import pong_sample.SimplePongPaddle;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -66,7 +66,7 @@ public class ServerController implements NewFileFromClientListener {
     @Override
     public void newFileRecieved(String teamName, File f) {
         //TODO create gameMechanic (i.e pongPaddle) from file
-        GameMechanic<PongGame,PongMove> pongPaddle = new PongPaddle();
+        GameMechanic<PongGame,PongMove> pongPaddle = new SimplePongPaddle();
 
         executor.submit(() -> {
             model.handleContributionFromCompetitor(teamName, pongPaddle);

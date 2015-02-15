@@ -7,7 +7,7 @@ import javafx.scene.shape.Rectangle;
 /**
  * Created by tejp on 01/11/14.
  */
-public class PongPaddle implements GameMechanic<PongGame, PongMove>, Cloneable {
+public class SimplePongPaddle extends AbstractPongPaddle implements GameMechanic<PongGame, PongMove>, Cloneable {
 
     @Override
     public PongMove onGameTick(PongGame game) {
