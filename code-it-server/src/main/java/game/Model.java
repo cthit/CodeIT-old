@@ -1,6 +1,5 @@
 package game;
 
-import game.view.NewGameListener;
 import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
 import it.tejp.codeit.api.GameMechanic;
@@ -14,7 +13,8 @@ public class Model<T, M> {
     private final List<Competitor<T, M>> competitors = new ArrayList<>();
     private final CompetitorPairIterator<T,M> competitorPairIterator;
     private Game<T, M> game;
-    private NewGameListener newGameListener;
+
+    private final Map<String, Double> score = new HashMap<>();
 
     public Model(BiFunction<Competitor<T, M>, Competitor<T, M>, Game> gameFactory, Competitor<T,M>... competitors) {
         this.gameFactory = gameFactory;
@@ -28,7 +28,6 @@ public class Model<T, M> {
 
     public Game<T,M> createNewGame(Competitor<T,M> competitor1, Competitor<T,M> competitor2) {
         game = gameFactory.apply(competitor1, competitor2);
-        newGameListener.newGameCreated(game);
         return game;
     }
 
@@ -55,14 +54,33 @@ public class Model<T, M> {
         }
         competitors.add(competitorToEvaluate);
         // rating algorithm needs to run multiple times.
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 10; i++)
             evaluateCompetitor(competitorToEvaluate);
+
+        updateScore(competitors);
+    }
+
+    private synchronized void updateScore(final List<Competitor<T, M>> competitors) {
+        score.clear();
+        for(Competitor<T, M> competitor : competitors) {
+            score.put(competitor.getTeamName(), competitor.getRating());
+            System.out.println("UpdateScore: " + competitor.getTeamName() + " " + competitor.getRating());
+        }
+    }
+
+    public synchronized Map<String, Double> getScore() {
+        Map<String, Double> ret = new HashMap<>();
+        Iterator it = score.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<String, Double> pairs = (Map.Entry<String, Double>)it.next();
+            ret.put(pairs.getKey(), pairs.getValue());
+        }
+        return ret;
     }
 
     public void evaluateCompetitor(Competitor<T,M> competitor) {
         competitors.stream().filter(otherCompetitor -> !competitor.equals(otherCompetitor)).forEach(otherCompetitor -> {
             Game<T, M> game = createNewGame(competitor, otherCompetitor);
-
             while (!game.isGameOver()) {
                 game.play();
             }
@@ -86,10 +104,6 @@ public class Model<T, M> {
 
     public List<Competitor<T,M>> getCompetitors() {
         return competitors;
-    }
-
-    public void setNewGameListener(NewGameListener newGameListener) {
-        this.newGameListener = newGameListener;
     }
 
     public static class CompetitorPair<T,M> {
