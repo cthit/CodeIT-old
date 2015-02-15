@@ -13,7 +13,7 @@ public class ClientView extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
         Parent root = loader.load();
         primaryStage.setTitle("CodeIT");
-        Scene scene = new Scene(root, 300, 275);
+        Scene scene = new Scene(root, 800, 825);
         scene.getStylesheets().add(
                 getClass().getResource("main.css").toExternalForm()
         );

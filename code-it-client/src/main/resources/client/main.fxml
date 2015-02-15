@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -7,22 +9,27 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.Controller">
+<AnchorPane maxHeight="600.0" maxWidth="-800.0" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.Controller">
    <children>
-      <TextField fx:id="team_name" layoutX="300.0" layoutY="190.0" promptText="IT-Crowd" />
-      <TextField fx:id="address" layoutX="300.0" layoutY="228.0" prefHeight="25.0" prefWidth="116.0" promptText="192.168.0.26" />
-      <TextField fx:id="port" layoutX="416.0" layoutY="228.0" prefHeight="25.0" prefWidth="54.0" promptText="4242" />
-      <TextField fx:id="file_path" layoutX="300.0" layoutY="264.0" prefHeight="25.0" prefWidth="131.0" promptText="Path to file" />
-      <Button layoutX="431.0" layoutY="264.0" mnemonicParsing="false" onAction="#browseClicked" prefHeight="25.0" prefWidth="40.0" text="Button" />
-      <Text id="title" layoutX="200.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CodeIT" />
-      <Label layoutX="200.0" layoutY="195.0" text="Team Name:" />
-      <Label layoutX="200.0" layoutY="233.0" text="Connection:" />
-      <Label layoutX="200.0" layoutY="269.0" text="File path:" />
-      <Button id="green" layoutX="200.0" layoutY="322.0" mnemonicParsing="false" onAction="#sendCodeClicked" text="Send code" />
-      <Button layoutX="339.0" layoutY="322.0" mnemonicParsing="false" onAction="#downloadSourcesClicked" text="Download Sources" />
-      <Button layoutX="200.0" layoutY="372.0" mnemonicParsing="false" onAction="#testMyAIClicked" prefHeight="25.0" prefWidth="280.0" text="Test my AI" />
-      <Label fx:id="feedback_team_name" layoutX="477.0" layoutY="195.0" />
-      <Label fx:id="feedback_connection" layoutX="477.0" layoutY="233.0" />
-      <Label fx:id="feedback_project_path" layoutX="477.0" layoutY="269.0" />
+      <TextField fx:id="team_name" layoutX="359.0" layoutY="168.0" promptText="IT-Crowd" />
+      <TextField fx:id="address" layoutX="359.0" layoutY="206.0" prefHeight="25.0" prefWidth="116.0" promptText="192.168.0.26" />
+      <TextField fx:id="port" layoutX="475.0" layoutY="206.0" prefHeight="25.0" prefWidth="54.0" promptText="4242" />
+      <TextField fx:id="file_path" layoutX="359.0" layoutY="242.0" prefHeight="25.0" prefWidth="131.0" promptText="Path to file" />
+      <Button layoutX="490.0" layoutY="242.0" mnemonicParsing="false" onAction="#browseClicked" prefHeight="25.0" prefWidth="40.0" text="Button" />
+      <Text id="title" layoutX="259.0" layoutY="128.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Code-IT" />
+      <Label layoutX="259.0" layoutY="173.0" text="Team Name:" />
+      <Label layoutX="259.0" layoutY="211.0" text="Connection:" />
+      <Label layoutX="259.0" layoutY="247.0" text="File path:" />
+      <Button id="green" layoutX="259.0" layoutY="300.0" mnemonicParsing="false" onAction="#sendCodeClicked" text="Send code" />
+      <Button layoutX="398.0" layoutY="300.0" mnemonicParsing="false" onAction="#downloadSourcesClicked" text="Download Sources" />
+      <Button layoutX="259.0" layoutY="350.0" mnemonicParsing="false" onAction="#testMyAIClicked" prefHeight="25.0" prefWidth="280.0" text="Test my AI" />
+      <Label fx:id="feedback_team_name" layoutX="536.0" layoutY="173.0" />
+      <Label fx:id="feedback_connection" layoutX="536.0" layoutY="211.0" />
+      <Label fx:id="feedback_project_path" layoutX="536.0" layoutY="247.0" />
+      <ImageView fitHeight="281.0" fitWidth="280.0" layoutX="279.0" layoutY="422.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@digit14.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>
