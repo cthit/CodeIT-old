@@ -112,16 +112,17 @@ public class Controller {
     @FXML
     private void testMyAIClicked() {
         File file = new File(file_path.getText());
-        String s = null;
+        String code = null;
         Object instanceObj = null;
         try {
-            s = new String(Files.readAllBytes(file.toPath()));
+            code = new String(Files.readAllBytes(file.toPath()));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         try {
-            instanceObj = JavaSourceFromString.compile(s, file.getName(), "pong_sample");
+            code = code.replaceFirst("package\\s+.+?;", "package pong_sample;");
+            instanceObj = JavaSourceFromString.compile(code, file.getName(), "pong_sample");
         } catch (Exception e) {
             e.printStackTrace();
         }
