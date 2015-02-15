@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Map;
 
 public class ServerConnection {
 
@@ -120,6 +121,13 @@ public class ServerConnection {
                 e.printStackTrace();
                 throw null;
             }
+        } else if("RequestRating".equals(splitMessage[0])) {
+            Map<String, Double> ratings = networkEventListener.requestRatings();
+            try {
+                sendData((Serializable)ratings);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -128,6 +136,14 @@ public class ServerConnection {
         bos.write(byteMessage);
         bos.flush();
         bos.close();
+    }
+
+    public void sendData(Serializable serializable) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(os);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(bos);
+        objectOutputStream.writeObject(serializable);
+        objectOutputStream.flush();
+        objectOutputStream.close();
     }
 
     public void setSourceFile(File sourceFile) {

@@ -12,6 +12,7 @@ import utils.JavaSourceFromString;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
@@ -67,6 +68,11 @@ public class ServerController implements NetworkEventListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Map<String, Double> requestRatings() {
+        return model.getRating();
     }
 
     public static void main(String[] args) {
