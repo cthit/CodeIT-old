@@ -12,6 +12,11 @@ public final class Vector2D {
 	    this.y = 0;
     }
 
+    public Vector2D(Vector2D vector) {
+        this.x = vector.x;
+        this.y = vector.y;
+    }
+
     public Vector2D(double x1, double y1, double x2, double y2) {
         this.x = x2 - x1;
 	    this.y = y2 - y1;
@@ -26,12 +31,18 @@ public final class Vector2D {
         return Math.sqrt(x * x + y * y);
     }
 
-    public Vector2D normalize() {
+    public void normalize() {
         if (x == 0 && y == 0) {
-            return this;
+            return;
         }
 	    double magnitude = getMagnitude();
-        return new Vector2D(x / magnitude, y / magnitude);
+        x = x / magnitude;
+        y = y / magnitude;
+    }
+
+    public void scale(double scalar) {
+        x *= scalar;
+        y *= scalar;
     }
 
     public double distance(Vector2D toPosition) {
@@ -40,9 +51,10 @@ public final class Vector2D {
         return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
     }
 
-    public void add(Vector2D vector) {
+    public Vector2D add(Vector2D vector) {
 	    x += vector.x;
 	    y += vector.y;
+        return this;
     }
 
 	public void add(double x, double y) {

@@ -3,6 +3,8 @@ package pong_sample;
 import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
 import it.tejp.codeit.api.GameMechanic;
+import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -12,6 +14,7 @@ import javafx.scene.shape.Shape;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by tejp on 01/11/14.
@@ -24,7 +27,11 @@ public class PongGame implements Game<PongGame, PongMove> {
     private final double scoreArr[] = new double[2];
     private int roundsLeft;
     private final int width, height;
-    private final Ball ball = new Ball(200, 100);
+    private final Ball ball = new Ball(
+            new Point2D.Double(200, 100),
+            new Vector2D(Math.random()/2 + 1, Math.random()/2 + 1),
+            1
+    );
 
     private List<Shape> gameElements = new ArrayList<>();
 
@@ -75,14 +82,13 @@ public class PongGame implements Game<PongGame, PongMove> {
         rightPaddle.setY(middleY);
         ball.setCenterY(middleY);
         ball.setCenterX(width / 2);
-        ball.getVelocity().y = Math.random()*2 - 1;
+
+        ball.setDirection(new Vector2D(Math.random()/2 + 0.5, Math.random()/2 + 0.5));
+        ball.setSpeed(1);
 
         double startX = Math.random();
         // i want 0.5 < |startX| < 1
-        ball.getVelocity().x = startX < 0.5 ? -0.5-startX : startX;
 
-//        System.out.println("Left: " + leftCompetitor.getRating());
-//        System.out.println("Right: " + rightCompetitor.getRating());
     }
 
     @Override
@@ -92,11 +98,53 @@ public class PongGame implements Game<PongGame, PongMove> {
         Line leftPaddleLine = new Line(leftX, leftPaddle.getY(), leftX, leftPaddle.getY() + leftPaddle.getHeight());
         Line rightPaddleLine = new Line(rightX, rightPaddle.getY(), rightX, rightPaddle.getY() + leftPaddle.getHeight());
 
-        Line ballLine = new Line(ball.getCenterX(), ball.getCenterY(), ball.getCenterX() + ball.getVelocity().x, ball.getCenterY() + ball.getVelocity().y);
+        Line ballLine = new Line(
+                ball.getCenterX(),
+                ball.getCenterY(),
+                ball.getCenterX() + ball.getSpeed()* ball.getDirection().getX(),
+                ball.getCenterY() + ball.getSpeed()* ball.getDirection().getY());
 
-        if (leftPaddleLine.intersects(ballLine.boundsInLocalProperty().get()) || rightPaddleLine.intersects(ballLine.boundsInLocalProperty().get())) {
-            ball.getVelocity().x = -ball.getVelocity().x*1.1; //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
-            ball.getVelocity().y = ball.getVelocity().y*1.1;
+        if (leftPaddleLine.intersects(ballLine.boundsInLocalProperty().get())) {
+            double offsetY = leftPaddleLine.getStartY();
+
+            double paddleBot = leftPaddleLine.getEndY() - offsetY;
+
+            final double ballCoordWithinPaddle = ball.getCenterY() - offsetY;
+
+            //should be a float number between -1 - 1
+            double normalizedBallPosOnPaddle = (ballCoordWithinPaddle / paddleBot) * 2 - 1;
+            System.out.println("should be between -1 and 1: " + normalizedBallPosOnPaddle);
+
+            double degreeOnUnitCircle = normalizedBallPosOnPaddle * 90;
+
+            Vector2D vectorToAdd = new Vector2D(Math.cos(degreeOnUnitCircle),Math.sin(degreeOnUnitCircle));
+
+            ball.getDirection().add(vectorToAdd).normalize();
+
+            ball.setSpeed(ball.getSpeed() * 1.1); //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
+
+
+        } else if (rightPaddleLine.intersects(ballLine.boundsInLocalProperty().get())) {
+            double offsetY = rightPaddleLine.getStartY();
+
+            double paddleBot = leftPaddleLine.getEndY() - offsetY;
+
+            final double ballCoordWithinPaddle = ball.getCenterY() - offsetY;
+
+            //should be a float number between -1 - 1
+            double normalizedBallPosOnPaddle = (ballCoordWithinPaddle / paddleBot) * 2 - 1;
+            System.out.println("should be between -1 and 1: " + normalizedBallPosOnPaddle);
+
+            double degreeOnUnitCircle = normalizedBallPosOnPaddle * 90;
+
+            Vector2D vectorToAdd = new Vector2D(Math.cos(degreeOnUnitCircle),Math.sin(degreeOnUnitCircle));
+
+            ball.getDirection().add(vectorToAdd).normalize();
+
+            ball.setSpeed(ball.getSpeed() * 1.1); //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
+
+
+            ball.setSpeed(ball.getSpeed() * 1.1); //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
         }
 
         //############################################################
@@ -105,7 +153,7 @@ public class PongGame implements Game<PongGame, PongMove> {
         movePaddle(rightCompetitor.getGameMechanic(), rightPaddle);
 
         if (ball.getCenterY() < 0 || ball.getCenterY() > height) {
-            ball.velocity.y = -ball.velocity.y;
+            ball.getDirection().setY(-ball.getDirection().getY());
         }
 
         if (ball.getCenterX() < 0) {
@@ -145,29 +193,40 @@ public class PongGame implements Game<PongGame, PongMove> {
     }
 
     public static class Ball extends Circle {
-        private Point2D.Double velocity;
+        private Vector2D direction;
+        private double speed;
 
-        public Ball(Point2D.Double pos, Point2D.Double velocity) {
+        public Ball(Point2D.Double pos, Vector2D direction, double speed) {
             super(pos.x, pos.y, 3, Color.BLACK);
-            this.velocity = velocity;
+            this.direction = direction;
+            this.speed = speed;
         }
 
         public Ball(Ball ball) {
             super(ball.getCenterX(), ball.getCenterY(), ball.getRadius(), ball.getFill());
-            this.velocity = ball.getVelocity();
-        }
-
-        public Ball(double x, double y) {
-            this(new Point2D.Double(x, y), new Point2D.Double(0, 0));
+            this.speed = ball.speed;
+            this.direction = new Vector2D(ball.direction);
         }
 
         public void move() {
-            setCenterX(getCenterX() + velocity.x);
-            setCenterY(getCenterY() + velocity.y);
+            setCenterX(getCenterX() + direction.getX() * speed);
+            setCenterY(getCenterY() + direction.getY() * speed);
         }
 
-        public Point2D.Double getVelocity() {
-            return velocity;
+        public double getSpeed() {
+            return speed;
+        }
+
+        public Vector2D getDirection() {
+            return direction;
+        }
+
+        public void setDirection(Vector2D direction) {
+            this.direction = direction;
+        }
+
+        public void setSpeed(double speed) {
+            this.speed = speed;
         }
     }
 }
