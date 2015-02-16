@@ -69,9 +69,11 @@ public class Controller {
 
         ChangeListener<String> numberOnly= (observable, oldValue, newValue) -> {
             if (newValue.matches("\\d+\\.?\\d*")) {
+                simulation_delay.setEffect(new InnerShadow(0, Color.WHITE));
                 feedback_simulation.setText("");
                 feedback_simulation.setTextFill(Color.GREEN);
             } else {
+                simulation_delay.setEffect(new InnerShadow(1000, Color.DARKRED));
                 feedback_simulation.setText("Nah, plz fex.");
                 feedback_simulation.setTextFill(Color.DARKRED);
             }
