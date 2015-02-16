@@ -141,6 +141,7 @@ public class Controller {
                     .masthead(e.getMessage())
                     .message("Couldn't download source.jar make sure the IP address is correct: " + address.getText())
                     .showError();
+            return;
         }
         try {
             unzipJar("compiled", "source.jar");
