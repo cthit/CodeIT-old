@@ -15,6 +15,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.io.IOException;
 
 public class RatingVisualizer extends Application {
 
@@ -33,14 +34,25 @@ public class RatingVisualizer extends Application {
 
         scene.getStylesheets().addAll(this.getClass().getResource("ratingvisualizer/main.css").toExternalForm());
 
-//        loader.getController()
-
         final Label label = new Label("RatingTable");
         label.setFont(new Font("Arial", 20));
 
-        ((RatingVisualizerController)loader.getController()).startDataWatcher();
-//        table.setItems(data );
-//        table.getColumns().addAll(teamNameColumn, ratingColumn);
+
+        int port = 7777;
+        String adress = "127.0.0.1";
+        switch (getParameters().getRaw().size()) {
+            case 2:
+                port = Integer.parseInt(getParameters().getRaw().get(1));
+            case 1:
+                adress = getParameters().getRaw().get(0);
+        }
+
+
+        final RatingVisualizerController controller = (RatingVisualizerController) loader.getController();
+        controller.initialize(adress, port);
+        controller.startDataWatcher();
+
+
 
         stage.setScene(scene);
         stage.show();

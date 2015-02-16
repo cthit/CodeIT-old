@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class RatingVisualizerController {
 
+    private int port;
+    private InetAddress adress;
 
     private ObservableList<TeamRatingEntry> data = FXCollections.observableArrayList();
 
@@ -54,18 +56,9 @@ public class RatingVisualizerController {
     }
 
     public Map<String, Double> requestRatingFromServer() {
-        InetAddress inetAddress = null;
-        try {
-            inetAddress = InetAddress.getByName("127.0.0.1");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        int port = 7777;
-
-
         Socket socket = null;
         try {
-            socket = new Socket(inetAddress, port);
+            socket = new Socket(adress, port);
             OutputStream os = socket.getOutputStream();
             BufferedOutputStream bos = new BufferedOutputStream(os);
             byte[] byteMessage = "RequestRating".getBytes();
@@ -97,6 +90,15 @@ public class RatingVisualizerController {
             e.printStackTrace();
         }
         return receivedRatings;
+    }
+
+    public void initialize(String address, int port) {
+        this.port = port;
+        try {
+            this.adress = InetAddress.getByName(address);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(String.format("Could not find host ip address: %s", address));
+        }
     }
 
     public static class TeamRatingEntry {
