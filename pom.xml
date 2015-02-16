@@ -20,6 +20,7 @@
         <module>pong-challenge</module>
         <module>code-it-api</module>
         <module>code-it-client</module>
+        <module>code-it-ratingvisualizer</module>
     </modules>
     
 </project>
