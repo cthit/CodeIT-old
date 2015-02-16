@@ -1,7 +1,5 @@
 package pong_sample;
 
-import it.tejp.codeit.api.Competitor;
-import it.tejp.codeit.api.GameMechanic;
 import javafx.scene.shape.Rectangle;
 
 /**

@@ -10,7 +10,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by tejp on 01/11/14.
