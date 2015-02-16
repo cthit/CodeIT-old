@@ -18,9 +18,11 @@ public class AITestScene extends Scene {
 
     private final List<Shape> gameElements = null;
     private final Game<?,?> game;
+    private final double delay;
 
-    public AITestScene(GameMechanic<?,?> gameMechanic) {
+    public AITestScene(GameMechanic<?,?> gameMechanic, double delay) {
         super(new Group());
+        this.delay = delay;
         game = (Game<?, ?>) gameMechanic.createTestGame();
 
         ((Group)getRoot()).getChildren().addAll(game.getScreenElements());
@@ -30,7 +32,7 @@ public class AITestScene extends Scene {
 
     public void play() {
         Timeline animation = new Timeline(
-                new KeyFrame(Duration.millis(0.1), e -> game.play()));
+                new KeyFrame(Duration.millis(delay), e -> game.play()));
         animation.setCycleCount(Timeline.INDEFINITE);
         animation.play(); // Start animation
     }

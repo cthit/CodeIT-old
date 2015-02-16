@@ -31,9 +31,11 @@ public class Controller {
     @FXML private TextField address;
     @FXML private TextField port;
     @FXML private TextField file_path;
+    @FXML private TextField simulation_delay;
     @FXML private Label feedback_team_name;
     @FXML private Label feedback_connection;
     @FXML private Label feedback_project_path;
+    @FXML private Label feedback_simulation;
     private Connection connection;
 
     public void setStageAndDoSetup(Stage stage) {
@@ -65,7 +67,18 @@ public class Controller {
             }
         };
 
+        ChangeListener<String> numberOnly= (observable, oldValue, newValue) -> {
+            if (newValue.matches("\\d+\\.?\\d*")) {
+                feedback_simulation.setText("");
+                feedback_simulation.setTextFill(Color.GREEN);
+            } else {
+                feedback_simulation.setText("Nah, plz fex.");
+                feedback_simulation.setTextFill(Color.DARKRED);
+            }
+        };
+
         address.textProperty().addListener(listener);
+        simulation_delay.textProperty().addListener(numberOnly);
 
         team_name.setText("qwerty");
         address.setText("127.0.0.1");
@@ -144,6 +157,18 @@ public class Controller {
         File file = new File(file_path.getText());
         String code = null;
         Object instanceObj = null;
+        double delay = 0;
+        try {
+            delay = new Double(simulation_delay.getText()).doubleValue();
+        } catch(NumberFormatException e) {
+            Dialogs.create()
+                    .owner(stage)
+                    .title("Number error")
+                    .masthead("Not a number")
+                    .message(e.getMessage())
+                    .showWarning();
+            return;
+        }
         try {
             code = new String(Files.readAllBytes(file.toPath()));
 
@@ -179,7 +204,7 @@ public class Controller {
         }
         GameMechanic<?,?> instance = (GameMechanic<?,?>)instanceObj;
         Stage stage = new Stage();
-        AITestScene testScene = new AITestScene(instance);
+        AITestScene testScene = new AITestScene(instance, delay);
         stage.setScene(testScene);
         stage.show();
         testScene.play();

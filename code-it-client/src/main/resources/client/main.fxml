@@ -20,9 +20,9 @@
       <Label layoutX="259.0" layoutY="173.0" text="Team Name:" />
       <Label layoutX="259.0" layoutY="211.0" text="Connection:" />
       <Label layoutX="259.0" layoutY="247.0" text="File path:" />
-      <Button id="green" layoutX="259.0" layoutY="300.0" mnemonicParsing="false" onAction="#sendCodeClicked" text="Send code" />
-      <Button layoutX="398.0" layoutY="300.0" mnemonicParsing="false" onAction="#downloadSourcesClicked" text="Download Sources" />
-      <Button layoutX="259.0" layoutY="350.0" mnemonicParsing="false" onAction="#testMyAIClicked" prefHeight="25.0" prefWidth="280.0" text="Test my AI" />
+      <Button id="green" layoutX="259.0" layoutY="327.0" mnemonicParsing="false" onAction="#sendCodeClicked" text="Send code" />
+      <Button layoutX="398.0" layoutY="327.0" mnemonicParsing="false" onAction="#downloadSourcesClicked" text="Download Sources" />
+      <Button layoutX="259.0" layoutY="365.0" mnemonicParsing="false" onAction="#testMyAIClicked" prefHeight="27.0" prefWidth="285.0" text="Test AI" />
       <Label fx:id="feedback_team_name" layoutX="536.0" layoutY="173.0" />
       <Label fx:id="feedback_connection" layoutX="536.0" layoutY="211.0" />
       <Label fx:id="feedback_project_path" layoutX="536.0" layoutY="247.0" />
@@ -31,5 +31,8 @@
             <Image url="@digit14.png" />
          </image>
       </ImageView>
+      <TextField fx:id="simulation_delay" layoutX="359.0" layoutY="280.0" prefHeight="27.0" prefWidth="131.0" promptText="Simulation delay" text="20" />
+      <Label layoutX="210.0" layoutY="285.0" text="Simulation Delay:" />
+      <Label fx:id="feedback_simulation" layoutX="497.0" layoutY="285.0" />
    </children>
 </AnchorPane>
