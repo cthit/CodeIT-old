@@ -48,7 +48,7 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         for (URL url : urlClassLoader.getURLs()) {
             sb.append(url.getFile()).append(File.pathSeparator);
         }
-        sb.append("source.jar:");
+        sb.append("source.jar" + File.pathSeparator);
         sb.append(compilationPath.getAbsolutePath());
         options.add(sb.toString());
 
