@@ -77,9 +77,13 @@ public class Controller {
     private void browseClicked() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open your AI file");
-        File file = fileChooser.showOpenDialog(stage);
-        if (file != null)
-            file_path.setText(file.getAbsolutePath());
+        File file = new File(file_path.getText());
+        if(file.exists() && file.getParentFile().isDirectory()) {
+            fileChooser.setInitialDirectory(file.getParentFile());
+        }
+        File choosenFile = fileChooser.showOpenDialog(stage);
+        if (choosenFile != null)
+            file_path.setText(choosenFile.getAbsolutePath());
     }
 
     @FXML
