@@ -144,13 +144,14 @@ public class Controller {
             return;
         }
         try {
+            new File("compiled").mkdir();
             unzipJar("compiled", "source.jar");
         } catch (IOException e) {
             Dialogs.create()
                     .owner(stage)
                     .title("File error")
                     .masthead("Couldn't unzip jarfile")
-                    .message("Path: compiler/source.jar")
+                    .message("Path: compiled/source.jar")
                     .showError();
         }
     }
