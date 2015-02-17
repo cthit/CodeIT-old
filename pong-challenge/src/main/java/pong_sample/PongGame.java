@@ -60,7 +60,8 @@ public class PongGame implements Game<PongGame, PongMove> {
     }
 
     public Rectangle getPaddle(GameMechanic<PongGame, PongMove> paddleLogic) {
-        return paddleLogic == leftCompetitor.getGameMechanic() ? leftPaddle : rightPaddle;
+        Rectangle r = paddleLogic == leftCompetitor.getGameMechanic() ? leftPaddle : rightPaddle;
+        return new Rectangle(r.getX(), r.getY(), r.getWidth(), r.getHeight());
     }
 
     public Ball getBall() {
