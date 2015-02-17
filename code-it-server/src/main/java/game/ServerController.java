@@ -59,6 +59,8 @@ public class ServerController implements NetworkEventListener {
         }
         code = code.replaceFirst("package\\s+.+?;", "package pong_sample;");
         code = code.replaceFirst("public\\s+class\\s+.+?\\s", "public class " + teamName + " ");
+        code = code.replace("System.out", "//System.out");
+
         try {
             GameMechanic<PongGame,PongMove> pongPaddle = (GameMechanic<PongGame,PongMove>) JavaSourceFromString.compile(code, teamName + ".java", "pong_sample");
             pongPaddle.createTestGame();
