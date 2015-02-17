@@ -104,45 +104,36 @@ public class PongGame implements Game<PongGame, PongMove> {
                 ball.getCenterX() + ball.getSpeed()* ball.getDirection().getX(),
                 ball.getCenterY() + ball.getSpeed()* ball.getDirection().getY());
 
-        if (leftPaddleLine.intersects(ballLine.boundsInLocalProperty().get())) {
-            double offsetY = leftPaddleLine.getStartY();
+        boolean leftHit = leftPaddleLine.intersects(ballLine.boundsInLocalProperty().get());
+        boolean rightHit = rightPaddleLine.intersects(ballLine.boundsInLocalProperty().get());
 
-            double paddleBot = leftPaddleLine.getEndY() - offsetY;
+        if (leftHit || rightHit) {
+            Line paddleLine = rightPaddleLine;
+            int degreesToAdd = 0;
 
-            final double ballCoordWithinPaddle = ball.getCenterY() - offsetY;
+            if (leftHit) {
+                paddleLine = leftPaddleLine;
+                degreesToAdd = 180;
+            }
 
-            //should be a float number between -1 - 1
-            double normalizedBallPosOnPaddle = (ballCoordWithinPaddle / paddleBot) * 2 - 1;
-            System.out.println("should be between -1 and 1: " + normalizedBallPosOnPaddle);
+            double offsetY = paddleLine.getStartY();
 
-            double degreeOnUnitCircle = normalizedBallPosOnPaddle * 90;
-
-            Vector2D vectorToAdd = new Vector2D(Math.cos(degreeOnUnitCircle),Math.sin(degreeOnUnitCircle));
-
-            ball.getDirection().add(vectorToAdd).normalize();
-
-            ball.setSpeed(ball.getSpeed() * 1.1); //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
-
-
-        } else if (rightPaddleLine.intersects(ballLine.boundsInLocalProperty().get())) {
-            double offsetY = rightPaddleLine.getStartY();
-
-            double paddleBot = leftPaddleLine.getEndY() - offsetY;
+            double paddleBot = paddleLine.getEndY() - offsetY;
 
             final double ballCoordWithinPaddle = ball.getCenterY() - offsetY;
 
             //should be a float number between -1 - 1
             double normalizedBallPosOnPaddle = (ballCoordWithinPaddle / paddleBot) * 2 - 1;
-            System.out.println("should be between -1 and 1: " + normalizedBallPosOnPaddle);
+            if (Math.abs(normalizedBallPosOnPaddle) > 1) {
+                // Print error if not between -1 and 1
+                System.err.println("should be between -1 and 1: " + normalizedBallPosOnPaddle);
+            }
 
-            double degreeOnUnitCircle = normalizedBallPosOnPaddle * 90;
+            double degreeOnUnitCircle = normalizedBallPosOnPaddle * 90 + degreesToAdd;
 
             Vector2D vectorToAdd = new Vector2D(Math.cos(degreeOnUnitCircle),Math.sin(degreeOnUnitCircle));
 
             ball.getDirection().add(vectorToAdd).normalize();
-
-            ball.setSpeed(ball.getSpeed() * 1.1); //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
-
 
             ball.setSpeed(ball.getSpeed() * 1.1); //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
         }
