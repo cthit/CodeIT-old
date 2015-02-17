@@ -35,6 +35,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <outputDirectory>../bin</outputDirectory>
+                    <finalName>source_server</finalName>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
