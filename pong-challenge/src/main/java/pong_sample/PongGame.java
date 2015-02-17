@@ -136,25 +136,24 @@ public class PongGame implements Game<PongGame, PongMove> {
             ball.getDirection().add(vectorToAdd).normalize();
 
             ball.setSpeed(ball.getSpeed() + 0.01);
+        } else {
+            if (ball.getCenterY() < 0 || ball.getCenterY() > height) {
+                ball.getDirection().setY(-ball.getDirection().getY());
+            }
+
+            if (ball.getCenterX() < 0) {
+                scoreArr[1]++;
+                initializeGame();
+            } else if (width < ball.getCenterX()) {
+                scoreArr[0]++;
+                initializeGame();
+            }
         }
 
         //############################################################
         ball.move();
         movePaddle(leftCompetitor.getGameMechanic(), leftPaddle);
         movePaddle(rightCompetitor.getGameMechanic(), rightPaddle);
-
-        if (ball.getCenterY() < 0 || ball.getCenterY() > height) {
-            ball.getDirection().setY(-ball.getDirection().getY());
-        }
-
-        if (ball.getCenterX() < 0) {
-            scoreArr[1]++;
-            initializeGame();
-        } else if (width < ball.getCenterX()) {
-            scoreArr[0]++;
-            initializeGame();
-        }
-
     }
 
     private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
