@@ -22,8 +22,8 @@ import java.util.Vector;
 public class PongGame implements Game<PongGame, PongMove> {
 
     private final Competitor<PongGame, PongMove> leftCompetitor, rightCompetitor;
-    private Rectangle leftPaddle = new Rectangle(0, 100, 10, 40);
-    private Rectangle rightPaddle = new Rectangle(400, 100, 10, 40);
+    private Rectangle leftPaddle = new Rectangle(15, 100, 10, 40);
+    private Rectangle rightPaddle = new Rectangle(375, 100, 10, 40);
     private final double scoreArr[] = new double[2];
     private int roundsLeft;
     private final int width, height;
@@ -129,13 +129,13 @@ public class PongGame implements Game<PongGame, PongMove> {
                 System.err.println("should be between -1 and 1: " + normalizedBallPosOnPaddle);
             }
 
-            double degreeOnUnitCircle = normalizedBallPosOnPaddle * 90 + degreesToAdd;
+            double degreeOnUnitCircle = normalizedBallPosOnPaddle * 70 + degreesToAdd;
 
             Vector2D vectorToAdd = new Vector2D(Math.cos(degreeOnUnitCircle),Math.sin(degreeOnUnitCircle));
 
             ball.getDirection().add(vectorToAdd).normalize();
 
-            ball.setSpeed(ball.getSpeed() * 1.1); //todo Magic numbers. they mean: increase speed by 10% in both x and y velocity.
+            ball.setSpeed(ball.getSpeed() + 0.01);
         }
 
         //############################################################
