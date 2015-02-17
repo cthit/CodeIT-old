@@ -22,8 +22,8 @@ import java.util.Vector;
 public class PongGame implements Game<PongGame, PongMove> {
 
     private final Competitor<PongGame, PongMove> leftCompetitor, rightCompetitor;
-    private Rectangle leftPaddle = new Rectangle(15, 100, 10, 40);
-    private Rectangle rightPaddle = new Rectangle(375, 100, 10, 40);
+    private Rectangle leftPaddle = new Rectangle(5, 100, 10, 40);
+    private Rectangle rightPaddle = new Rectangle(385, 100, 10, 40);
     private final double scoreArr[] = new double[2];
     private int roundsLeft;
     private final int width, height;
@@ -104,8 +104,8 @@ public class PongGame implements Game<PongGame, PongMove> {
                 ball.getCenterX() + ball.getSpeed()* ball.getDirection().getX(),
                 ball.getCenterY() + ball.getSpeed()* ball.getDirection().getY());
 
-        boolean leftHit = leftPaddleLine.intersects(ballLine.boundsInLocalProperty().get());
-        boolean rightHit = rightPaddleLine.intersects(ballLine.boundsInLocalProperty().get());
+        boolean leftHit = leftPaddle.getBoundsInParent().intersects(ballLine.getBoundsInParent());
+        boolean rightHit = rightPaddle.getBoundsInParent().intersects(ballLine.getBoundsInParent());
 
         if (leftHit || rightHit) {
             Line paddleLine = rightPaddleLine;
@@ -132,8 +132,8 @@ public class PongGame implements Game<PongGame, PongMove> {
             double degreeOnUnitCircle = normalizedBallPosOnPaddle * 70 + degreesToAdd;
 
             Vector2D vectorToAdd = new Vector2D(Math.cos(degreeOnUnitCircle),Math.sin(degreeOnUnitCircle));
-
-            ball.getDirection().add(vectorToAdd).normalize();
+            ball.setDirection(new Vector2D(-ball.getDirection().getX(), ball.getDirection().getY()));
+            //ball.getDirection().add(vectorToAdd).normalize();
 
             ball.setSpeed(ball.getSpeed() + 0.01);
         } else {
@@ -158,7 +158,7 @@ public class PongGame implements Game<PongGame, PongMove> {
 
     private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
         int direction = paddleLogic.onGameTick(this).getDirection();
-        paddle.setY(paddle.getY() + direction);
+        paddle.setY(paddle.getY() + (double)direction * 0.4);
 
         if (paddle.getY() < 0)
             paddle.setY(0);
