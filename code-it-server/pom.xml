@@ -55,7 +55,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <outputDirectory>../bin</outputDirectory>
+                    <finalName>CodeIT_server</finalName>
                     <archive>
                         <manifest>
                             <mainClass>game.ServerController</mainClass>

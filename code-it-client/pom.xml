@@ -17,7 +17,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <outputDirectory>../bin</outputDirectory>
+                    <finalName>CodeIT_client</finalName>
                     <archive>
                         <manifest>
                             <mainClass>client.ClientView</mainClass>
