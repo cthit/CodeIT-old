@@ -27,8 +27,8 @@ public class ServerController implements NetworkEventListener {
     private Game game;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
-    public ServerController() {
-        this.connection = new ServerConnection(new File("source_server.jar"), this);
+    public ServerController(String sourcePath) {
+        this.connection = new ServerConnection(new File(sourcePath), this);
 // TODO        executor.shutdown(); // executorn skapar ej fler trådar
 //        executor.shutdownNow();   // executorn dödar allat hejvilt
 //        if (Thread.interrupted()) {
@@ -78,8 +78,14 @@ public class ServerController implements NetworkEventListener {
     }
 
     public static void main(String[] args) {
-        ServerController serverController = new ServerController();
-        serverController.start();
+        if (args.length == 1){
+            System.out.println("Using " + args[0] + " as source path");
+            ServerController serverController = new ServerController(args[0]);
+            serverController.start();
+        } else {
+            System.out.println(String.format("Need exactly 1 argument. Got: %d\n" +
+                    "Argument is path to the source.jar file. (The Challenge implemented)", args.length));
+        }
         System.out.println("End of main");
     }
 }
