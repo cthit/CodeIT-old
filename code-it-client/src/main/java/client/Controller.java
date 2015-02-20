@@ -38,15 +38,16 @@ public class Controller {
     @FXML private Label feedback_simulation;
     private Connection connection;
 
+
     public void setStageAndDoSetup(Stage stage) {
         this.stage = stage;
 
         team_name.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (! newValue.matches("[\\w\\d(\\-_^*')]+")) {
+                if (! newValue.matches("[a-zA-Z_$][a-zA-Z\\d_$]*")) {
                     team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
-                    feedback_team_name.setText("Plz match this -> [\\w\\d(\\-_^*')]+");
+                    feedback_team_name.setText("Plz match this -> [a-zA-Z_$][a-zA-Z\\d_$]*");
                     feedback_team_name.setTextFill(Color.DARKRED);
                 } else {
                     team_name.setEffect(new InnerShadow(0, Color.WHITE));
