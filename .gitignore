@@ -70,6 +70,8 @@ pom.xml.versionsBackup
 pom.xml.next
 release.properties
 
+#Maven output directory
+bin/
 
 # plugin folder. specific to serverside of project
 /plugin/
