@@ -22,7 +22,7 @@
                     <finalName>CodeIT_client</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>client.ClientView</mainClass>
+                            <mainClass>view.ClientView</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

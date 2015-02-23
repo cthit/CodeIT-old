@@ -1,5 +1,6 @@
-package client;
+package view;
 
+import client.ClientController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,7 +20,7 @@ public class ClientView extends Application {
         );
         primaryStage.setScene(scene);
         primaryStage.show();
-        ((Controller) loader.getController()).setStageAndDoSetup(primaryStage);
+        ((ClientController) loader.getController()).setStageAndDoSetup(primaryStage);
     }
 
 
