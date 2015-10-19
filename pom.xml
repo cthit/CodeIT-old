@@ -21,6 +21,7 @@
         <module>code-it-api</module>
         <module>code-it-client</module>
         <module>code-it-ratingvisualizer</module>
+        <module>code-it-common</module>
     </modules>
 
     <dependencies>
