@@ -1,16 +1,23 @@
 package client;
 
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Connection;
 import it.tejp.codeit.api.GameMechanic;
+import it.tejp.codeit.common.network.Message;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import network.Connection;
 import org.controlsfx.dialog.Dialogs;
 import utils.JavaSourceFromString;
 import view.AITestScene;
@@ -19,12 +26,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class ClientController {
+public class ClientController extends Listener {
 
     private Stage stage;
     @FXML private TextField team_name;
@@ -36,10 +44,54 @@ public class ClientController {
     @FXML private Label feedback_connection;
     @FXML private Label feedback_project_path;
     @FXML private Label feedback_simulation;
-    private Connection connection;
+
+    //Network stuff.
+    private Client client = null;
+    private final int CONNECTION_TIMEOUT = 5000;
+    Thread clientThread = null;
+
+
+    public void initNetwork() {
+        client = new Client();
+     //   client.addListener();
+        clientThread = new Thread(client);
+        clientThread.start();
+    }
+
+
+    public boolean connect(String address, int port) {
+        try {
+            client.connect(CONNECTION_TIMEOUT, address, port);
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void connected(Connection connection) {
+        System.out.println("Connected");
+        connection.sendTCP("hej tejp hur är läget?");
+    }
+
+    @Override
+    public void received(Connection connection, Object object) {
+        System.out.println("Received");
+    }
+
+    @Override
+    public void disconnected(Connection connection) {
+        System.out.println("Disconnected");
+    }
+
+    public void requestSources() {
+        client.sendTCP(Message.REQUEST_SOURCES);
+    }
 
 
     public void setStageAndDoSetup(Stage stage) {
+        initNetwork();
+        
         this.stage = stage;
 
         team_name.textProperty().addListener(new ChangeListener<String>() {
@@ -81,12 +133,12 @@ public class ClientController {
         };
 
         address.textProperty().addListener(listener);
-        simulation_delay.textProperty().addListener(numberOnly);
+//        simulation_delay.textProperty().addListener(numberOnly);
 
         team_name.setText("qwerty");
-        address.setText("127.0.0.1");
+        address.setText("10.0.0.237");
         port.setText("7777");
-        file_path.setText("pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
+ //       file_path.setText("pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
     }
 
     @FXML
@@ -104,7 +156,7 @@ public class ClientController {
 
     @FXML
     private void sendCodeClicked() {
-        setupConnection();
+       /* setupConnection();
         String code = null;
         try {
             code = new String(Files.readAllBytes(new File(file_path.getText()).toPath()));
@@ -118,7 +170,7 @@ public class ClientController {
                     .showError();
             return;
         }
-        try {
+        /*try {
             connection.sendMessage("RecieveModule\0" + team_name.getText() + "\0" + code);
         } catch (RuntimeException e) {
             Dialogs.create()
@@ -127,12 +179,12 @@ public class ClientController {
                     .masthead(e.getMessage())
                     .message("Make sure the IP address is correct: " + address.getText())
                     .showError();
-        }
+        }*/
     }
 
     @FXML
     private void downloadSourcesClicked() {
-        setupConnection();
+      /*  setupConnection();
         try {
             connection.recieveSources();
         } catch(RuntimeException e) {
@@ -155,6 +207,7 @@ public class ClientController {
                     .message("Path: compiled/source.jar")
                     .showError();
         }
+        */
     }
 
     @FXML
@@ -215,9 +268,28 @@ public class ClientController {
         testScene.play();
     }
 
-    private void setupConnection() {
-        if (connection == null || !connection.getInetAddress().equals(address.getText()))
-            connection = new Connection( address.getText(), Integer.parseInt(port.getText()) );
+    @FXML
+    private void connectClicked() {
+        if(connect(getAddress(), getPort())) {
+            URL location = getClass().getResource("main.fxml");
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(location);
+            //fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
+            Parent root = null;
+            try {
+                root = (Parent) fxmlLoader.load(location.openStream());
+            } catch (IOException e) {
+                //FUUUUUUUUUUUU
+            }
+            Scene scene = new Scene(root, 800, 825);
+            scene.getStylesheets().add(
+                    getClass().getResource("main.css").toExternalForm());
+
+            stage.setScene(scene);
+
+        } else {
+
+        }
     }
 
     public static void unzipJar(String destinationDir, String jarPath) throws IOException {
@@ -257,5 +329,13 @@ public class ClientController {
                 is.close();
             }
         }
+    }
+
+    public String getAddress() {
+        return address.getText();
+    }
+
+    public int getPort() {
+        return Integer.parseInt(port.getText());
     }
 }
