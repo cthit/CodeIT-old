@@ -5,7 +5,7 @@ package it.tejp.codeit.common.network;
  */
 public enum Message {
 
-    REQUEST_SOURCES("request_sources");
+    REQUEST_SOURCES("request_sources"), REQUEST_RATING("request_rating");
 
     public String message;
 
