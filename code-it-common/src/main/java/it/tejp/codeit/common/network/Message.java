@@ -8,9 +8,10 @@ public enum Message {
     REQUEST_SOURCES("request_sources"), REQUEST_RATING("request_rating"),
     BAD_TEAMNAME("bad_teamname"), GOOD_TEAMNAME("good_teamname");
 
-    public String message;
+    private String message;
 
     Message(String message) {
         this.message = message;
     }
+
 }
