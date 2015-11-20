@@ -1,39 +1,40 @@
 package game;
 
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Server;
 import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
-import it.tejp.codeit.api.GameMechanic;
-import network.NetworkEventListener;
-import network.ServerConnection;
+import it.tejp.codeit.common.network.Initializer;
+import it.tejp.codeit.common.network.Message;
+import it.tejp.codeit.common.network.MessageWithObject;
+import it.tejp.codeit.common.network.SourceFile;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
-import utils.JavaSourceFromString;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
 
 /**
- * Created by tejp on 28/12/14.
+ * ServerController class
+ * handles connections and all responses to clients
  */
-public class ServerController implements NetworkEventListener {
+public class ServerController extends Listener {
 
-    private ServerConnection connection;
+    private Server server = new Server();
+    private HashMap<Connection, String> connectedTeams = new HashMap<>();
+    private SourceFile sourceFile;
+
     private Model model;
     private Game game;
     private ExecutorService executor = Executors.newCachedThreadPool();
 
     public ServerController(String sourcePath) {
-        this.connection = new ServerConnection(new File(sourcePath), this);
-// TODO        executor.shutdown(); // executorn skapar ej fler trådar
-//        executor.shutdownNow();   // executorn dödar allat hejvilt
-//        if (Thread.interrupted()) {
-//            throw new RuntimeException("interrupted");
-//        }
+        sourceFile = new SourceFile(new File(sourcePath));
     }
 
     public void setGame(Game game) {
@@ -41,13 +42,20 @@ public class ServerController implements NetworkEventListener {
     }
 
     public void start() {
-        connection.startServering();
+        Initializer.registerClasses(server.getKryo());
+        server.start();
+        try {
+            server.bind(7777);
+        } catch (IOException e) {
+            System.out.println("Could not bind to port. Is port busy? Maybe by another server instance.");
+        }
 
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a, b) -> new PongGame(a, b);
         model = new Model(gameFactory);
 
     }
 
+    /*
     @Override
     public void newFileRecieved(String teamName, File f) {
         String code = null;
@@ -70,22 +78,46 @@ public class ServerController implements NetworkEventListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }*/
+
+    @Override
+    public void disconnected(Connection connection) {
+        connectedTeams.remove(connection);
     }
 
     @Override
-    public Map<String, Double> requestRatings() {
-        return model.getRating();
+    public void received(Connection conn, Object object) {
+        if (object instanceof Message) {
+            handleMessage(conn, (Message) object);
+        } else if (object instanceof MessageWithObject) {
+            handleMessageWithObject(conn, (MessageWithObject) object);
+        }
     }
 
-    public static void main(String[] args) {
-        if (args.length == 1){
-            System.out.println("Using " + args[0] + " as source path");
-            ServerController serverController = new ServerController(args[0]);
-            serverController.start();
-        } else {
-            System.out.println(String.format("Need exactly 1 argument. Got: %d\n" +
-                    "Argument is path to the source.jar file. (The Challenge implemented)", args.length));
+    private void handleMessage(Connection connection, Message message) {
+        if (message == Message.REQUEST_SOURCES) {
+            sendSources(connection);
         }
-        System.out.println("End of main");
     }
+
+    private void handleMessageWithObject(Connection connection, MessageWithObject m) {
+        if (m.message == Message.NEW_TEAMNAME) {
+            handleNewTeamName(connection, (String) m.object);
+        }
+    }
+
+    private void handleNewTeamName(Connection c, String teamName) {
+        if ( connectedTeams.containsValue(teamName) ) {
+            c.sendTCP(Message.BAD_TEAMNAME);
+        }
+        else {
+            connectedTeams.put(c, teamName);
+            c.sendTCP(Message.GOOD_TEAMNAME);
+        }
+    }
+
+    private void sendSources(Connection c) {
+        c.sendTCP(sourceFile);
+    }
+
 }
