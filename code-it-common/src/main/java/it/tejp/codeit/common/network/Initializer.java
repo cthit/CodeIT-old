@@ -9,5 +9,6 @@ public class Initializer {
     static public void registerClasses(Kryo kryo) {
         kryo.register(Message.class);
         kryo.register(SourceFile.class);
+        kryo.register(MessageWithObject.class);
     }
 }
