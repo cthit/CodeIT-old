@@ -35,38 +35,13 @@ import java.util.jar.JarFile;
 public class ClientController extends Listener {
 
     private Stage stage;
-    @FXML private TextField team_name;
-    @FXML private TextField address;
-    @FXML private TextField port;
     @FXML private TextField file_path;
     @FXML private TextField simulation_delay;
-    @FXML private Label feedback_team_name;
-    @FXML private Label feedback_connection;
     @FXML private Label feedback_project_path;
     @FXML private Label feedback_simulation;
 
-    //Network stuff.
     private Client client = null;
-    private final int CONNECTION_TIMEOUT = 5000;
-    Thread clientThread = null;
 
-
-    public void initNetwork() {
-        client = new Client();
-     //   client.addListener();
-        clientThread = new Thread(client);
-        clientThread.start();
-    }
-
-
-    public boolean connect(String address, int port) {
-        try {
-            client.connect(CONNECTION_TIMEOUT, address, port);
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public void connected(Connection connection) {
@@ -89,10 +64,28 @@ public class ClientController extends Listener {
     }
 
 
-    public void setStageAndDoSetup(Stage stage) {
-        initNetwork();
-        
+    public void setup(Stage stage, Client client) {
         this.stage = stage;
+        this.client = client;
+    }
+
+    /*public void switchToLoginScene() {
+        /*URL location = getClass().getResource("login.fxml");
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(location);
+
+        Parent root = null;
+        try {
+            root = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Scene scene = new Scene(root, 800, 825);
+        scene.getStylesheets().add(
+                getClass().getResource("main.css").toExternalForm()
+        );
+
+
 
         team_name.textProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -120,6 +113,30 @@ public class ClientController extends Listener {
             }
         };
 
+        address.textProperty().addListener(listener);
+
+
+        team_name.setText("qwerty");
+        address.setText("10.0.0.237");
+        port.setText("7777");
+    }*/
+
+    public void switchToMainScene() {
+        URL location = getClass().getResource("main.fxml");
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(location);
+        Parent root = null;
+        try {
+            root = (Parent) fxmlLoader.load(location.openStream());
+        } catch (IOException e) {
+            //FUUUUUUUUUUUU
+        }
+        Scene scene = new Scene(root, 800, 825);
+        scene.getStylesheets().add(
+                getClass().getResource("main.css").toExternalForm());
+
+        stage.setScene(scene);
+
         ChangeListener<String> numberOnly= (observable, oldValue, newValue) -> {
             if (newValue.matches("\\d+\\.?\\d*")) {
                 simulation_delay.setEffect(new InnerShadow(0, Color.WHITE));
@@ -132,13 +149,9 @@ public class ClientController extends Listener {
             }
         };
 
-        address.textProperty().addListener(listener);
-//        simulation_delay.textProperty().addListener(numberOnly);
+        simulation_delay.textProperty().addListener(numberOnly);
+        file_path.setText("pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
 
-        team_name.setText("qwerty");
-        address.setText("10.0.0.237");
-        port.setText("7777");
- //       file_path.setText("pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
     }
 
     @FXML
@@ -268,30 +281,6 @@ public class ClientController extends Listener {
         testScene.play();
     }
 
-    @FXML
-    private void connectClicked() {
-        if(connect(getAddress(), getPort())) {
-            URL location = getClass().getResource("main.fxml");
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(location);
-            //fxmlLoader.setBuilderFactory(new JavaFXBuilderFactory());
-            Parent root = null;
-            try {
-                root = (Parent) fxmlLoader.load(location.openStream());
-            } catch (IOException e) {
-                //FUUUUUUUUUUUU
-            }
-            Scene scene = new Scene(root, 800, 825);
-            scene.getStylesheets().add(
-                    getClass().getResource("main.css").toExternalForm());
-
-            stage.setScene(scene);
-
-        } else {
-
-        }
-    }
-
     public static void unzipJar(String destinationDir, String jarPath) throws IOException {
         File file = new File(jarPath);
         JarFile jar = new JarFile(file);
@@ -329,13 +318,5 @@ public class ClientController extends Listener {
                 is.close();
             }
         }
-    }
-
-    public String getAddress() {
-        return address.getText();
-    }
-
-    public int getPort() {
-        return Integer.parseInt(port.getText());
     }
 }
