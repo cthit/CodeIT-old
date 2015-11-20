@@ -6,12 +6,11 @@ package it.tejp.codeit.common.network;
 public enum Message {
 
     REQUEST_SOURCES("request_sources"), REQUEST_RATING("request_rating"),
-    BAD_TEAMNAME("bad_teamname"), GOOD_TEAMNAME("good_teamname");
+    BAD_TEAMNAME("bad_teamname"), GOOD_TEAMNAME("good_teamname"), NEW_TEAMNAME("new_teamname");
 
     private String message;
 
     Message(String message) {
         this.message = message;
     }
-
 }
