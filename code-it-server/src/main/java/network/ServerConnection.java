@@ -1,13 +1,9 @@
 package network;
 
-import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import it.tejp.codeit.common.network.Initializer;
-import it.tejp.codeit.common.network.Message;
-import network.listeners.SendSourceOnConnectListener;
 
-import java.io.File;
 import java.io.IOException;
 
 /**

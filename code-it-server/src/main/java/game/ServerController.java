@@ -14,8 +14,7 @@ import pong_sample.PongGame;
 import pong_sample.PongMove;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,6 +37,7 @@ public class ServerController extends Listener {
     private ExecutorService executor = Executors.newCachedThreadPool();
 
     public ServerController(String sourcePath) {
+        sourceFilePath = Paths.get(sourcePath);
         server.addListener(this);
         this.connection = new ServerConnection(7777);
     }
