@@ -27,5 +27,6 @@
          </image>
       </ImageView>
       <Button id="connect" layoutX="295.0" layoutY="255.0" mnemonicParsing="false" onAction="#connectClicked" prefHeight="46.0" prefWidth="210.0" text="Connect" />
+      <Label id="feedback_connecting" layoutX="520.0" layoutY="270.0" />
    </children>
 </AnchorPane>

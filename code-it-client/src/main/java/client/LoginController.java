@@ -33,6 +33,7 @@ public class LoginController extends Listener {
     @FXML private TextField port;
     @FXML private Label feedback_team_name;
     @FXML private Label feedback_connection;
+    @FXML private Label feedback_connecting;
 
     //Network stuff.
     private Client client = null;
@@ -133,15 +134,20 @@ public class LoginController extends Listener {
 
     @FXML
     private void connectClicked() {
+        setConnectingFeedback("Trying to connect");
         if(connect(getAddress(), getPort())) {
-
+            setConnectingFeedback("");
         } else {
-
+            setConnectingFeedback("Couldn't connect to server");
         }
     }
 
     private void setBadTeamName() {
         feedback_team_name.setText("Team name already connected to server.");
+    }
+
+    private void setConnectingFeedback(String text) {
+        feedback_connection.setText(text);
     }
 
     private void switchToMainScene() {
