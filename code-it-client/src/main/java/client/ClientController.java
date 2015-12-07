@@ -61,6 +61,14 @@ public class ClientController extends Listener {
         client.sendTCP(Message.REQUEST_SOURCES);
     }
 
+    private void errorDialog(String title, String masthead, String message) {
+        Dialogs.create()
+                .owner(stage)
+                .title(title)
+                .masthead(masthead)
+                .message(message)
+                .showError();
+    }
 
     public void setup(Stage stage, Client client) {
         this.stage = stage;
@@ -230,45 +238,25 @@ public class ClientController extends Listener {
         try {
             delay = new Double(simulation_delay.getText()).doubleValue();
         } catch(NumberFormatException e) {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Number error")
-                    .masthead("Not a number")
-                    .message(e.getMessage())
-                    .showWarning();
+            errorDialog("Number error", "Not a number", e.getLocalizedMessage());
             return;
         }
         try {
             code = new String(Files.readAllBytes(file.toPath()));
 
         } catch (IOException e) {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("File error")
-                    .masthead("Couldn't read file")
-                    .message(("Path: " + file_path.getText()))
-                    .showError();
+            errorDialog("File error", "Couldn't read file", "Path: " + file_path.getText());
             return;
         }
         code = code.replaceFirst("package\\s+.+?;", "package pong_sample;");
         try {
             instanceObj = JavaSourceFromString.compile(code, file.getName(), "pong_sample");
         } catch (RuntimeException e) {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Compiler error")
-                    .masthead("Couldn't compile class")
-                    .message("Error: " + e.getMessage())
-                    .showError();
+            errorDialog("Compiler error", "Couldn't compile class", "Error: " + e.getMessage());
             return;
         }
         if (instanceObj == null) {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Compiler error")
-                    .masthead("Couldn't instantiate class")
-                    .message(("instanceObj == null"))
-                    .showError();
+            errorDialog("Compiler error", "Couldn't instantiate class", "instanceObj == null");
             return;
         }
         GameMechanic<?,?> instance = (GameMechanic<?,?>)instanceObj;
