@@ -101,9 +101,7 @@ public class LoginController extends Listener {
     @Override
     public void connected(Connection connection) {
         System.out.println("Connected");
-        MessageWithObject newTeamName = new MessageWithObject();
-        newTeamName.message = Message.NEW_TEAMNAME;
-        newTeamName.object = team_name.getText();
+        MessageWithObject newTeamName = new MessageWithObject(Message.NEW_TEAMNAME, team_name.getText());
         connection.sendTCP(newTeamName);
     }
 
