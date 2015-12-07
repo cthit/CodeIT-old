@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import it.tejp.codeit.api.GameMechanic;
 import it.tejp.codeit.common.network.Message;
+import it.tejp.codeit.common.network.MessageWithObject;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,10 +26,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
+import java.nio.file.*;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
 
 public class ClientController extends Listener {
 
@@ -49,7 +52,12 @@ public class ClientController extends Listener {
 
     @Override
     public void received(Connection connection, Object object) {
-        System.out.println("Received");
+        System.out.println("Received something");
+        if(object instanceof Message) {
+            handleMessage((Message)object);
+        }else if(object instanceof MessageWithObject) {
+            handleMessageWithObject((MessageWithObject) object);
+        }
     }
 
     @Override
@@ -57,8 +65,25 @@ public class ClientController extends Listener {
         System.out.println("Disconnected");
     }
 
-    public void requestSources() {
-        client.sendTCP(Message.REQUEST_SOURCES);
+    private void handleMessage(Message msg) {
+
+    }
+
+    private void handleMessageWithObject(MessageWithObject msg) {
+        if (msg.message == Message.TRANSFER_SOURCES) {
+            handleDownloadSources("source.jar", (byte[])msg.object);
+        }
+    }
+
+    private void handleDownloadSources(String fileName, byte[] fileContent) {
+        Path filePath = Paths.get(fileName);
+        try {
+            Files.write(filePath, fileContent);
+            new File("compiled").mkdir();
+            unzipJar("compiled", fileName);
+        } catch (IOException e) {
+            errorDialog("File error", e.getLocalizedMessage(), "");//e.getStackTrace());
+        }
     }
 
     private void errorDialog(String title, String masthead, String message) {
@@ -73,6 +98,7 @@ public class ClientController extends Listener {
     public void setup(Stage stage, Client client) {
         this.stage = stage;
         this.client = client;
+        client.addListener(this);
     }
 
     /*public void switchToLoginScene() {
@@ -203,30 +229,7 @@ public class ClientController extends Listener {
 
     @FXML
     private void downloadSourcesClicked() {
-      /*  setupConnection();
-        try {
-            connection.recieveSources();
-        } catch(RuntimeException e) {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Network error")
-                    .masthead(e.getMessage())
-                    .message("Couldn't download source.jar make sure the IP address is correct: " + address.getText())
-                    .showError();
-            return;
-        }
-        try {
-            new File("compiled").mkdir();
-            unzipJar("compiled", "source.jar");
-        } catch (IOException e) {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("File error")
-                    .masthead("Couldn't unzip jarfile")
-                    .message("Path: compiled/source.jar")
-                    .showError();
-        }
-        */
+        client.sendTCP(Message.REQUEST_SOURCES);
     }
 
     @FXML
