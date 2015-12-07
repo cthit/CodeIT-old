@@ -1,5 +1,7 @@
 package it.tejp.codeit.common.network;
 
+import com.esotericsoftware.kryo.Kryo;
+
 /**
  * Created by kerp on 19/10/15.
  */
@@ -14,6 +16,8 @@ public enum Message {
         this.message = message;
     }
 
-
+    public static void register(Kryo k) {
+        k.register(Message.class);
+    }
 
 }

@@ -9,9 +9,7 @@ import java.io.File;
  */
 public class Initializer {
     static public void registerClasses(Kryo kryo) {
-        kryo.register(Message.class);
-        kryo.register(SourceFile.class);
-        kryo.register(File.class);
-        kryo.register(MessageWithObject.class);
+        Message.register(kryo);
+        MessageWithObject.register(kryo);
     }
 }

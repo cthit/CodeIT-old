@@ -8,7 +8,6 @@ import it.tejp.codeit.api.Game;
 import it.tejp.codeit.common.network.Initializer;
 import it.tejp.codeit.common.network.Message;
 import it.tejp.codeit.common.network.MessageWithObject;
-import it.tejp.codeit.common.network.SourceFile;
 import network.ServerConnection;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
