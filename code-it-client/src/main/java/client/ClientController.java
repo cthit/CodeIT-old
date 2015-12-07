@@ -1,15 +1,13 @@
 package client;
 
 import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import it.tejp.codeit.api.GameMechanic;
 import it.tejp.codeit.common.network.Message;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

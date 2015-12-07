@@ -3,8 +3,6 @@ package pong_sample;
 import it.tejp.codeit.api.Competitor;
 import it.tejp.codeit.api.Game;
 import it.tejp.codeit.api.GameMechanic;
-import javafx.beans.property.DoubleProperty;
-import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -14,7 +12,6 @@ import javafx.scene.shape.Shape;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Created by tejp on 01/11/14.

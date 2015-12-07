@@ -12,8 +12,10 @@ import network.ServerConnection;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

@@ -2,10 +2,12 @@ package network;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import it.tejp.codeit.common.network.Message;
-import java.io.*;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Kerp on 19/10/15.
