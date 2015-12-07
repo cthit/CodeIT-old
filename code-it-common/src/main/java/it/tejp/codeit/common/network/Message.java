@@ -5,7 +5,7 @@ package it.tejp.codeit.common.network;
  */
 public enum Message {
 
-    REQUEST_SOURCES("request_sources"), REQUEST_RATING("request_rating"),
+    REQUEST_SOURCES("request_sources"), REQUEST_RATING("request_rating"), TRANSFER_SOURCES("transfer_sources"),
     BAD_TEAMNAME("bad_teamname"), GOOD_TEAMNAME("good_teamname"), NEW_TEAMNAME("new_teamname");
 
     private String message;
