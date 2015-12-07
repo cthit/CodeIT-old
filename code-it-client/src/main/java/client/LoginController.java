@@ -110,23 +110,27 @@ public class LoginController extends Listener {
     @FXML
     private void connectClicked() {
         if(connect(getAddress(), getPort())) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
-            Scene scene = null;
-            try {
-               scene = new Scene((Pane)loader.load());
-            } catch (IOException e) {
 
-            }
-            ClientController controller = loader.<ClientController>getController();
-            controller.setup(stage, client);
-            scene.getStylesheets().add(
-                    getClass().getResource("main.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
         } else {
 
         }
+    }
+
+    private void switchToMainScene() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
+        Scene scene = null;
+        try {
+            scene = new Scene((Pane)loader.load());
+        } catch (IOException e) {
+
+        }
+        ClientController controller = loader.<ClientController>getController();
+        controller.setup(stage, client);
+        scene.getStylesheets().add(
+                getClass().getResource("main.css").toExternalForm());
+
+        stage.setScene(scene);
+        stage.show();
     }
 
     public String getAddress() {
