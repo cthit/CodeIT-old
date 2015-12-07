@@ -7,4 +7,9 @@ public class MessageWithObject {
 
     public Message message;
     public Object object;
+
+    public MessageWithObject(Message message, Object object) {
+        this.message = message;
+        this.object = object;
+    }
 }
