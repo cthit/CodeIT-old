@@ -3,6 +3,10 @@ package client;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import it.tejp.codeit.common.network.Initializer;
+import it.tejp.codeit.common.network.Message;
+import it.tejp.codeit.common.network.MessageWithObject;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -77,7 +81,9 @@ public class LoginController extends Listener {
 
     public void initNetwork() {
         client = new Client();
-        //   client.addListener();
+
+        Initializer.registerClasses(client.getKryo());
+        client.addListener(this);
         clientThread = new Thread(client);
         clientThread.start();
     }
@@ -94,17 +100,35 @@ public class LoginController extends Listener {
     @Override
     public void connected(Connection connection) {
         System.out.println("Connected");
-        connection.sendTCP("hej tejp hur är läget?");
+        MessageWithObject newTeamName = new MessageWithObject();
+        newTeamName.message = Message.NEW_TEAMNAME;
+        newTeamName.object = team_name.getText();
+        connection.sendTCP(newTeamName);
     }
 
     @Override
     public void received(Connection connection, Object object) {
         System.out.println("Received");
+
+        if(object instanceof Message) {
+            handleMessage((Message)object);
+        }
     }
 
     @Override
     public void disconnected(Connection connection) {
         System.out.println("Disconnected");
+    }
+
+    private void handleMessage(Message msg) {
+        System.out.println("Real Message Received");
+        if(msg == Message.GOOD_TEAMNAME) {
+            System.out.println("Good teamnamne");
+            Platform.runLater(() -> switchToMainScene());
+        }else if(msg == Message.BAD_TEAMNAME) {
+            System.out.println("Bad teamnamne");
+            Platform.runLater(() -> setBadTeamName());
+        }
     }
 
     @FXML
@@ -114,6 +138,10 @@ public class LoginController extends Listener {
         } else {
 
         }
+    }
+
+    private void setBadTeamName() {
+        feedback_team_name.setText("Team name already connected to server.");
     }
 
     private void switchToMainScene() {
