@@ -23,6 +23,11 @@ public class ClientView extends Application {
         ((ClientController) loader.getController()).setStageAndDoSetup(primaryStage);
     }
 
+    @Override
+    public void stop(){
+        System.exit(0);
+    }
+
 
     public static void main(String[] args) {
         launch(args);
