@@ -12,6 +12,8 @@ import java.util.List;
  */
 public class Network {
 
+    public static final int BUFFER_SIZE = 16384;
+
     /**
      * Sends the given MessageWithObject to a connection, makes sure that the message can be sent regardless of size.
      * @param connection The connection to send the message on.
@@ -19,11 +21,10 @@ public class Network {
      * @throws IOException Throws an exception if the message can't be serialized.
      */
     public static void sendMessageWithObject(Connection connection, MessageWithObject msg) throws IOException {
-        int bufferSize = connection.getTcpWriteBufferSize();
         byte[] content = Serializer.serialize(msg);
         int contentSize = content.length;
 
-        List<MessageWithObject> chunks = chunkMessage(content, bufferSize);
+        List<MessageWithObject> chunks = chunkMessage(content, BUFFER_SIZE);
 
         MessageWithObject chunkedTransfer = new MessageWithObject(Message.CHUNKED_TRANSFER, contentSize);
         connection.sendTCP(chunkedTransfer);

@@ -6,6 +6,7 @@ import com.esotericsoftware.kryonet.Listener;
 import it.tejp.codeit.common.network.Initializer;
 import it.tejp.codeit.common.network.Message;
 import it.tejp.codeit.common.network.MessageWithObject;
+import it.tejp.codeit.common.network.Network;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -79,7 +80,7 @@ public class LoginController extends Listener {
     }
 
     public void initNetwork() {
-        client = new Client();
+        client = new Client(Network.BUFFER_SIZE, Network.BUFFER_SIZE);
 
         Initializer.registerClasses(client.getKryo());
         client.addListener(this);
