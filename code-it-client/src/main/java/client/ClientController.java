@@ -43,11 +43,9 @@ public class ClientController extends Listener {
 
     private Client client = null;
 
-
     @Override
     public void connected(Connection connection) {
         System.out.println("Connected");
-        connection.sendTCP("hej tejp hur är läget?");
     }
 
     @Override
@@ -99,6 +97,8 @@ public class ClientController extends Listener {
         this.stage = stage;
         this.client = client;
         client.addListener(this);
+
+        file_path.setText("");
     }
 
     /*public void switchToLoginScene() {
@@ -201,34 +201,22 @@ public class ClientController extends Listener {
 
     @FXML
     private void sendCodeClicked() {
-       /* setupConnection();
-        String code = null;
-        try {
-            code = new String(Files.readAllBytes(new File(file_path.getText()).toPath()));
+        Path filePath = Paths.get(file_path.getText());
+        byte[] content = new byte[0];
 
+        try {
+            content = Files.readAllBytes(filePath);
         } catch (IOException e) {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("File error")
-                    .masthead("Couldn't read file")
-                    .message(("Path: " + file_path.getText()))
-                    .showError();
-            return;
+            errorDialog("File error", "Couldn't read file", e.getMessage());
         }
-        /*try {
-            connection.sendMessage("RecieveModule\0" + team_name.getText() + "\0" + code);
-        } catch (RuntimeException e) {
-            Dialogs.create()
-                    .owner(stage)
-                    .title("Network error")
-                    .masthead(e.getMessage())
-                    .message("Make sure the IP address is correct: " + address.getText())
-                    .showError();
-        }*/
+
+        MessageWithObject msg = new MessageWithObject(Message.TRANSFER_SOURCES, content);
+        client.sendTCP(msg);
     }
 
     @FXML
     private void downloadSourcesClicked() {
+        System.out.println("downloadSourcesClicked()");
         client.sendTCP(Message.REQUEST_SOURCES);
     }
 
