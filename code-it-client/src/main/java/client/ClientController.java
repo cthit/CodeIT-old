@@ -6,6 +6,8 @@ import com.esotericsoftware.kryonet.Listener;
 import it.tejp.codeit.api.GameMechanic;
 import it.tejp.codeit.common.network.Message;
 import it.tejp.codeit.common.network.MessageWithObject;
+import it.tejp.codeit.common.network.Network;
+import it.tejp.codeit.common.network.Serializer;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +19,7 @@ import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.ArrayUtils;
 import org.controlsfx.dialog.Dialogs;
 import utils.JavaSourceFromString;
 import view.AITestScene;
@@ -27,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.*;
-import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -42,6 +44,8 @@ public class ClientController extends Listener {
     @FXML private Label feedback_simulation;
 
     private Client client = null;
+    private byte[] chunks = null;
+    private int chunkSize = -1; //Chunk size -1 indicates that currently no chunk transfer is in progress.
 
     @Override
     public void connected(Connection connection) {
@@ -69,8 +73,51 @@ public class ClientController extends Listener {
 
     private void handleMessageWithObject(MessageWithObject msg) {
         if (msg.message == Message.TRANSFER_SOURCES) {
-            handleDownloadSources("source.jar", (byte[])msg.object);
+            handleDownloadSources("source.jar", (byte[]) msg.object);
+        } else if(msg.message == Message.CHUNKED_TRANSFER) {
+            handleNewChunkedTransfer(msg);
+        } else if(msg.message == Message.CHUNK) {
+            handleChunk(msg);
         }
+    }
+
+    /**
+     * Handles a single chunk, to allow any chunks from being received a chunk transfer has first be initiated.
+     * @param msg contains message CHUNK and a byte array that's a part of a MessageWithObject
+     */
+    private void handleChunk(MessageWithObject msg) {
+        if(chunkSize == -1) {
+            errorDialog("Transfer error", "", "Got chunk while no chunk transfer was in progress");
+        } else {
+            chunks = ArrayUtils.addAll(chunks, (byte[])msg.object);
+            if(chunks.length == chunkSize) {
+                System.out.println("chunks.length == chunkSize");
+                try {
+                    chunkSize = -1;
+                    handleMessageWithObject((MessageWithObject)Serializer.deserialize(chunks));
+                } catch (IOException e) {
+                    errorDialog("Transfer error", e.getMessage(), "Couldn't deserialize a received message");
+                } catch (ClassNotFoundException e) {
+                    errorDialog("Transfer error", e.getMessage(), "Couldn't deserialize chunked transfer in a meaningfull way");
+                }
+            } else if(chunks.length > chunkSize) {
+                errorDialog("Transfer error", "Received too many bytes in a chunked transfer", "chunks.length > chunkSize");
+            }
+        }
+    }
+
+    /**
+     * Initiates a new chunk transfer, only one chunk transfer can can happen at a time.
+     * @param msg The message containing the expected size of all the chunks.
+     */
+    private void handleNewChunkedTransfer(MessageWithObject msg) {
+        if(chunkSize == -1) {
+            chunkSize = (int)msg.object;
+            chunks = null;
+        } else {
+            errorDialog("Transfer error", "", "New chunked transfer initiaded while one was already in progress");
+        }
+
     }
 
     private void handleDownloadSources(String fileName, byte[] fileContent) {
@@ -211,7 +258,11 @@ public class ClientController extends Listener {
         }
 
         MessageWithObject msg = new MessageWithObject(Message.TRANSFER_SOURCES, content);
-        client.sendTCP(msg);
+        try {
+            Network.sendMessageWithObject(client, msg);
+        } catch (IOException e) {
+            errorDialog("Transfer error", "Couldn't send message", e.getMessage());
+        }
     }
 
     @FXML
