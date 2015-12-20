@@ -2,10 +2,12 @@ package it.tejp.codeit.common.network;
 
 import com.esotericsoftware.kryo.Kryo;
 
+import java.io.Serializable;
+
 /**
  * Created by kerp on 20/11/15.
  */
-public class MessageWithObject {
+public class MessageWithObject implements Serializable{
 
     public Message message;
     public Object object;
