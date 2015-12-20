@@ -13,15 +13,14 @@ to create a BOT-class aswell as test it before uploading it to the server.
 
 
 ### Setup
-Clone project with:
-1. `git clone https://github.com/cthit/CodeIT.git`
-2. From the repository root, run:  `mvn install`. Known to work with  maven version 4.11
-3. `mvn install` will create a bin folder in the repository root.
-From here you can start the server with:
-4. `java -jar CodeIT_server.jar <path>`
-5. The path argument is the path to a .jar file with sources. See pong-challenge module for example. 
-6. Distribute the Client in any way you feel like.
-7. The ratingvisualizer takes arguments. the first one is the ip of the server. The second one is the  port
+
+1.  Clone project with: `git clone https://github.com/cthit/CodeIT.git`
+2.  From the repository root, run:  `mvn install`. Known to work with  maven version 4.11
+3.  `mvn install` will create a bin folder in the repository root.
+4.  From here you can start the server with: `java -jar CodeIT_server.jar <path>`
+5.  The path argument is the path to a .jar file with sources. See pong-challenge module for example. 
+6.  Distribute the Client in any way you feel like.
+7.  The ratingvisualizer takes arguments. the first one is the ip of the server. The second one is the  port
 
 
 ## Pong

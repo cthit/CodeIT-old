@@ -26,6 +26,11 @@ public class ClientView extends Application {
         primaryStage.show();
     }
 
+    @Override
+    public void stop(){
+        System.exit(0);
+    }
+
 
     public static void main(String[] args) {
         launch(args);
