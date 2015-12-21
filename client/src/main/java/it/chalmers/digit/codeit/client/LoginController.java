@@ -78,7 +78,7 @@ public class LoginController extends Listener {
 
 
         team_name.setText("qwerty");
-        address.setText("10.0.0.237");
+        address.setText("192.168.1.6");
         port.setText("7777");
     }
 
@@ -149,7 +149,7 @@ public class LoginController extends Listener {
     }
 
     private void switchToMainScene() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/main.fxml"));
         Scene scene = null;
         try {
             scene = new Scene((Pane)loader.load());
@@ -160,7 +160,7 @@ public class LoginController extends Listener {
         client.removeListener(this);
         controller.setup(stage, client);
         scene.getStylesheets().add(
-                getClass().getResource("main.css").toExternalForm());
+                getClass().getResource("view/main.css").toExternalForm());
 
         stage.setScene(scene);
         stage.show();
