@@ -48,12 +48,20 @@ public class ClientController extends Listener {
     private byte[] chunks = null;
     private int chunkSize = -1; //Chunk size -1 indicates that currently no chunk transfer is in progress.
 
-
+    /**
+     * Callback method when a connection is established.
+     * @param connection The connection that was established.
+     */
     @Override
     public void connected(Connection connection) {
         System.out.println("Connected");
     }
 
+    /**
+     * Callback when data is received on a connection.
+     * @param connection The connection on which the data is received .
+     * @param object The data received.
+     */
     @Override
     public void received(Connection connection, Object object) {
         if(object instanceof Message) {
@@ -63,11 +71,19 @@ public class ClientController extends Listener {
         }
     }
 
+    /**
+     * Callback when a connection is disconnected.
+     * @param connection The connection that was disconnected.
+     */
     @Override
     public void disconnected(Connection connection) {
         System.out.println("Disconnected");
     }
 
+    /**
+     * Handles messages śent by the server.
+     * @param msg The message sent by the server.
+     */
     private void handleMessage(Message msg) {
         if(msg == Message.TRANSFER_ERROR) {
             chunkSize = -1;
@@ -75,6 +91,10 @@ public class ClientController extends Listener {
         }
     }
 
+    /**
+     * Handles messages that also contains objects that are sent by the server.
+     * @param msg The message with an object attached.
+     */
     private void handleMessageWithObject(MessageWithObject msg) {
         System.out.println("Received: " + msg.message);
         if (msg.message == Message.TRANSFER_SOURCES) {
@@ -128,6 +148,11 @@ public class ClientController extends Listener {
 
     }
 
+    /**y
+     * Writes a file with the specified name and contents to disk and unzips it into a directory named 'compiled'
+     * @param fileName The name of the file on disk.
+     * @param fileContent The content of the file.
+     */
     private void handleDownloadSources(String fileName, byte[] fileContent) {
         Path filePath = Paths.get(fileName);
         try {
@@ -139,6 +164,13 @@ public class ClientController extends Listener {
         }
     }
 
+    /**
+     * Displays an dialog box with the error template to the user.
+     * Needs to be invoked with Platform.runlater(() -> ) in the network thread.
+     * @param title The title of the dialog box.
+     * @param masthead The masthea dof the dialog box.
+     * @param message The message of the dialog box.
+     */
     private void errorDialog(String title, String masthead, String message) {
         Dialogs.create()
                 .owner(stage)
@@ -148,6 +180,11 @@ public class ClientController extends Listener {
                 .showError();
     }
 
+    /**
+     * Should be called when this scene is created, handles setup tasks.
+     * @param stage The stage that this scene belongs to.
+     * @param client The client that has an open connection to the server.
+     */
     public void setup(Stage stage, Client client) {
         this.stage = stage;
         this.client = client;
@@ -241,6 +278,9 @@ public class ClientController extends Listener {
 
     }
 
+    /**
+     * Handle the onClickEvent on the file browse button.
+     */
     @FXML
     private void browseClicked() {
         FileChooser fileChooser = new FileChooser();
@@ -254,6 +294,9 @@ public class ClientController extends Listener {
             file_path.setText(choosenFile.getAbsolutePath());
     }
 
+    /**
+     * Handles the onClickEvent on the send code button.
+     */
     @FXML
     private void sendCodeClicked() {
         Path filePath = Paths.get(file_path.getText());
@@ -273,12 +316,18 @@ public class ClientController extends Listener {
         }
     }
 
+    /**
+     * Handles the onClickEvent on the download sources button.
+     */
     @FXML
     private void downloadSourcesClicked() {
         System.out.println("downloadSourcesClicked()");
         client.sendTCP(Message.REQUEST_SOURCES);
     }
 
+    /**
+     * Handles the onClickEvent on the test AI button.
+     */
     @FXML
     private void testMyAIClicked() {
         File file = new File(file_path.getText());
@@ -317,6 +366,12 @@ public class ClientController extends Listener {
         testScene.play();
     }
 
+    /**
+     * Unzips the given jar file into a directory.
+     * @param destinationDir The directory where the jar file will be unzipped.
+     * @param jarPath THe path to the jar file.
+     * @throws IOException
+     */
     public static void unzipJar(String destinationDir, String jarPath) throws IOException {
         File file = new File(jarPath);
         JarFile jar = new JarFile(file);
