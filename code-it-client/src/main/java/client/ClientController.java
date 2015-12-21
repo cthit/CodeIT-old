@@ -69,7 +69,10 @@ public class ClientController extends Listener {
     }
 
     private void handleMessage(Message msg) {
-
+        if(msg == Message.TRANSFER_ERROR) {
+            chunkSize = -1;
+            Platform.runLater(() -> errorDialog("Transfer error", "Unexpected error", "Error on transfer, please try again"));
+        }
     }
 
     private void handleMessageWithObject(MessageWithObject msg) {
