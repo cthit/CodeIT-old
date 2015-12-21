@@ -159,8 +159,6 @@ public class LoginController extends Listener {
         ClientController controller = loader.<ClientController>getController();
         client.removeListener(this);
         controller.setup(stage, client);
-        scene.getStylesheets().add(
-                getClass().getResource("view/main.css").toExternalForm());
 
         stage.setScene(scene);
         stage.show();

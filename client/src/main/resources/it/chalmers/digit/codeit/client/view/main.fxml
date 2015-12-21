@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="825.0" maxWidth="800.0" minHeight="825.0" minWidth="800.0" prefHeight="825.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.chalmers.digit.codeit.client.ClientController">
+<AnchorPane maxHeight="825.0" maxWidth="800.0" minHeight="825.0" minWidth="800.0" prefHeight="825.0" prefWidth="800.0" stylesheets="@main.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.chalmers.digit.codeit.client.ClientController">
    <children>
       <TextField fx:id="file_path" layoutX="359.0" layoutY="207.0" prefHeight="25.0" prefWidth="131.0" promptText="Path to file" />
       <Button layoutX="493.0" layoutY="207.0" mnemonicParsing="false" onAction="#browseClicked" prefHeight="25.0" prefWidth="40.0" text=". . ." />

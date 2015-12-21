@@ -19,9 +19,6 @@ public class ClientView extends Application {
         controller.setup(primaryStage);
 
         Scene scene = new Scene(root, 800, 825);
-        scene.getStylesheets().add(
-                getClass().getResource("main.css").toExternalForm());
-
         primaryStage.setScene(scene);
         primaryStage.show();
     }
