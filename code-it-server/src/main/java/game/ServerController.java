@@ -36,18 +36,12 @@ public class ServerController extends Listener {
     private ExecutorService executor = Executors.newCachedThreadPool();
     */
 
-    public ServerController(String sourcePath) {
+    public ServerController(Game game, String sourcePath) {
         sourceFilePath = Paths.get(sourcePath);
+        this.game = game;
         server.addListener(this);
     }
 
-    /**
-     * sets the current game implementation beeing played
-     * @param game
-     */
-    public void setGame(Game game) {
-        this.game = game;
-    }
 
     /**
      * start the server in the controller
