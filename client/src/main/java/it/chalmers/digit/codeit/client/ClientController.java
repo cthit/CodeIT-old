@@ -36,9 +36,12 @@ import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 
 
 public class ClientController extends Listener {
+
+    private static final Logger log = Logger.getLogger(ClientController.class.getName());
 
     private Stage stage;
     @FXML private TextField file_path;
@@ -56,7 +59,7 @@ public class ClientController extends Listener {
      */
     @Override
     public void connected(Connection connection) {
-        System.out.println("Connected");
+        log.info("Connected to " + connection.getRemoteAddressTCP());
     }
 
     /**
@@ -79,7 +82,7 @@ public class ClientController extends Listener {
      */
     @Override
     public void disconnected(Connection connection) {
-        System.out.println("Disconnected");
+        log.info("Disconnected " + connection.getRemoteAddressTCP());
     }
 
     /**
@@ -98,7 +101,7 @@ public class ClientController extends Listener {
      * @param msg The message with an object attached.
      */
     private void handleMessageWithObject(MessageWithObject msg) {
-        System.out.println("Received: " + msg.message);
+        log.info("Received: " + msg.message);
         if (msg.message == Message.TRANSFER_SOURCES) {
             handleDownloadSources("source.jar", (byte[]) msg.object);
         } else if(msg.message == Message.CHUNKED_TRANSFER) {
@@ -117,9 +120,9 @@ public class ClientController extends Listener {
             Platform.runLater(() -> errorDialog("Transfer error", "", "Got chunk while no chunk transfer was in progress"));
         } else {
             chunks = ArrayUtils.addAll(chunks, (byte[])msg.object);
-            System.out.println("Chunksize: " + chunks.length);
+            log.info("Chunksize: " + chunks.length);
             if(chunks.length == chunkSize) {
-                System.out.println("chunks.length == chunkSize");
+                log.info("chunks.length == chunkSize");
                 try {
                     chunkSize = -1;
                     handleMessageWithObject((MessageWithObject) Serializer.deserialize(chunks));
@@ -139,7 +142,7 @@ public class ClientController extends Listener {
      * @param msg The message containing the expected size of all the chunks.
      */
     private void handleNewChunkedTransfer(MessageWithObject msg) {
-        System.out.println("handleNewChunkedTransfer");
+        log.info("handleNewChunkedTransfer");
         if(chunkSize == -1) {
             chunkSize = (int)msg.object;
             chunks = null;
@@ -323,7 +326,6 @@ public class ClientController extends Listener {
      */
     @FXML
     private void downloadSourcesClicked() {
-        System.out.println("downloadSourcesClicked()");
         client.sendTCP(Message.REQUEST_SOURCES);
     }
 
