@@ -1,5 +1,6 @@
 package it.tejp.codeit.common.network;
 
+import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryonet.Connection;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.List;
 public class Network {
 
     public static final int BUFFER_SIZE = 16384;
+    private static final int SEND_DELAY = 50;
 
     /**
      * Sends the given MessageWithObject to a connection, makes sure that the message can be sent regardless of size.
@@ -29,9 +31,27 @@ public class Network {
         MessageWithObject chunkedTransfer = new MessageWithObject(Message.CHUNKED_TRANSFER, contentSize);
         connection.sendTCP(chunkedTransfer);
 
-        for(MessageWithObject chunk : chunks) {
-            connection.sendTCP(chunk);
+        // Implement better logging here
+        // System.out.println("Sending " + chunks.size() + " messages");
+
+        try {
+            for (MessageWithObject chunk : chunks) {
+                connection.sendTCP(chunk);
+                try {
+                    Thread.sleep(SEND_DELAY);
+                } catch (InterruptedException e) {
+                    System.out.println("Network.sendMessageWithObject: InterruptedException");
+                    e.printStackTrace();
+                    connection.sendTCP(Message.TRANSFER_ERROR);
+                }
+            }
+        } catch (KryoException e) {
+            // Implement better logging here
+            System.out.println("Network.sendMessageWithObject: KryoException");
+            e.printStackTrace();
+            connection.sendTCP(Message.TRANSFER_ERROR);
         }
+
     }
 
     /**
@@ -40,14 +60,22 @@ public class Network {
      * @param chunkSize The maximum size of the array parts.
      * @return
      */
-    private static List<MessageWithObject> chunkMessage(byte[] bytes, int chunkSize) {
-        int numberOfChunks = (int)Math.ceil(bytes.length / chunkSize);
+    protected static List<MessageWithObject> chunkMessage(byte[] bytes, int chunkSize) {
+        chunkSize = (int) (chunkSize*0.9);
+        int numberOfChunks = (int)Math.ceil(bytes.length / (chunkSize));
         List<MessageWithObject> chunks = new ArrayList<>();
 
-        for(int i = 0; i < numberOfChunks; ++i) {
+        // Implement better logging here
+        //System.out.println("chunkMessage byteslength: " + bytes.length);
+        //System.out.println("chunkMessage chunksize: " + chunkSize);
+
+        for(int i = 0; i <= numberOfChunks; ++i) {
+            int start = chunkSize * i;
+            int end   = chunkSize * (i+1);
+            end = end > bytes.length ? bytes.length : end;
             MessageWithObject msg = new MessageWithObject();
             msg.message = Message.CHUNK;
-            msg.object = Arrays.copyOfRange(bytes, chunkSize * i, chunkSize * (i + 1));
+            msg.object = Arrays.copyOfRange(bytes, start, end);
             chunks.add(msg);
         }
         return chunks;
