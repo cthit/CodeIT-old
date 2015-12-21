@@ -21,11 +21,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Created by kerp on 20/11/15.
  */
 public class LoginController extends Listener {
+
+    private static final Logger log = Logger.getLogger(LoginController.class.getName());
 
     @FXML private TextField team_name;
     @FXML private TextField address;
@@ -99,14 +102,14 @@ public class LoginController extends Listener {
 
     @Override
     public void connected(Connection connection) {
-        System.out.println("Connected");
+        log.info("Connected to " + connection.getRemoteAddressTCP());
         MessageWithObject newTeamName = new MessageWithObject(Message.NEW_TEAMNAME, team_name.getText());
         connection.sendTCP(newTeamName);
     }
 
     @Override
     public void received(Connection connection, Object object) {
-        System.out.println("Received");
+        log.info("Received message from " + connection.getRemoteAddressTCP());
 
         if(object instanceof Message) {
             handleMessage((Message)object);
@@ -115,16 +118,14 @@ public class LoginController extends Listener {
 
     @Override
     public void disconnected(Connection connection) {
-        System.out.println("Disconnected");
+        log.info("Disconnected from " + connection.getRemoteAddressTCP());
     }
 
     private void handleMessage(Message msg) {
-        System.out.println("Real Message Received");
+        log.info("Message: " + msg);
         if(msg == Message.GOOD_TEAMNAME) {
-            System.out.println("Good teamnamne");
             Platform.runLater(() -> switchToMainScene());
         }else if(msg == Message.BAD_TEAMNAME) {
-            System.out.println("Bad teamnamne");
             Platform.runLater(() -> setBadTeamName());
         }
     }
