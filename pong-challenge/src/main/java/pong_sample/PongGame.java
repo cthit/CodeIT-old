@@ -1,8 +1,8 @@
 package pong_sample;
 
-import it.tejp.codeit.api.Competitor;
-import it.tejp.codeit.api.Game;
-import it.tejp.codeit.api.GameMechanic;
+import it.chalmers.digit.codeit.api.Competitor;
+import it.chalmers.digit.codeit.api.Game;
+import it.chalmers.digit.codeit.api.GameMechanic;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;

@@ -1,7 +1,7 @@
 package pong_sample;
 
 
-import it.tejp.codeit.api.Move;
+import it.chalmers.digit.codeit.api.Move;
 
 /**
  * Created by tejp on 01/11/14.

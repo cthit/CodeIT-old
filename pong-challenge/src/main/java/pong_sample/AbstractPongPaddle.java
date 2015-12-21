@@ -1,7 +1,7 @@
 package pong_sample;
 
-import it.tejp.codeit.api.Competitor;
-import it.tejp.codeit.api.GameMechanic;
+import it.chalmers.digit.codeit.api.Competitor;
+import it.chalmers.digit.codeit.api.GameMechanic;
 
 /**
  * Created by tejp on 15/02/15.

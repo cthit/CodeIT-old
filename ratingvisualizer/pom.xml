@@ -2,31 +2,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>it.chalmers.digit</groupId>
-    <artifactId>pong-challenge</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
     <parent>
-        <groupId>it.chalmers.digit</groupId>
         <artifactId>code-it</artifactId>
+        <groupId>it.chalmers.digit</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <dependencies>
-        <dependency>
-            <groupId>it.chalmers.digit</groupId>
-            <artifactId>code-it-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+    <artifactId>code-it-ratingvisualizer</artifactId>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <outputDirectory>../bin</outputDirectory>
+                    <finalName>CodeIT_ratingvisualizer</finalName>
+                    <archive>
+                        <manifest>
+                            <mainClass>it.chalmers.digit.codeit.ratingvisualizer.RatingVisualizer</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -35,14 +37,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <outputDirectory>../bin</outputDirectory>
-                    <finalName>CodeIT_pong_challenge</finalName>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -54,5 +48,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
