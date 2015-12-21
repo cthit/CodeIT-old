@@ -199,7 +199,7 @@ public class ServerController extends Listener {
             Network.sendMessageWithObject(c, m);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Could not find file to send to client. " + sourceFilePath);
+            log.info("Could not find file to send to client. " + sourceFilePath);
         }
     }
 
