@@ -16,9 +16,9 @@
       <Button layoutX="493.0" layoutY="207.0" mnemonicParsing="false" onAction="#browseClicked" prefHeight="25.0" prefWidth="40.0" text=". . ." />
       <Text id="title" layoutX="366.0" layoutY="122.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Code-IT" />
       <Label layoutX="278.0" layoutY="211.0" styleClass="label_info" text="Source path:" />
-      <Button id="green" layoutX="265.0" layoutY="290.0" mnemonicParsing="false" onAction="#sendCodeClicked" text="Send Code" />
-      <Button layoutX="346.0" layoutY="290.0" mnemonicParsing="false" onAction="#downloadSourcesClicked" prefHeight="25.0" prefWidth="121.0" text="Download Sources" />
-      <Button layoutX="474.0" layoutY="290.0" mnemonicParsing="false" onAction="#testMyAIClicked" prefHeight="25.0" prefWidth="72.0" text="Test AI" />
+      <Button id="green" fx:id="send_code" layoutX="265.0" layoutY="290.0" mnemonicParsing="false" onAction="#sendCodeClicked" text="Send Code" />
+      <Button fx:id="download_sources" layoutX="346.0" layoutY="290.0" mnemonicParsing="false" onAction="#downloadSourcesClicked" prefHeight="25.0" prefWidth="121.0" text="Download Sources" />
+      <Button fx:id="test_ai" layoutX="474.0" layoutY="290.0" mnemonicParsing="false" onAction="#testMyAIClicked" prefHeight="25.0" prefWidth="72.0" text="Test AI" />
       <Label fx:id="feedback_team_name" layoutX="536.0" layoutY="173.0" />
       <Label fx:id="feedback_connection" layoutX="536.0" layoutY="211.0" />
       <Label fx:id="feedback_project_path" layoutX="536.0" layoutY="247.0" />
@@ -35,5 +35,7 @@
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
+      <Label fx:id="server_status" layoutX="359.0" layoutY="173.0" prefHeight="17.0" prefWidth="323.0" text="Server Feedback" />
+      <Label alignment="CENTER_RIGHT" layoutX="244.0" layoutY="173.0" prefHeight="17.0" prefWidth="100.0" styleClass="label_info" text="Server status:" />
    </children>
 </AnchorPane>

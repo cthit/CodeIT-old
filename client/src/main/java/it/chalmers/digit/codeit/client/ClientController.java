@@ -16,10 +16,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.ArrayUtils;
@@ -50,6 +52,11 @@ public class ClientController extends Listener {
     @FXML private Label feedback_simulation;
 
     @FXML private Label team_name;
+    @FXML private Label server_status;
+
+    @FXML private Button send_code;
+    @FXML private Button download_sources;
+    @FXML private Button test_ai;
 
     private Client client = null;
     private byte[] chunks = null;
@@ -85,6 +92,9 @@ public class ClientController extends Listener {
     @Override
     public void disconnected(Connection connection) {
         log.info("Disconnected " + connection.getRemoteAddressTCP());
+        Platform.runLater(() -> setServerStatus("Disconnected from server", Color.DARKRED));
+        Platform.runLater(() -> send_code.setDisable(true));
+        Platform.runLater(() -> download_sources.setDisable(true));
     }
 
     /**
@@ -199,7 +209,19 @@ public class ClientController extends Listener {
         this.team_name.setText(teamName);
         client.addListener(this);
 
+        setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN);
+
         file_path.setText("/home/kalior/project/codeit/pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
+    }
+
+    /**
+     * Updates the server status label.
+     * @param text The text to display.
+     * @param color The color of the text.
+     */
+    private void setServerStatus(String text, Paint color) {
+        server_status.setText(text);
+        server_status.setTextFill(color);
     }
 
     /*public void switchToLoginScene() {
