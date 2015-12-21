@@ -49,6 +49,8 @@ public class ClientController extends Listener {
     @FXML private Label feedback_project_path;
     @FXML private Label feedback_simulation;
 
+    @FXML private Label team_name;
+
     private Client client = null;
     private byte[] chunks = null;
     private int chunkSize = -1; //Chunk size -1 indicates that currently no chunk transfer is in progress.
@@ -189,10 +191,12 @@ public class ClientController extends Listener {
      * Should be called when this scene is created, handles setup tasks.
      * @param stage The stage that this scene belongs to.
      * @param client The client that has an open connection to the server.
+     * @param teamName The teamname that the player has chosen.
      */
-    public void setup(Stage stage, Client client) {
+    public void setup(Stage stage, Client client, String teamName) {
         this.stage = stage;
         this.client = client;
+        this.team_name.setText(teamName);
         client.addListener(this);
 
         file_path.setText("/home/kalior/project/codeit/pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");

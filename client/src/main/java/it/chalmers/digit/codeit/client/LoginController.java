@@ -158,7 +158,7 @@ public class LoginController extends Listener {
         }
         ClientController controller = loader.<ClientController>getController();
         client.removeListener(this);
-        controller.setup(stage, client);
+        controller.setup(stage, client, team_name.getText());
 
         stage.setScene(scene);
         stage.show();
