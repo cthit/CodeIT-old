@@ -8,6 +8,7 @@ import it.tejp.codeit.common.network.Message;
 import it.tejp.codeit.common.network.MessageWithObject;
 import it.tejp.codeit.common.network.Network;
 import it.tejp.codeit.common.network.Serializer;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -87,7 +88,7 @@ public class ClientController extends Listener {
      */
     private void handleChunk(MessageWithObject msg) {
         if(chunkSize == -1) {
-            errorDialog("Transfer error", "", "Got chunk while no chunk transfer was in progress");
+            Platform.runLater(() -> errorDialog("Transfer error", "", "Got chunk while no chunk transfer was in progress"));
         } else {
             chunks = ArrayUtils.addAll(chunks, (byte[])msg.object);
             if(chunks.length == chunkSize) {
@@ -96,12 +97,12 @@ public class ClientController extends Listener {
                     chunkSize = -1;
                     handleMessageWithObject((MessageWithObject)Serializer.deserialize(chunks));
                 } catch (IOException e) {
-                    errorDialog("Transfer error", e.getMessage(), "Couldn't deserialize a received message");
+                    Platform.runLater(() -> errorDialog("Transfer error", e.getMessage(), "Couldn't deserialize a received message"));
                 } catch (ClassNotFoundException e) {
-                    errorDialog("Transfer error", e.getMessage(), "Couldn't deserialize chunked transfer in a meaningfull way");
+                    Platform.runLater(() -> errorDialog("Transfer error", e.getMessage(), "Couldn't deserialize chunked transfer in a meaningfull way"));
                 }
             } else if(chunks.length > chunkSize) {
-                errorDialog("Transfer error", "Received too many bytes in a chunked transfer", "chunks.length > chunkSize");
+                Platform.runLater(() -> errorDialog("Transfer error", "Received too many bytes in a chunked transfer", "chunks.length > chunkSize"));
             }
         }
     }
@@ -115,7 +116,8 @@ public class ClientController extends Listener {
             chunkSize = (int)msg.object;
             chunks = null;
         } else {
-            errorDialog("Transfer error", "", "New chunked transfer initiaded while one was already in progress");
+            Platform.runLater(() -> errorDialog("Transfer error", "", "New chunked transfer initiated while one was already in progress"));
+            client.close();
         }
 
     }
