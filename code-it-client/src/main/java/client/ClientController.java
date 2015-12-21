@@ -48,6 +48,7 @@ public class ClientController extends Listener {
     private byte[] chunks = null;
     private int chunkSize = -1; //Chunk size -1 indicates that currently no chunk transfer is in progress.
 
+
     @Override
     public void connected(Connection connection) {
         System.out.println("Connected");
@@ -55,7 +56,6 @@ public class ClientController extends Listener {
 
     @Override
     public void received(Connection connection, Object object) {
-        System.out.println("Received something");
         if(object instanceof Message) {
             handleMessage((Message)object);
         }else if(object instanceof MessageWithObject) {
@@ -76,6 +76,7 @@ public class ClientController extends Listener {
     }
 
     private void handleMessageWithObject(MessageWithObject msg) {
+        System.out.println("Received: " + msg.message);
         if (msg.message == Message.TRANSFER_SOURCES) {
             handleDownloadSources("source.jar", (byte[]) msg.object);
         } else if(msg.message == Message.CHUNKED_TRANSFER) {
@@ -94,6 +95,7 @@ public class ClientController extends Listener {
             Platform.runLater(() -> errorDialog("Transfer error", "", "Got chunk while no chunk transfer was in progress"));
         } else {
             chunks = ArrayUtils.addAll(chunks, (byte[])msg.object);
+            System.out.println("Chunksize: " + chunks.length);
             if(chunks.length == chunkSize) {
                 System.out.println("chunks.length == chunkSize");
                 try {
@@ -115,6 +117,7 @@ public class ClientController extends Listener {
      * @param msg The message containing the expected size of all the chunks.
      */
     private void handleNewChunkedTransfer(MessageWithObject msg) {
+        System.out.println("handleNewChunkedTransfer");
         if(chunkSize == -1) {
             chunkSize = (int)msg.object;
             chunks = null;
@@ -150,7 +153,7 @@ public class ClientController extends Listener {
         this.client = client;
         client.addListener(this);
 
-        file_path.setText("");
+        file_path.setText("/home/kalior/project/codeit/pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
     }
 
     /*public void switchToLoginScene() {
