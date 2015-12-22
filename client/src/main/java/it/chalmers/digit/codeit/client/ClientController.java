@@ -72,6 +72,9 @@ public class ClientController extends Listener {
     @Override
     public void connected(Connection connection) {
         log.info("Connected to " + connection.getRemoteAddressTCP());
+        Platform.runLater(() -> setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.DARKRED));
+        Platform.runLater(() -> send_code.setDisable(false));
+        Platform.runLater(() -> download_sources.setDisable(false));
     }
 
     /**
