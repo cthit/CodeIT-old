@@ -58,6 +58,9 @@ public class ClientController extends Listener {
     @FXML private Button download_sources;
     @FXML private Button test_ai;
 
+    //Where to put the unzipped source downloaded from the server.
+    private final String JAR_DIRECTORY = "compiled/";
+
     private Client client = null;
     private byte[] chunks = null;
     private int chunkSize = -1; //Chunk size -1 indicates that currently no chunk transfer is in progress.
@@ -171,11 +174,13 @@ public class ClientController extends Listener {
      * @param fileContent The content of the file.
      */
     private void handleDownloadSources(String fileName, byte[] fileContent) {
-        Path filePath = Paths.get(fileName);
+        Path filePath = Paths.get(JAR_DIRECTORY + fileName);
         try {
+            new File(JAR_DIRECTORY).mkdir();
             Files.write(filePath, fileContent);
-            new File("compiled").mkdir();
-            unzipJar("compiled", fileName);
+            unzipJar(JAR_DIRECTORY, fileName);
+            Platform.runLater(() -> test_ai.setDisable(false));
+            Platform.runLater(() -> setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN));
         } catch (IOException e) {
             errorDialog("File error", e.getLocalizedMessage(), "");//e.getStackTrace());
         }
@@ -210,6 +215,7 @@ public class ClientController extends Listener {
         client.addListener(this);
 
         setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN);
+        test_ai.setDisable(true); //Set to disabled until sources have been downloaded from the server.
 
         file_path.setText("/home/kalior/project/codeit/pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
     }
@@ -353,6 +359,7 @@ public class ClientController extends Listener {
     @FXML
     private void downloadSourcesClicked() {
         client.sendTCP(Message.REQUEST_SOURCES);
+        setServerStatus("Downloading sources", Color.GREEN);
     }
 
     /**
