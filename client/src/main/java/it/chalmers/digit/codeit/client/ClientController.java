@@ -343,6 +343,7 @@ public class ClientController extends Listener {
             content = Files.readAllBytes(filePath);
         } catch (IOException e) {
             errorDialog("File error", "Couldn't read file", e.getMessage());
+            return;
         }
 
         MessageWithObject msg = new MessageWithObject(Message.TRANSFER_SOURCES, content);
