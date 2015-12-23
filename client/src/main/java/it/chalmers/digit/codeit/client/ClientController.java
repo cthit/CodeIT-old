@@ -57,6 +57,7 @@ public class ClientController extends Listener {
     @FXML private Button send_code;
     @FXML private Button download_sources;
     @FXML private Button test_ai;
+    @FXML private Button reconnect;
 
     //Where to put the unzipped source downloaded from the server.
     private final String JAR_DIRECTORY = "compiled/";
@@ -75,6 +76,7 @@ public class ClientController extends Listener {
         Platform.runLater(() -> setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.DARKRED));
         Platform.runLater(() -> send_code.setDisable(false));
         Platform.runLater(() -> download_sources.setDisable(false));
+        Platform.runLater(() -> reconnect.setDisable(true));
     }
 
     /**
@@ -101,6 +103,7 @@ public class ClientController extends Listener {
         Platform.runLater(() -> setServerStatus("Disconnected from server", Color.DARKRED));
         Platform.runLater(() -> send_code.setDisable(true));
         Platform.runLater(() -> download_sources.setDisable(true));
+        Platform.runLater(() -> reconnect.setDisable(false));
     }
 
     /**
@@ -219,6 +222,7 @@ public class ClientController extends Listener {
 
         setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN);
         test_ai.setDisable(true); //Set to disabled until sources have been downloaded from the server.
+        reconnect.setDisable(true);
 
         file_path.setText("/home/kalior/project/codeit/pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
     }
@@ -318,6 +322,16 @@ public class ClientController extends Listener {
 
     }
 
+
+    @FXML
+    private void onReconnectClicked() {
+        try {
+            client.reconnect();
+
+        } catch (IOException e) {
+            errorDialog("Couldn't connect", "Couldn't connect to server", e.getMessage());
+        }
+    }
     /**
      * Handle the onClickEvent on the file browse button.
      */

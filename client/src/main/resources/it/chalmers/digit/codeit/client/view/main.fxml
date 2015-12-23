@@ -37,5 +37,6 @@
       </Label>
       <Label fx:id="server_status" layoutX="359.0" layoutY="173.0" prefHeight="17.0" prefWidth="323.0" text="Server Feedback" />
       <Label alignment="CENTER_RIGHT" layoutX="244.0" layoutY="173.0" prefHeight="17.0" prefWidth="100.0" styleClass="label_info" text="Server status:" />
+      <Button fx:id="reconnect" layoutX="346.0" layoutY="323.0" mnemonicParsing="false" onAction="#onReconnectClicked" prefHeight="25.0" prefWidth="121.0" text="Reconnect" />
    </children>
 </AnchorPane>
