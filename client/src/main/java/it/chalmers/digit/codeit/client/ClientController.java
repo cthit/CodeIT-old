@@ -73,7 +73,7 @@ public class ClientController extends Listener {
         Platform.runLater(() -> setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.DARKRED));
         Platform.runLater(() -> send_code.setDisable(false));
         Platform.runLater(() -> download_sources.setDisable(false));
-        Platform.runLater(() -> reconnect.setDisable(true));
+        Platform.runLater(() -> reconnect.setVisible(false));
     }
 
     /**
@@ -100,7 +100,7 @@ public class ClientController extends Listener {
         Platform.runLater(() -> setServerStatus("Disconnected from server", Color.DARKRED));
         Platform.runLater(() -> send_code.setDisable(true));
         Platform.runLater(() -> download_sources.setDisable(true));
-        Platform.runLater(() -> reconnect.setDisable(false));
+        Platform.runLater(() -> reconnect.setVisible(true));
     }
 
     /**
@@ -219,7 +219,7 @@ public class ClientController extends Listener {
 
         setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN);
         test_ai.setDisable(true); //Set to disabled until sources have been downloaded from the server.
-        reconnect.setDisable(true);
+        reconnect.setVisible(false);
 
         file_path.setText("/home/kalior/project/codeit/pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
     }
