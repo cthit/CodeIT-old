@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -21,6 +22,8 @@ public class ClientView extends Application {
         primaryStage.setTitle("CodeIT");
         primaryStage.setMinHeight(MIN_HEGTH);
         primaryStage.setMinWidth(MIN_WIDTH);
+
+        primaryStage.getIcons().add(new Image(ClientView.class.getResourceAsStream("digit.png" )));
 
         LoginController controller = loader.<LoginController>getController();
         controller.setup(primaryStage);
