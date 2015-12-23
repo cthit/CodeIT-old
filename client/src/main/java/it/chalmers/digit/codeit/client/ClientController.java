@@ -11,15 +11,13 @@ import it.chalmers.digit.codeit.common.network.Network;
 import it.chalmers.digit.codeit.common.network.Serializer;
 import it.chalmers.digit.codeit.server.utils.JavaSourceFromString;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.InnerShadow;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
@@ -31,7 +29,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -237,100 +234,33 @@ public class ClientController extends Listener {
         server_status.setTextFill(color);
     }
 
-    /*public void switchToLoginScene() {
-        /*URL location = getClass().getResource("login.fxml");
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(location);
-
-        Parent root = null;
+    /**
+     * Handles the switch to the login scene.
+     * Loads the correct fxml layout, calls setup() on the correct controller and removes this class as listener
+     * on network events.
+     */
+    public void switchToLoginScene() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/login.fxml"));
+        Scene scene = null;
         try {
-            root = loader.load();
+            scene = new Scene((Pane)loader.load());
         } catch (IOException e) {
-            e.printStackTrace();
+            errorDialog("Load error", "Couldn't load layout file", e.getMessage());
         }
-        Scene scene = new Scene(root, 800, 825);
-        scene.getStylesheets().add(
-                getClass().getResource("main.css").toExternalForm()
-        );
-
-
-
-        team_name.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (! newValue.matches("[a-zA-Z_$][a-zA-Z\\d_$]*")) {
-                    team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
-                    feedback_team_name.setText("Plz match this -> [a-zA-Z_$][a-zA-Z\\d_$]*");
-                    feedback_team_name.setTextFill(Color.DARKRED);
-                } else {
-                    team_name.setEffect(new InnerShadow(0, Color.WHITE));
-                    feedback_team_name.setText("");
-                    feedback_team_name.setTextFill(Color.GREEN);
-                }
-            }
-        });
-
-
-        ChangeListener<String> listener= (observable, oldValue, newValue) -> {
-            if (newValue.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
-                feedback_connection.setText("Wow very address");
-                feedback_connection.setTextFill(Color.GREEN);
-            } else {
-                feedback_connection.setText("Nah, plz fex.");
-                feedback_connection.setTextFill(Color.DARKRED);
-            }
-        };
-
-        address.textProperty().addListener(listener);
-
-
-        team_name.setText("qwerty");
-        address.setText("10.0.0.237");
-        port.setText("7777");
-    }*/
-
-    public void switchToMainScene() {
-        URL location = getClass().getResource("main.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(location);
-        Parent root = null;
-        try {
-            root = (Parent) fxmlLoader.load(location.openStream());
-        } catch (IOException e) {
-            //FUUUUUUUUUUUU
-        }
-        Scene scene = new Scene(root, 800, 825);
-        scene.getStylesheets().add(
-                getClass().getResource("main.css").toExternalForm());
 
         stage.setScene(scene);
-
-        ChangeListener<String> numberOnly= (observable, oldValue, newValue) -> {
-            if (newValue.matches("\\d+\\.?\\d*")) {
-                simulation_delay.setEffect(new InnerShadow(0, Color.WHITE));
-                feedback_simulation.setText("");
-                feedback_simulation.setTextFill(Color.GREEN);
-            } else {
-                simulation_delay.setEffect(new InnerShadow(1000, Color.DARKRED));
-                feedback_simulation.setText("Nah, plz fex.");
-                feedback_simulation.setTextFill(Color.DARKRED);
-            }
-        };
-
-        simulation_delay.textProperty().addListener(numberOnly);
-        file_path.setText("pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
-
+        client.removeListener(this);
+        LoginController controller = loader.<LoginController>getController();
+        controller.setup(stage);
+        stage.show();
     }
 
-
+    /**
+     * Handle the onClickEvent on the reconnect button.
+     */
     @FXML
     private void onReconnectClicked() {
-        try {
-            client.reconnect();
-
-        } catch (IOException e) {
-            errorDialog("Couldn't connect", "Couldn't connect to server", e.getMessage());
-        }
+        switchToLoginScene();
     }
     /**
      * Handle the onClickEvent on the file browse button.
