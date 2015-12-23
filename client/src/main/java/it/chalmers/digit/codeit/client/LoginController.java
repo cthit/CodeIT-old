@@ -48,23 +48,19 @@ public class LoginController extends Listener {
         this.stage = stage;
         initNetwork();
 
-        team_name.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (! newValue.matches("[a-zA-Z_$][a-zA-Z\\d_$]*")) {
-                    team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
-                    feedback_team_name.setText("Plz match this -> [a-zA-Z_$][a-zA-Z\\d_$]*");
-                    feedback_team_name.setTextFill(Color.DARKRED);
-                } else {
-                    team_name.setEffect(new InnerShadow(0, Color.WHITE));
-                    feedback_team_name.setText("");
-                    feedback_team_name.setTextFill(Color.GREEN);
-                }
+        team_name.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (! newValue.matches("[a-zA-Z_$][a-zA-Z\\d_$]*")) {
+                team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
+                feedback_team_name.setText("Plz match this -> [a-zA-Z_$][a-zA-Z\\d_$]*");
+                feedback_team_name.setTextFill(Color.DARKRED);
+            } else {
+                team_name.setEffect(new InnerShadow(0, Color.WHITE));
+                feedback_team_name.setText("");
+                feedback_team_name.setTextFill(Color.GREEN);
             }
         });
 
-
-        ChangeListener<String> listener= (observable, oldValue, newValue) -> {
+        address.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
                 feedback_connection.setText("Wow very address");
                 feedback_connection.setTextFill(Color.GREEN);
@@ -72,9 +68,8 @@ public class LoginController extends Listener {
                 feedback_connection.setText("Nah, plz fex.");
                 feedback_connection.setTextFill(Color.DARKRED);
             }
-        };
+        });
 
-        address.textProperty().addListener(listener);
 
 
         team_name.setText("qwerty");
