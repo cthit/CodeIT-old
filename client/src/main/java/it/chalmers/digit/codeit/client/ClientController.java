@@ -184,11 +184,11 @@ public class ClientController extends Listener {
         try {
             new File(JAR_DIRECTORY).mkdir();
             Files.write(filePath, fileContent);
-            unzipJar(JAR_DIRECTORY, fileName);
+            unzipJar(JAR_DIRECTORY, filePath.toString());
             Platform.runLater(() -> test_ai.setDisable(false));
             Platform.runLater(() -> setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN));
         } catch (IOException e) {
-            errorDialog("File error", e.getLocalizedMessage(), "");//e.getStackTrace());
+            Platform.runLater(() -> errorDialog("File error", "Couldn't write downloaded sources to disk", e.getLocalizedMessage()));
         }
     }
 
