@@ -126,7 +126,7 @@ public class LoginController extends Listener {
         if(msg == Message.GOOD_TEAMNAME) {
             Platform.runLater(() -> switchToMainScene());
         }else if(msg == Message.BAD_TEAMNAME) {
-            Platform.runLater(() -> setBadTeamName());
+            Platform.runLater(() -> setBadTeamName(getTeamName()));
         }
     }
 
@@ -140,8 +140,9 @@ public class LoginController extends Listener {
         }
     }
 
-    private void setBadTeamName() {
-        feedback_team_name.setText("Team name already connected to server.");
+    private void setBadTeamName(String teamName) {
+        feedback_team_name.setText("The name: " + teamName + " is already in use");
+        feedback_team_name.setTextFill(Color.DARKRED);
     }
 
     private void setConnectingFeedback(String text) {
@@ -172,5 +173,7 @@ public class LoginController extends Listener {
         return Integer.parseInt(port.getText());
     }
 
-
+    public String getTeamName() {
+        return team_name.getText();
+    }
 }
