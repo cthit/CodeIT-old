@@ -179,7 +179,10 @@ public class ClientController extends Listener {
     private void handleDownloadSources(String fileName, byte[] fileContent) {
         Path filePath = Paths.get(JAR_DIRECTORY + fileName);
         try {
-            new File(JAR_DIRECTORY).mkdir();
+            File directory = new  File(JAR_DIRECTORY);
+            if(!directory.mkdirs()) {
+                Platform.runLater(() -> errorDialog("File error", "Couldn't create directories when unzipping jar", directory.getAbsolutePath()));
+            }
             Files.write(filePath, fileContent);
             unzipJar(JAR_DIRECTORY, filePath.toString());
             Platform.runLater(() -> test_ai.setDisable(false));
@@ -193,7 +196,7 @@ public class ClientController extends Listener {
      * Displays an dialog box with the error template to the user.
      * Needs to be invoked with Platform.runlater(() -> ) in the network thread.
      * @param title The title of the dialog box.
-     * @param masthead The masthea dof the dialog box.
+     * @param masthead The masthead dof the dialog box.
      * @param message The message of the dialog box.
      */
     private void errorDialog(String title, String masthead, String message) {
@@ -209,7 +212,7 @@ public class ClientController extends Listener {
      * Should be called when this scene is created, handles setup tasks.
      * @param stage The stage that this scene belongs to.
      * @param client The client that has an open connection to the server.
-     * @param teamName The teamname that the player has chosen.
+     * @param teamName The team name that the player has chosen.
      */
     public void setup(Stage stage, Client client, String teamName) {
         this.stage = stage;
@@ -243,7 +246,7 @@ public class ClientController extends Listener {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("view/login.fxml"));
         Scene scene = null;
         try {
-            scene = new Scene((Pane)loader.load());
+            scene = new Scene(loader.load());
         } catch (IOException e) {
             errorDialog("Load error", "Couldn't load layout file", e.getMessage());
         }
@@ -284,7 +287,7 @@ public class ClientController extends Listener {
     @FXML
     private void sendCodeClicked() {
         Path filePath = Paths.get(file_path.getText());
-        byte[] content = new byte[0];
+        byte[] content;
 
         try {
             content = Files.readAllBytes(filePath);
@@ -316,11 +319,11 @@ public class ClientController extends Listener {
     @FXML
     private void testMyAIClicked() {
         File file = new File(file_path.getText());
-        String code = null;
-        Object instanceObj = null;
-        double delay = 0;
+        String code;
+        Object instanceObj;
+        double delay;
         try {
-            delay = new Double(simulation_delay.getText()).doubleValue();
+            delay = Double.parseDouble(simulation_delay.getText());
         } catch(NumberFormatException e) {
             errorDialog("Number error", "Not a number", e.getLocalizedMessage());
             return;
@@ -357,7 +360,7 @@ public class ClientController extends Listener {
      * @param jarPath THe path to the jar file.
      * @throws IOException
      */
-    public static void unzipJar(String destinationDir, String jarPath) throws IOException {
+    public void unzipJar(String destinationDir, String jarPath) throws IOException {
         File file = new File(jarPath);
         JarFile jar = new JarFile(file);
         // fist get all directories,
@@ -369,7 +372,9 @@ public class ClientController extends Listener {
             File f = new File(fileName);
 
             if (fileName.endsWith("/")) {
-                f.mkdirs();
+                if (!f.mkdirs()) {
+                    Platform.runLater(() -> errorDialog("File error", "Couldn't create directories when unzipping jar", f.getAbsolutePath()));
+                }
             }
 
         }
