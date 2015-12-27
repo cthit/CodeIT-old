@@ -244,11 +244,12 @@ public class ClientController extends Listener {
      */
     public void switchToLoginScene() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("view/login.fxml"));
-        Scene scene = null;
+        Scene scene;
         try {
             scene = new Scene(loader.load());
         } catch (IOException e) {
             errorDialog("Load error", "Couldn't load layout file", e.getMessage());
+            return;
         }
 
         stage.setScene(scene);
