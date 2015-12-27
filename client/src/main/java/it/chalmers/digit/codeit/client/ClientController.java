@@ -276,9 +276,9 @@ public class ClientController extends Listener {
         if(file.exists() && file.getParentFile().isDirectory()) {
             fileChooser.setInitialDirectory(file.getParentFile());
         }
-        File choosenFile = fileChooser.showOpenDialog(stage);
-        if (choosenFile != null)
-            file_path.setText(choosenFile.getAbsolutePath());
+        File chosenFile = fileChooser.showOpenDialog(stage);
+        if (chosenFile != null)
+            file_path.setText(chosenFile.getAbsolutePath());
     }
 
     /**
