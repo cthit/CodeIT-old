@@ -25,11 +25,8 @@ public class RatingVisualizer extends Application {
         stage.setWidth(300);
         stage.setHeight(500);
 
-        scene.getStylesheets().addAll(this.getClass().getResource("it/chalmers/digit/codeit/ratingvisualizer/main.css").toExternalForm());
-
         final Label label = new Label("RatingTable");
         label.setFont(new Font("Arial", 20));
-
 
         int port = 7777;
         String adress = "127.0.0.1";
@@ -40,22 +37,11 @@ public class RatingVisualizer extends Application {
                 adress = getParameters().getRaw().get(0);
         }
 
-
         final RatingVisualizerController controller = (RatingVisualizerController) loader.getController();
         controller.initialize(adress, port);
         controller.startDataWatcher();
 
-
-
         stage.setScene(scene);
         stage.show();
-
-
-
-
     }
-
-
-
-
 }
