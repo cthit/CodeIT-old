@@ -222,7 +222,7 @@ public class ServerController extends Listener {
         }
 
         try {
-            JavaSourceFromString.compile(code, "SimplePongPaddle.java", "pong_sample");
+            JavaSourceFromString.compile("compiled/", code);
         } catch (Exception e) {
             e.printStackTrace();
         }
