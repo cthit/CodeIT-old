@@ -1,4 +1,4 @@
-package it.chalmers.digit.codeit.server.utils;
+package it.chalmers.digit.codeit.common.utils;
 
 import javax.tools.JavaCompiler;
 import javax.tools.SimpleJavaFileObject;
@@ -60,6 +60,13 @@ public class JavaSourceFromString extends SimpleJavaFileObject
 
         System.out.println("Class has been successfully compiled");
         File root = new File("compiled");
+        return createInstanceFromClass(root, className, packageName);
+    }
+
+    //
+    // Separate methods for creating a binary and creating an instance of that binary.
+
+    public static Object createInstanceFromClass(File root, String className, String packageName) {
         // Load and instantiate compiled class.
         URLClassLoader classLoader = null;
         try {

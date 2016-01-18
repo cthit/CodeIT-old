@@ -6,7 +6,7 @@
 
 package plugin;
 
-import it.chalmers.digit.codeit.server.utils.FileScanner;
+import it.chalmers.digit.codeit.common.utils.FileScanner;
 
 import java.io.File;
 import java.util.ArrayList;
