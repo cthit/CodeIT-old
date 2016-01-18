@@ -28,14 +28,18 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         return this.code;
     }
 
-    public static Object compile(String code, String packageName) {
+    public static Object compile(String compilePath, String code) {
+        File compPath = new File(compilePath);
         String className = getClassName(code);
-        File compilationPath = new File("compiled/");
-        JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
-        if (javaCompiler == null) {
-            throw new RuntimeException("Couldn't instantiate the java compiler");
-        }
+        String packageName = getPackageName(code);
+        classCompile(className, code, compPath);
 
+        System.out.println("Class has been successfully compiled");
+        File root = new File("compiled");
+        return createInstanceFromClass(root, className, packageName);
+    }
+
+    private static void classCompile (String className, String code, File compilationPath) {
         JavaSourceFromString jsfs = new JavaSourceFromString(className, code);
 
         Iterable<JavaSourceFromString> fileObjects = Collections.singletonList(jsfs);
@@ -43,14 +47,15 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         List<String> options = createCompileOptions(compilationPath);
 
         StringWriter output = new StringWriter();
+        JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
+        if (javaCompiler == null) {
+            throw new RuntimeException("Couldn't instantiate the java compiler");
+        }
+
         boolean success = javaCompiler.getTask(output, null, null, options, null, fileObjects).call();
         if (!success) {
             throw new RuntimeException("Compilation failed :" + output);
         }
-
-        System.out.println("Class has been successfully compiled");
-        File root = new File("compiled");
-        return createInstanceFromClass(root, className, packageName);
     }
 
     private static List<String> createCompileOptions(File compilationPath) {
@@ -70,10 +75,19 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         options.add(sb.toString());
         return options;
     }
-
-
+    
     private static String getClassName(String code) {
         Pattern p = Pattern.compile(".*public\\sclass\\s(([a-zA-Z_$][a-zA-Z\\d_$]*)+).*");
+        Matcher m = p.matcher(code);
+
+        if (m.find()) {
+            System.out.println(m.group(1));
+        }
+        return null;
+    }
+
+    private static String getPackageName(String code) {
+        Pattern p = Pattern.compile(".*package\\s([a-z]+(\\.[a-z]+)*;)");
         Matcher m = p.matcher(code);
 
         if (m.find()) {
@@ -108,7 +122,7 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Access denied for class: " + packageName + "." + className);
         }
-        
+
         return instance;
     }
 }

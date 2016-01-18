@@ -350,7 +350,7 @@ public class ClientController extends Listener {
         }
         code = code.replaceFirst("package\\s+.+?;", "package pong_sample;");
         try {
-            instanceObj = JavaSourceFromString.compile(code, file.getName(), "pong_sample");
+            instanceObj = JavaSourceFromString.compile("compiled/", code);
         } catch (RuntimeException e) {
             errorDialog("Compiler error", "Couldn't compile class", "Error: " + e.getMessage());
             return;
