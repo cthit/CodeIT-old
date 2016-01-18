@@ -16,11 +16,14 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  * Created by tejp on 16/02/15.
  */
 public class RatingVisualizerController {
+
+    private static final Logger log = Logger.getLogger(RatingVisualizer.class.getName());
 
     private int port;
     private InetAddress adress;
