@@ -9,7 +9,7 @@ import it.chalmers.digit.codeit.common.network.Message;
 import it.chalmers.digit.codeit.common.network.MessageWithObject;
 import it.chalmers.digit.codeit.common.network.Network;
 import it.chalmers.digit.codeit.common.network.Serializer;
-import it.chalmers.digit.codeit.server.utils.JavaSourceFromString;
+import it.chalmers.digit.codeit.common.utils.JavaSourceFromString;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;

@@ -8,7 +8,7 @@ import it.chalmers.digit.codeit.api.Game;
 import it.chalmers.digit.codeit.common.network.*;
 import it.chalmers.digit.codeit.server.game.Model;
 import it.chalmers.digit.codeit.server.game.Team;
-import it.chalmers.digit.codeit.server.utils.JavaSourceFromString;
+import it.chalmers.digit.codeit.common.utils.JavaSourceFromString;
 import pong_sample.PongGame;
 import pong_sample.PongMove;
 

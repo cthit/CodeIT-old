@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package it.chalmers.digit.codeit.server.utils;
+package it.chalmers.digit.codeit.common.utils;
 
 import java.io.File;
 import java.util.ArrayList;
