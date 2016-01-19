@@ -11,15 +11,15 @@ import it.chalmers.digit.codeit.common.network.Network;
 import it.chalmers.digit.codeit.common.network.Serializer;
 import it.chalmers.digit.codeit.common.utils.JavaSourceFromString;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.InnerShadow;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.ArrayUtils;
@@ -29,22 +29,35 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Logger;
 
 
 public class ClientController extends Listener {
+
+    private static final Logger log = Logger.getLogger(ClientController.class.getName());
 
     private Stage stage;
     @FXML private TextField file_path;
     @FXML private TextField simulation_delay;
     @FXML private Label feedback_project_path;
     @FXML private Label feedback_simulation;
+
+    @FXML private Label team_name;
+    @FXML private Label server_status;
+
+    @FXML private Button send_code;
+    @FXML private Button download_sources;
+    @FXML private Button test_ai;
+    @FXML private Button reconnect;
+
+    //Where to put the unzipped source downloaded from the server.
+    private final String JAR_DIRECTORY = "compiled/";
 
     private Client client = null;
     private byte[] chunks = null;
@@ -56,7 +69,11 @@ public class ClientController extends Listener {
      */
     @Override
     public void connected(Connection connection) {
-        System.out.println("Connected");
+        log.info("Connected to " + connection.getRemoteAddressTCP());
+        Platform.runLater(() -> setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.DARKRED));
+        Platform.runLater(() -> send_code.setDisable(false));
+        Platform.runLater(() -> download_sources.setDisable(false));
+        Platform.runLater(() -> reconnect.setVisible(false));
     }
 
     /**
@@ -79,7 +96,11 @@ public class ClientController extends Listener {
      */
     @Override
     public void disconnected(Connection connection) {
-        System.out.println("Disconnected");
+        log.info("Disconnected " + connection.getRemoteAddressTCP());
+        Platform.runLater(() -> setServerStatus("Disconnected from server", Color.DARKRED));
+        Platform.runLater(() -> send_code.setDisable(true));
+        Platform.runLater(() -> download_sources.setDisable(true));
+        Platform.runLater(() -> reconnect.setVisible(true));
     }
 
     /**
@@ -98,7 +119,7 @@ public class ClientController extends Listener {
      * @param msg The message with an object attached.
      */
     private void handleMessageWithObject(MessageWithObject msg) {
-        System.out.println("Received: " + msg.message);
+        log.info("Received: " + msg.message);
         if (msg.message == Message.TRANSFER_SOURCES) {
             handleDownloadSources("source.jar", (byte[]) msg.object);
         } else if(msg.message == Message.CHUNKED_TRANSFER) {
@@ -117,9 +138,9 @@ public class ClientController extends Listener {
             Platform.runLater(() -> errorDialog("Transfer error", "", "Got chunk while no chunk transfer was in progress"));
         } else {
             chunks = ArrayUtils.addAll(chunks, (byte[])msg.object);
-            System.out.println("Chunksize: " + chunks.length);
+            log.info("Chunksize: " + chunks.length);
             if(chunks.length == chunkSize) {
-                System.out.println("chunks.length == chunkSize");
+                log.info("chunks.length == chunkSize");
                 try {
                     chunkSize = -1;
                     handleMessageWithObject((MessageWithObject) Serializer.deserialize(chunks));
@@ -139,7 +160,7 @@ public class ClientController extends Listener {
      * @param msg The message containing the expected size of all the chunks.
      */
     private void handleNewChunkedTransfer(MessageWithObject msg) {
-        System.out.println("handleNewChunkedTransfer");
+        log.info("handleNewChunkedTransfer");
         if(chunkSize == -1) {
             chunkSize = (int)msg.object;
             chunks = null;
@@ -156,13 +177,18 @@ public class ClientController extends Listener {
      * @param fileContent The content of the file.
      */
     private void handleDownloadSources(String fileName, byte[] fileContent) {
-        Path filePath = Paths.get(fileName);
+        Path filePath = Paths.get(JAR_DIRECTORY + fileName);
         try {
+            File directory = new  File(JAR_DIRECTORY);
+            if(!directory.mkdirs()) {
+                Platform.runLater(() -> errorDialog("File error", "Couldn't create directories when unzipping jar", directory.getAbsolutePath()));
+            }
             Files.write(filePath, fileContent);
-            new File("compiled").mkdir();
-            unzipJar("compiled", fileName);
+            unzipJar(JAR_DIRECTORY, filePath.toString());
+            Platform.runLater(() -> test_ai.setDisable(false));
+            Platform.runLater(() -> setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN));
         } catch (IOException e) {
-            errorDialog("File error", e.getLocalizedMessage(), "");//e.getStackTrace());
+            Platform.runLater(() -> errorDialog("File error", "Couldn't write downloaded sources to disk", e.getLocalizedMessage()));
         }
     }
 
@@ -170,7 +196,7 @@ public class ClientController extends Listener {
      * Displays an dialog box with the error template to the user.
      * Needs to be invoked with Platform.runlater(() -> ) in the network thread.
      * @param title The title of the dialog box.
-     * @param masthead The masthea dof the dialog box.
+     * @param masthead The masthead dof the dialog box.
      * @param message The message of the dialog box.
      */
     private void errorDialog(String title, String masthead, String message) {
@@ -186,100 +212,60 @@ public class ClientController extends Listener {
      * Should be called when this scene is created, handles setup tasks.
      * @param stage The stage that this scene belongs to.
      * @param client The client that has an open connection to the server.
+     * @param teamName The team name that the player has chosen.
      */
-    public void setup(Stage stage, Client client) {
+    public void setup(Stage stage, Client client, String teamName) {
         this.stage = stage;
         this.client = client;
+        this.team_name.setText(teamName);
         client.addListener(this);
+
+        setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN);
+        test_ai.setDisable(true); //Set to disabled until sources have been downloaded from the server.
+        reconnect.setVisible(false);
 
         file_path.setText("/home/kalior/project/codeit/pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
     }
 
-    /*public void switchToLoginScene() {
-        /*URL location = getClass().getResource("login.fxml");
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(location);
-
-        Parent root = null;
-        try {
-            root = loader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Scene scene = new Scene(root, 800, 825);
-        scene.getStylesheets().add(
-                getClass().getResource("main.css").toExternalForm()
-        );
-
-
-
-        team_name.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (! newValue.matches("[a-zA-Z_$][a-zA-Z\\d_$]*")) {
-                    team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
-                    feedback_team_name.setText("Plz match this -> [a-zA-Z_$][a-zA-Z\\d_$]*");
-                    feedback_team_name.setTextFill(Color.DARKRED);
-                } else {
-                    team_name.setEffect(new InnerShadow(0, Color.WHITE));
-                    feedback_team_name.setText("");
-                    feedback_team_name.setTextFill(Color.GREEN);
-                }
-            }
-        });
-
-
-        ChangeListener<String> listener= (observable, oldValue, newValue) -> {
-            if (newValue.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
-                feedback_connection.setText("Wow very address");
-                feedback_connection.setTextFill(Color.GREEN);
-            } else {
-                feedback_connection.setText("Nah, plz fex.");
-                feedback_connection.setTextFill(Color.DARKRED);
-            }
-        };
-
-        address.textProperty().addListener(listener);
-
-
-        team_name.setText("qwerty");
-        address.setText("10.0.0.237");
-        port.setText("7777");
-    }*/
-
-    public void switchToMainScene() {
-        URL location = getClass().getResource("main.fxml");
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(location);
-        Parent root = null;
-        try {
-            root = (Parent) fxmlLoader.load(location.openStream());
-        } catch (IOException e) {
-            //FUUUUUUUUUUUU
-        }
-        Scene scene = new Scene(root, 800, 825);
-        scene.getStylesheets().add(
-                getClass().getResource("main.css").toExternalForm());
-
-        stage.setScene(scene);
-
-        ChangeListener<String> numberOnly= (observable, oldValue, newValue) -> {
-            if (newValue.matches("\\d+\\.?\\d*")) {
-                simulation_delay.setEffect(new InnerShadow(0, Color.WHITE));
-                feedback_simulation.setText("");
-                feedback_simulation.setTextFill(Color.GREEN);
-            } else {
-                simulation_delay.setEffect(new InnerShadow(1000, Color.DARKRED));
-                feedback_simulation.setText("Nah, plz fex.");
-                feedback_simulation.setTextFill(Color.DARKRED);
-            }
-        };
-
-        simulation_delay.textProperty().addListener(numberOnly);
-        file_path.setText("pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
-
+    /**
+     * Updates the server status label.
+     * @param text The text to display.
+     * @param color The color of the text.
+     */
+    private void setServerStatus(String text, Paint color) {
+        server_status.setText(text);
+        server_status.setTextFill(color);
     }
 
+    /**
+     * Handles the switch to the login scene.
+     * Loads the correct fxml layout, calls setup() on the correct controller and removes this class as listener
+     * on network events.
+     */
+    public void switchToLoginScene() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/login.fxml"));
+        Scene scene;
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            errorDialog("Load error", "Couldn't load layout file", e.getMessage());
+            return;
+        }
+
+        stage.setScene(scene);
+        client.removeListener(this);
+        LoginController controller = loader.<LoginController>getController();
+        controller.setup(stage);
+        stage.show();
+    }
+
+    /**
+     * Handle the onClickEvent on the reconnect button.
+     */
+    @FXML
+    private void onReconnectClicked() {
+        switchToLoginScene();
+    }
     /**
      * Handle the onClickEvent on the file browse button.
      */
@@ -291,9 +277,9 @@ public class ClientController extends Listener {
         if(file.exists() && file.getParentFile().isDirectory()) {
             fileChooser.setInitialDirectory(file.getParentFile());
         }
-        File choosenFile = fileChooser.showOpenDialog(stage);
-        if (choosenFile != null)
-            file_path.setText(choosenFile.getAbsolutePath());
+        File chosenFile = fileChooser.showOpenDialog(stage);
+        if (chosenFile != null)
+            file_path.setText(chosenFile.getAbsolutePath());
     }
 
     /**
@@ -302,12 +288,13 @@ public class ClientController extends Listener {
     @FXML
     private void sendCodeClicked() {
         Path filePath = Paths.get(file_path.getText());
-        byte[] content = new byte[0];
+        byte[] content;
 
         try {
             content = Files.readAllBytes(filePath);
         } catch (IOException e) {
             errorDialog("File error", "Couldn't read file", e.getMessage());
+            return;
         }
 
         MessageWithObject msg = new MessageWithObject(Message.TRANSFER_SOURCES, content);
@@ -323,8 +310,8 @@ public class ClientController extends Listener {
      */
     @FXML
     private void downloadSourcesClicked() {
-        System.out.println("downloadSourcesClicked()");
         client.sendTCP(Message.REQUEST_SOURCES);
+        setServerStatus("Downloading sources", Color.GREEN);
     }
 
     /**
@@ -333,11 +320,11 @@ public class ClientController extends Listener {
     @FXML
     private void testMyAIClicked() {
         File file = new File(file_path.getText());
-        String code = null;
-        Object instanceObj = null;
-        double delay = 0;
+        String code;
+        Object instanceObj;
+        double delay;
         try {
-            delay = new Double(simulation_delay.getText()).doubleValue();
+            delay = Double.parseDouble(simulation_delay.getText());
         } catch(NumberFormatException e) {
             errorDialog("Number error", "Not a number", e.getLocalizedMessage());
             return;
@@ -374,7 +361,7 @@ public class ClientController extends Listener {
      * @param jarPath THe path to the jar file.
      * @throws IOException
      */
-    public static void unzipJar(String destinationDir, String jarPath) throws IOException {
+    public void unzipJar(String destinationDir, String jarPath) throws IOException {
         File file = new File(jarPath);
         JarFile jar = new JarFile(file);
         // fist get all directories,
@@ -386,7 +373,9 @@ public class ClientController extends Listener {
             File f = new File(fileName);
 
             if (fileName.endsWith("/")) {
-                f.mkdirs();
+                if (!f.mkdirs()) {
+                    Platform.runLater(() -> errorDialog("File error", "Couldn't create directories when unzipping jar", f.getAbsolutePath()));
+                }
             }
 
         }

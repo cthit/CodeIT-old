@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Utility functions for communication over the network.
@@ -15,6 +16,8 @@ public class Network {
 
     public static final int BUFFER_SIZE = 16384;
     private static final int SEND_DELAY = 50;
+
+    private static final Logger log = Logger.getLogger(Network.class.getName());
 
     /**
      * Sends the given MessageWithObject to a connection, makes sure that the message can be sent regardless of size.
@@ -31,8 +34,7 @@ public class Network {
         MessageWithObject chunkedTransfer = new MessageWithObject(Message.CHUNKED_TRANSFER, contentSize);
         connection.sendTCP(chunkedTransfer);
 
-        // Implement better logging here
-        // System.out.println("Sending " + chunks.size() + " messages");
+        log.info("Sending "  + msg.message + " with " + chunks.size() + " messages");
 
         try {
             for (MessageWithObject chunk : chunks) {
@@ -40,15 +42,12 @@ public class Network {
                 try {
                     Thread.sleep(SEND_DELAY);
                 } catch (InterruptedException e) {
-                    System.out.println("Network.sendMessageWithObject: InterruptedException");
-                    e.printStackTrace();
+                    log.info(e.getMessage());
                     connection.sendTCP(Message.TRANSFER_ERROR);
                 }
             }
         } catch (KryoException e) {
-            // Implement better logging here
-            System.out.println("Network.sendMessageWithObject: KryoException");
-            e.printStackTrace();
+            log.info(e.getMessage());
             connection.sendTCP(Message.TRANSFER_ERROR);
         }
 
@@ -65,9 +64,8 @@ public class Network {
         int numberOfChunks = (int)Math.ceil(bytes.length / (chunkSize));
         List<MessageWithObject> chunks = new ArrayList<>();
 
-        // Implement better logging here
-        //System.out.println("chunkMessage byteslength: " + bytes.length);
-        //System.out.println("chunkMessage chunksize: " + chunkSize);
+        log.info("chunkMessage byteslength: " + bytes.length);
+        log.info("chunkMessage chunksize: " + chunkSize);
 
         for(int i = 0; i <= numberOfChunks; ++i) {
             int start = chunkSize * i;

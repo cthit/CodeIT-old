@@ -21,11 +21,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Created by kerp on 20/11/15.
  */
 public class LoginController extends Listener {
+
+    private static final Logger log = Logger.getLogger(LoginController.class.getName());
 
     @FXML private TextField team_name;
     @FXML private TextField address;
@@ -45,23 +48,19 @@ public class LoginController extends Listener {
         this.stage = stage;
         initNetwork();
 
-        team_name.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (! newValue.matches("[a-zA-Z_$][a-zA-Z\\d_$]*")) {
-                    team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
-                    feedback_team_name.setText("Plz match this -> [a-zA-Z_$][a-zA-Z\\d_$]*");
-                    feedback_team_name.setTextFill(Color.DARKRED);
-                } else {
-                    team_name.setEffect(new InnerShadow(0, Color.WHITE));
-                    feedback_team_name.setText("");
-                    feedback_team_name.setTextFill(Color.GREEN);
-                }
+        team_name.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (! newValue.matches("[a-zA-Z_$][a-zA-Z\\d_$]*")) {
+                team_name.setEffect(new InnerShadow(1000, Color.DARKRED));
+                feedback_team_name.setText("Plz match this -> [a-zA-Z_$][a-zA-Z\\d_$]*");
+                feedback_team_name.setTextFill(Color.DARKRED);
+            } else {
+                team_name.setEffect(new InnerShadow(0, Color.WHITE));
+                feedback_team_name.setText("");
+                feedback_team_name.setTextFill(Color.GREEN);
             }
         });
 
-
-        ChangeListener<String> listener= (observable, oldValue, newValue) -> {
+        address.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
                 feedback_connection.setText("Wow very address");
                 feedback_connection.setTextFill(Color.GREEN);
@@ -69,13 +68,12 @@ public class LoginController extends Listener {
                 feedback_connection.setText("Nah, plz fex.");
                 feedback_connection.setTextFill(Color.DARKRED);
             }
-        };
+        });
 
-        address.textProperty().addListener(listener);
 
 
         team_name.setText("qwerty");
-        address.setText("10.0.0.237");
+        address.setText("192.168.1.6");
         port.setText("7777");
     }
 
@@ -99,14 +97,14 @@ public class LoginController extends Listener {
 
     @Override
     public void connected(Connection connection) {
-        System.out.println("Connected");
+        log.info("Connected to " + connection.getRemoteAddressTCP());
         MessageWithObject newTeamName = new MessageWithObject(Message.NEW_TEAMNAME, team_name.getText());
         connection.sendTCP(newTeamName);
     }
 
     @Override
     public void received(Connection connection, Object object) {
-        System.out.println("Received");
+        log.info("Received message from " + connection.getRemoteAddressTCP());
 
         if(object instanceof Message) {
             handleMessage((Message)object);
@@ -115,17 +113,15 @@ public class LoginController extends Listener {
 
     @Override
     public void disconnected(Connection connection) {
-        System.out.println("Disconnected");
+        log.info("Disconnected from " + connection.getRemoteAddressTCP());
     }
 
     private void handleMessage(Message msg) {
-        System.out.println("Real Message Received");
+        log.info("Message: " + msg);
         if(msg == Message.GOOD_TEAMNAME) {
-            System.out.println("Good teamnamne");
             Platform.runLater(() -> switchToMainScene());
         }else if(msg == Message.BAD_TEAMNAME) {
-            System.out.println("Bad teamnamne");
-            Platform.runLater(() -> setBadTeamName());
+            Platform.runLater(() -> setBadTeamName(getTeamName()));
         }
     }
 
@@ -139,8 +135,9 @@ public class LoginController extends Listener {
         }
     }
 
-    private void setBadTeamName() {
-        feedback_team_name.setText("Team name already connected to server.");
+    private void setBadTeamName(String teamName) {
+        feedback_team_name.setText("The name: " + teamName + " is already in use");
+        feedback_team_name.setTextFill(Color.DARKRED);
     }
 
     private void setConnectingFeedback(String text) {
@@ -148,7 +145,7 @@ public class LoginController extends Listener {
     }
 
     private void switchToMainScene() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/main.fxml"));
         Scene scene = null;
         try {
             scene = new Scene((Pane)loader.load());
@@ -157,9 +154,7 @@ public class LoginController extends Listener {
         }
         ClientController controller = loader.<ClientController>getController();
         client.removeListener(this);
-        controller.setup(stage, client);
-        scene.getStylesheets().add(
-                getClass().getResource("main.css").toExternalForm());
+        controller.setup(stage, client, team_name.getText());
 
         stage.setScene(scene);
         stage.show();
@@ -173,5 +168,7 @@ public class LoginController extends Listener {
         return Integer.parseInt(port.getText());
     }
 
-
+    public String getTeamName() {
+        return team_name.getText();
+    }
 }

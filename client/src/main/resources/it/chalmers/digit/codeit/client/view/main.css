@@ -2,7 +2,7 @@
     -fx-background-image: url("background.jpg");
 }
 
-.label {
+.label_info {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
     -fx-text-fill: #333333;

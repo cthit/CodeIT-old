@@ -5,23 +5,30 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class ClientView extends Application {
 
+    private final int MIN_HEGTH = 800;
+    private final int MIN_WIDTH = 825;
+
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
         Parent root = loader.load();
         primaryStage.setTitle("CodeIT");
+        primaryStage.setMinHeight(MIN_HEGTH);
+        primaryStage.setMinWidth(MIN_WIDTH);
+
+        primaryStage.getIcons().add(new Image(ClientView.class.getResourceAsStream("digit.png" )));
 
         LoginController controller = loader.<LoginController>getController();
         controller.setup(primaryStage);
 
-        Scene scene = new Scene(root, 800, 825);
-        scene.getStylesheets().add(
-                getClass().getResource("main.css").toExternalForm());
-
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

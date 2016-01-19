@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +28,8 @@ import java.util.stream.Collectors;
  * handles connections and all responses to clients
  */
 public class ServerController extends Listener {
+
+    private static final Logger log = Logger.getLogger(ServerController.class.getName());
 
     private Server server = new Server(Network.BUFFER_SIZE, Network.BUFFER_SIZE);
     private HashMap<Connection, Team> connectedTeams = new HashMap<>();
@@ -55,8 +58,7 @@ public class ServerController extends Listener {
         try {
             server.bind(7777);
         } catch (IOException e) {
-            //Implement better logging
-            System.out.println("Could not bind to port. Is port busy? Maybe by another server instance.");
+            log.info("Could not bind to port: 7777");
         }
 
         BiFunction<Competitor<PongGame, PongMove>, Competitor<PongGame, PongMove>, Game> gameFactory = (a, b) -> new PongGame(a, b);
@@ -118,8 +120,7 @@ public class ServerController extends Listener {
                 handleTransferError(conn, m);
                 break;
             default:
-                // Implement better logging
-                System.out.println("Received unknown message from" + connectedTeams.get(conn).getTeamName());
+                log.info("Received unknown message from" + connectedTeams.get(conn).getTeamName());
         }
     }
 
@@ -129,9 +130,8 @@ public class ServerController extends Listener {
      * @param m the Message with an attached object
      */
     private void handleTransferError(Connection conn, MessageWithObject m) {
-        // Implement better loggin
-        System.out.println("Transfer error from: " + connectedTeams.get(conn).getTeamName());
-        System.out.println(m.message);
+        log.info("Transfer error from: " + connectedTeams.get(conn).getTeamName());
+        log.info("Message: " + m.message);
     }
 
     /**
@@ -199,7 +199,7 @@ public class ServerController extends Listener {
             Network.sendMessageWithObject(c, m);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Could not find file to send to client. " + sourceFilePath);
+            log.info("Could not find file to send to client. " + sourceFilePath);
         }
     }
 
@@ -216,8 +216,7 @@ public class ServerController extends Listener {
         try {
             code = new String(bytes, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            // Implement better logging
-            System.out.println("Count't handle encoding");
+            log.info("Couldn't handle encoding");
             e.printStackTrace();
         }
 
