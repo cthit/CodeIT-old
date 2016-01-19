@@ -17,34 +17,32 @@ public class JavaSourceFromString extends SimpleJavaFileObject
 {
     final String code;
 
-    public JavaSourceFromString(String name, String code)
-    {
+    public JavaSourceFromString(String name, String code) {
         super(URI.create("string:///" + name), Kind.SOURCE);
         this.code = code;
     }
 
-    public CharSequence getCharContent(boolean ignoreEncodingErrors)
-    {
+    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
         return this.code;
     }
 
-    public static Object compile(String compilePath, String code) {
-        File compPath = new File(compilePath);
+    public static Object compile(String compileOutputPath, String code) {
+        File compPath = new File(compileOutputPath);
         String className = getClassName(code);
         String packageName = getPackageName(code);
-        classCompile(className, code, compPath);
+        classCompile(compPath, className, code);
 
         System.out.println("Class has been successfully compiled");
         File root = new File("compiled");
         return createInstanceFromClass(root, className, packageName);
     }
 
-    private static void classCompile (String className, String code, File compilationPath) {
+    private static void classCompile (File compilationPath, String className, String code) {
         JavaSourceFromString jsfs = new JavaSourceFromString(className, code);
 
         Iterable<JavaSourceFromString> fileObjects = Collections.singletonList(jsfs);
 
-        List<String> options = createCompileOptions(compilationPath);
+        List<String> options = createCompileOptions(compilationPath, "source.jar");
 
         StringWriter output = new StringWriter();
         JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -58,10 +56,10 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         }
     }
 
-    private static List<String> createCompileOptions(File compilationPath) {
+    private static List<String> createCompileOptions(File compilationOutputPath, String sourceDependency) {
         List<String> options = new ArrayList<>();
         options.add("-d");
-        options.add(compilationPath.getAbsolutePath());
+        options.add(compilationOutputPath.getAbsolutePath());
         options.add("-classpath");
 
         URLClassLoader urlClassLoader = (URLClassLoader)Thread.currentThread().getContextClassLoader();
@@ -69,9 +67,9 @@ public class JavaSourceFromString extends SimpleJavaFileObject
         for (URL url : urlClassLoader.getURLs()) {
             sb.append(url.getFile()).append(File.pathSeparator);
         }
-        sb.append("source.jar");
+        sb.append(sourceDependency);
         sb.append(File.pathSeparator);
-        sb.append(compilationPath.getAbsolutePath());
+        sb.append(compilationOutputPath.getAbsolutePath());
         options.add(sb.toString());
         return options;
     }
