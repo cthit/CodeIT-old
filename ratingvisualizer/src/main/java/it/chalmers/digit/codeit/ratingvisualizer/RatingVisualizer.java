@@ -16,14 +16,17 @@ public class RatingVisualizer extends Application {
         launch(args);
     }
 
+    private final int MIN_HEiGTH = 600;
+    private final int MIN_WIDTH = 568;
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("ratingvisualizer.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("Table View Sample");
-        stage.setWidth(300);
-        stage.setHeight(500);
+        stage.setMinWidth(MIN_HEiGTH);
+        stage.setMinHeight(MIN_WIDTH);
 
         final Label label = new Label("RatingTable");
         label.setFont(new Font("Arial", 20));
