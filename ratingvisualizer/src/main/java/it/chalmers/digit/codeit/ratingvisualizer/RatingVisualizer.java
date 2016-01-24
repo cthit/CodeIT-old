@@ -41,10 +41,15 @@ public class RatingVisualizer extends Application {
         }
 
         final RatingVisualizerController controller = (RatingVisualizerController) loader.getController();
-        controller.initialize(adress, port);
+        controller.initialize(adress, port, stage);
         controller.startDataWatcher();
 
         stage.setScene(scene);
         stage.show();
+    }
+
+    @Override
+    public void stop(){
+        System.exit(0);
     }
 }
