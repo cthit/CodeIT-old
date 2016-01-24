@@ -7,13 +7,12 @@ import it.chalmers.digit.codeit.common.network.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import org.controlsfx.dialog.Dialogs;
 import org.apache.commons.lang3.ArrayUtils;
+import org.controlsfx.dialog.Dialogs;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -33,12 +32,10 @@ public class RatingVisualizerController extends Listener {
     private static final Logger log = Logger.getLogger(RatingVisualizer.class.getName());
 
     private int port;
-    private InetAddress adress;
-
-    private ObservableList<TeamRatingEntry> data = FXCollections.observableArrayList();
+    private InetAddress address;
 
     private static final ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
-    @FXML private TableView table;
+    @FXML private TableView<TeamRatingEntry> table;
     private Stage stage;
 
     private Client client = null;
@@ -54,7 +51,7 @@ public class RatingVisualizerController extends Listener {
         clientThread = new Thread(client);
         clientThread.start();
         try {
-            client.connect(5000, adress, port);
+            client.connect(5000, address, port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,7 +86,7 @@ public class RatingVisualizerController extends Listener {
     }
 
     private void handleTransferRatings(MessageWithObject msg) {
-        final ObservableList items = table.getItems();
+        final ObservableList<TeamRatingEntry> items = table.getItems();
 
         Platform.runLater(() -> {
             items.clear();
@@ -161,7 +158,7 @@ public class RatingVisualizerController extends Listener {
         this.port = port;
         this.stage = stage;
         try {
-            this.adress = InetAddress.getByName(address);
+            this.address = InetAddress.getByName(address);
         } catch (UnknownHostException e) {
             throw new RuntimeException(String.format("Could not find host ip address: %s", address));
         }
