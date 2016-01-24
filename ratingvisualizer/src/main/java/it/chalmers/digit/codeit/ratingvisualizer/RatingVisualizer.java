@@ -32,16 +32,16 @@ public class RatingVisualizer extends Application {
         label.setFont(new Font("Arial", 20));
 
         int port = 7777;
-        String adress = "127.0.0.1";
+        String address = "127.0.0.1";
         switch (getParameters().getRaw().size()) {
             case 2:
                 port = Integer.parseInt(getParameters().getRaw().get(1));
             case 1:
-                adress = getParameters().getRaw().get(0);
+                address = getParameters().getRaw().get(0);
         }
 
-        final RatingVisualizerController controller = (RatingVisualizerController) loader.getController();
-        controller.initialize(adress, port, stage);
+        final RatingVisualizerController controller = loader.getController();
+        controller.initialize(address, port, stage);
         controller.startDataWatcher();
 
         stage.setScene(scene);
