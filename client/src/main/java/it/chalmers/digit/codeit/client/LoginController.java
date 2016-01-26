@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 /**
  * Created by kerp on 20/11/15.
@@ -44,9 +45,13 @@ public class LoginController extends Listener {
 
     private Stage stage = null;
 
+    Preferences preferences = Preferences.userRoot().node(this.getClass().getName());
+
     public void setup(Stage stage) {
         this.stage = stage;
         initNetwork();
+
+        stage.setOnCloseRequest(event -> savePreferences());
 
         team_name.textProperty().addListener((observable, oldValue, newValue) -> {
             if (! newValue.matches("[a-zA-Z_$][a-zA-Z\\d_$]*")) {
@@ -72,9 +77,9 @@ public class LoginController extends Listener {
 
 
 
-        team_name.setText("qwerty");
-        address.setText("192.168.1.6");
-        port.setText("7777");
+        team_name.setText(preferences.get("team_name", "default_name"));
+        address.setText(preferences.get("address", "127.0.0.1"));
+        port.setText(preferences.get("port", "7777"));
     }
 
     public void initNetwork() {
@@ -145,6 +150,8 @@ public class LoginController extends Listener {
     }
 
     private void switchToMainScene() {
+        savePreferences();
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("view/main.fxml"));
         Scene scene = null;
         try {
@@ -158,6 +165,12 @@ public class LoginController extends Listener {
 
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void savePreferences() {
+        preferences.put("team_name", team_name.getText());
+        preferences.put("address", address.getText());
+        preferences.put("port", port.getText());
     }
 
     public String getAddress() {
