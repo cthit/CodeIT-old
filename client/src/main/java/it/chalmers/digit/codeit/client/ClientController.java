@@ -203,12 +203,14 @@ public class ClientController extends Listener {
      * @param message The message of the dialog box.
      */
     private void errorDialog(String title, String masthead, String message) {
-        Dialogs.create()
+       /* Dialogs.create()
                 .owner(stage)
                 .title(title)
                 .masthead(masthead)
                 .message(message)
                 .showError();
+               */
+        log.info(title + ": " + masthead + " + " + message);
     }
 
     /**
@@ -226,7 +228,6 @@ public class ClientController extends Listener {
         stage.setOnCloseRequest(event -> savePreferences());
 
         setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN);
-        test_ai.setDisable(true); //Set to disabled until sources have been downloaded from the server.
         reconnect.setVisible(false);
 
         file_path.setText(preferences.get("file_path", System.getProperty("user.home")));
