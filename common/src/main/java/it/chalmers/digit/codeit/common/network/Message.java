@@ -7,9 +7,10 @@ import com.esotericsoftware.kryo.Kryo;
  */
 public enum Message {
 
-    REQUEST_SOURCES("request_sources"), REQUEST_RATING("request_rating"), TRANSFER_SOURCES("transfer_sources"),
+    REQUEST_SOURCES("request_sources"), TRANSFER_SOURCES("transfer_sources"),
     BAD_TEAMNAME("bad_teamname"), GOOD_TEAMNAME("good_teamname"), NEW_TEAMNAME("new_teamname"),
-    CHUNKED_TRANSFER("chunked_transfer"), CHUNK("chunk"), TRANSFER_ERROR("transfer_error");
+    CHUNKED_TRANSFER("chunked_transfer"), CHUNK("chunk"), TRANSFER_ERROR("transfer_error"),
+    REQUEST_RATINGS("request_ratings"), TRANSFER_RATINGS("transfer_ratings");
 
     private String message;
 
@@ -20,5 +21,4 @@ public enum Message {
     public static void register(Kryo k) {
         k.register(Message.class);
     }
-
 }

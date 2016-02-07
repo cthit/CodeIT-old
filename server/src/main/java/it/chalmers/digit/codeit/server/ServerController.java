@@ -18,7 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -92,9 +94,10 @@ public class ServerController extends Listener {
     private void handleMessage(Connection conn, Message message) {
         if (message == Message.REQUEST_SOURCES) {
             sendSources(conn);
+        } else if(message == Message.REQUEST_RATINGS) {
+            sendRatings(conn);
         }
     }
-
 
     /**
      * forwards a message to apropriate handle method for that message
@@ -200,6 +203,25 @@ public class ServerController extends Listener {
         } catch (IOException e) {
             e.printStackTrace();
             log.info("Could not find file to send to client. " + sourceFilePath);
+        }
+    }
+
+    /**
+     * Sends the list of teams and their ratings to a connection
+     * @param conn the connection to send to
+     */
+    private void sendRatings(Connection conn) {
+        Map<String, Double> teamRatings = new HashMap<>();
+        for (Team team : connectedTeams.values()) {
+            teamRatings.put(team.getTeamName(), 0.0);
+        }
+
+        MessageWithObject msg = new MessageWithObject(Message.TRANSFER_RATINGS, teamRatings);
+        try {
+            Network.sendMessageWithObject(conn, msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.info("Could not send ratings to ratingvisualizer");
         }
     }
 
