@@ -9,6 +9,7 @@ import it.chalmers.digit.codeit.common.network.Message;
 import it.chalmers.digit.codeit.common.network.MessageWithObject;
 import it.chalmers.digit.codeit.common.network.Network;
 import it.chalmers.digit.codeit.common.network.Serializer;
+import it.chalmers.digit.codeit.common.utils.JavaCompilerHelper;
 import it.chalmers.digit.codeit.common.utils.JavaSourceFromString;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -350,7 +351,8 @@ public class ClientController extends Listener {
         }
         code = code.replaceFirst("package\\s+.+?;", "package pong_sample;");
         try {
-            instanceObj = JavaSourceFromString.compile("compiled/", code);
+//            instanceObj = JavaSourceFromString.compile("compiled/", code);
+            instanceObj = JavaCompilerHelper.compile(code);
         } catch (RuntimeException e) {
             errorDialog("Compiler error", "Couldn't compile class", "Error: " + e.getMessage());
             return;
