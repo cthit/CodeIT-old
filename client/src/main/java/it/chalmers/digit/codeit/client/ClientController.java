@@ -36,6 +36,7 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 
 public class ClientController extends Listener {
@@ -62,6 +63,8 @@ public class ClientController extends Listener {
     private Client client = null;
     private byte[] chunks = null;
     private int chunkSize = -1; //Chunk size -1 indicates that currently no chunk transfer is in progress.
+
+    Preferences preferences = Preferences.userRoot().node(this.getClass().getName());
 
     /**
      * Callback method when a connection is established.
@@ -200,12 +203,14 @@ public class ClientController extends Listener {
      * @param message The message of the dialog box.
      */
     private void errorDialog(String title, String masthead, String message) {
-        Dialogs.create()
+       /* Dialogs.create()
                 .owner(stage)
                 .title(title)
                 .masthead(masthead)
                 .message(message)
                 .showError();
+               */
+        log.info(title + ": " + masthead + " + " + message);
     }
 
     /**
@@ -220,11 +225,12 @@ public class ClientController extends Listener {
         this.team_name.setText(teamName);
         client.addListener(this);
 
+        stage.setOnCloseRequest(event -> savePreferences());
+
         setServerStatus("Connected to " + client.getRemoteAddressTCP(), Color.GREEN);
-        test_ai.setDisable(true); //Set to disabled until sources have been downloaded from the server.
         reconnect.setVisible(false);
 
-        file_path.setText("/home/kalior/project/codeit/pong-challenge/src/main/java/pong_sample/SimplePongPaddle.java");
+        file_path.setText(preferences.get("file_path", System.getProperty("user.home")));
     }
 
     /**
@@ -243,6 +249,8 @@ public class ClientController extends Listener {
      * on network events.
      */
     public void switchToLoginScene() {
+        savePreferences();
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("view/login.fxml"));
         Scene scene;
         try {
@@ -257,6 +265,10 @@ public class ClientController extends Listener {
         LoginController controller = loader.<LoginController>getController();
         controller.setup(stage);
         stage.show();
+    }
+
+    private void savePreferences() {
+        preferences.put("file_path", file_path.getText());
     }
 
     /**
