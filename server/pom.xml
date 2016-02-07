@@ -58,7 +58,7 @@
                     <finalName>CodeIT_server</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>it.chalmers.digit.codeit.server.ServerController</mainClass>
+                            <mainClass>it.chalmers.digit.codeit.server.Main</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>

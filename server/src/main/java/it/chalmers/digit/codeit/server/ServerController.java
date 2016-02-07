@@ -6,6 +6,7 @@ import com.esotericsoftware.kryonet.Server;
 import it.chalmers.digit.codeit.api.Competitor;
 import it.chalmers.digit.codeit.api.Game;
 import it.chalmers.digit.codeit.common.network.*;
+import it.chalmers.digit.codeit.common.utils.JavaCompilerHelper;
 import it.chalmers.digit.codeit.server.game.Model;
 import it.chalmers.digit.codeit.server.game.Team;
 import it.chalmers.digit.codeit.common.utils.JavaSourceFromString;
@@ -35,7 +36,6 @@ public class ServerController extends Listener {
 
     private Server server = new Server(Network.BUFFER_SIZE, Network.BUFFER_SIZE);
     private HashMap<Connection, Team> connectedTeams = new HashMap<>();
-    private Path sourceFilePath;
 
     private Game game;
     private Model model;
@@ -44,8 +44,7 @@ public class ServerController extends Listener {
     */
 
     //public ServerController(Game game, String sourcePath) {
-    public ServerController(String sourcePath) {
-        sourceFilePath = Paths.get(sourcePath);
+    public ServerController() {
         //this.game = game;
         server.addListener(this);
     }
@@ -180,7 +179,7 @@ public class ServerController extends Listener {
      */
     private void handleNewTeamName(Connection c, String teamName) {
         List<String> teamNames = connectedTeams.values().stream().
-                map(t  -> t.getTeamName()).collect(Collectors.toList());
+                map(Team::getTeamName).collect(Collectors.toList());
 
         if ( teamNames.contains(teamName) ) {
             c.sendTCP(Message.BAD_TEAMNAME);
@@ -196,14 +195,15 @@ public class ServerController extends Listener {
      * @param c a connected client
      */
     private void sendSources(Connection c) {
-        try {
-            byte[] content = Files.readAllBytes(sourceFilePath);
-            MessageWithObject m = new MessageWithObject(Message.TRANSFER_SOURCES, content);
-            Network.sendMessageWithObject(c, m);
-        } catch (IOException e) {
-            e.printStackTrace();
-            log.info("Could not find file to send to client. " + sourceFilePath);
-        }
+        System.out.println("Fuck you");
+//        try {
+//            byte[] content = Files.readAllBytes(sourceFilePath);
+//            MessageWithObject m = new MessageWithObject(Message.TRANSFER_SOURCES, content);
+//            Network.sendMessageWithObject(c, m);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            log.info("Could not find file to send to client. " + sourceFilePath);
+//        }
     }
 
     /**
@@ -243,7 +243,8 @@ public class ServerController extends Listener {
         }
 
         try {
-            JavaSourceFromString.compile("compiled/", code);
+            JavaCompilerHelper.compile(code);
+//            JavaSourceFromString.compile("compiled/", code);
         } catch (Exception e) {
             e.printStackTrace();
         }
