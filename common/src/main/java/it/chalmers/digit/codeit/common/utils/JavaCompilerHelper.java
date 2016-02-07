@@ -49,8 +49,11 @@ public class JavaCompilerHelper {
             if(packageName.length() > 0){
                 qualifiedName += packageName + ".";
             }
+            File root = new File(SRC_DIRECTORY);
+            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
+
             qualifiedName += className;
-            Class c = Class.forName(qualifiedName);
+            Class c = Class.forName(qualifiedName, true, classLoader);
             return c.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
