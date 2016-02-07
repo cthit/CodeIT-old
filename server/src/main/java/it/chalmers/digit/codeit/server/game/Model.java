@@ -31,6 +31,8 @@ public class Model<T, M> {
         return game;
     }
 
+
+
     /**
      *
      * @param teamName
@@ -51,8 +53,8 @@ public class Model<T, M> {
         }
         if (competitorToEvaluate == null) {
             competitorToEvaluate = new Competitor<>(teamName, gameMechanic);
+            competitors.add(competitorToEvaluate);
         }
-        competitors.add(competitorToEvaluate);
         // rating algorithm needs to run multiple times.
         for (int i = 0; i < 10; i++)
             evaluateCompetitor(competitorToEvaluate);
@@ -76,6 +78,26 @@ public class Model<T, M> {
             ret.put(pairs.getKey(), pairs.getValue());
         }
         return ret;
+    }
+
+    public void evaluateCompetitorSimple(Competitor<T,M> comp1) {
+        competitors.stream()
+                .filter(otherCompetitor -> !comp1.equals(otherCompetitor))
+                .forEach(comp2 -> runGames(100, comp1, comp2));
+    }
+
+    private void runGames(int numberOfgames, Competitor<T, M> comp1, Competitor<T, M> comp2) {
+        for (int i = 0; i < numberOfgames; i++) {
+            Game<T, M> game = createNewGame(comp1, comp2);
+            while (!game.isGameOver()) {
+                game.play();
+            }
+
+            double[] results = game.getResults();
+
+            comp1.addRating(results[0]);
+            comp2.addRating(results[1]);
+        }
     }
 
     public void evaluateCompetitor(Competitor<T,M> competitor) {

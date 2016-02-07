@@ -1,5 +1,7 @@
 package it.chalmers.digit.codeit.server;
 
+import pong_sample.PongGame;
+
 public class Main {
     public static void main(String[] args) {
         ServerController serverController = new ServerController();
