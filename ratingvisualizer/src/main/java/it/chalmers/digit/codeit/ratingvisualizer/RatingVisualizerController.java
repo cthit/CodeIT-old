@@ -5,7 +5,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import it.chalmers.digit.codeit.common.network.*;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -94,7 +94,7 @@ public class RatingVisualizerController extends Listener {
             ratings.entrySet().forEach(e -> {
                 items.add(new TeamRatingEntry(
                         e.getKey(),
-                        e.getValue()
+                        e.getValue().intValue()
                 ));
             });
         });
@@ -184,11 +184,11 @@ public class RatingVisualizerController extends Listener {
 
     public static class TeamRatingEntry {
         private final SimpleStringProperty teamName;
-        private final SimpleDoubleProperty rating;
+        private final SimpleIntegerProperty rating;
 
-        public TeamRatingEntry(String teamName, double rating) {
+        public TeamRatingEntry(String teamName, int rating) {
             this.teamName = new SimpleStringProperty(teamName);
-            this.rating = new SimpleDoubleProperty(rating);
+            this.rating = new SimpleIntegerProperty(rating);
         }
 
         public String getTeamName() {
@@ -199,12 +199,11 @@ public class RatingVisualizerController extends Listener {
             this.teamName.set(teamName);
         }
 
-        public double getRating() {
+        public int getRating() {
             return rating.get();
         }
 
-
-        public void setRating(double rating) {
+        public void setRating(int rating) {
             this.rating.set(rating);
         }
     }
