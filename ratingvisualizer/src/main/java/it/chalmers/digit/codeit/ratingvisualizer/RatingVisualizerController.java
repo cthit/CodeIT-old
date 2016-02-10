@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.ArrayUtils;
@@ -97,6 +98,9 @@ public class RatingVisualizerController extends Listener {
                         e.getValue().intValue()
                 ));
             });
+            TableColumn column = table.getColumns().get(1);
+            table.getColumns().get(1).setSortType(TableColumn.SortType.DESCENDING);
+            table.getSortOrder().add(column);
         });
     }
 
