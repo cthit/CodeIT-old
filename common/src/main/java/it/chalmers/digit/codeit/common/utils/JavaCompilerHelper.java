@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class JavaCompilerHelper {
 
     private static final String SRC_DIRECTORY = ".";
-    private static final String LIB_FOLDER = "/home/tejp/it/digit/CodeIT/lib/source.jar";
+    private static final String LIB_FOLDER = "lib/source.jar";
 
     public static Object compile(String code) {
         String packageName = extractPackageName(code);
