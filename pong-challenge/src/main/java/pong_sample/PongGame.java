@@ -1,10 +1,8 @@
 package pong_sample;
 
-import it.tejp.codeit.api.Competitor;
-import it.tejp.codeit.api.Game;
-import it.tejp.codeit.api.GameMechanic;
-import javafx.beans.property.DoubleProperty;
-import javafx.geometry.Pos;
+import it.chalmers.digit.codeit.api.Competitor;
+import it.chalmers.digit.codeit.api.Game;
+import it.chalmers.digit.codeit.api.GameMechanic;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -14,7 +12,6 @@ import javafx.scene.shape.Shape;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Created by tejp on 01/11/14.
@@ -29,14 +26,14 @@ public class PongGame implements Game<PongGame, PongMove> {
     private final int width, height;
     private final Ball ball = new Ball(
             new Point2D.Double(200, 100),
-            new Vector2D(Math.random()/2 + 1, Math.random()/2 + 1),
+            getRandomStartVector(),
             1
     );
 
     private List<Shape> gameElements = new ArrayList<>();
 
     public PongGame(Competitor<PongGame, PongMove> leftCompetitor, Competitor<PongGame, PongMove> rightCompetitor) {
-        this(leftCompetitor, rightCompetitor, 10, 400, 200);
+        this(leftCompetitor, rightCompetitor, 5, 400, 200);
         leftPaddle.setFill(Color.GREEN);
         rightPaddle.setFill(Color.BLUE);
     }
@@ -81,15 +78,19 @@ public class PongGame implements Game<PongGame, PongMove> {
         double middleY = height/2;
         leftPaddle.setY(middleY);
         rightPaddle.setY(middleY);
+
         ball.setCenterY(middleY);
         ball.setCenterX(width / 2);
-
-        ball.setDirection(new Vector2D(Math.random()/2 + 0.5, Math.random()/2 + 0.5));
+        ball.setDirection(getRandomStartVector());
         ball.setSpeed(1);
+    }
 
-        double startX = Math.random();
-        // i want 0.5 < |startX| < 1
-
+    private Vector2D getRandomStartVector() {
+        double factorX = Math.random() < 0.5 ? 1 : -1;
+        double factorY = Math.random() < 0.5 ? 1 : -1;
+        double velX = (Math.random()/2 + 0.5)*factorX;
+        double velY = (Math.random()/2 + 0.5)*factorY;
+        return new Vector2D(velX, velY);
     }
 
     @Override
@@ -109,52 +110,62 @@ public class PongGame implements Game<PongGame, PongMove> {
         boolean rightHit = rightPaddle.getBoundsInParent().intersects(ballLine.getBoundsInParent());
 
         if (leftHit || rightHit) {
-            Line paddleLine = rightPaddleLine;
-            int degreesToAdd = 0;
-
-            if (leftHit) {
-                paddleLine = leftPaddleLine;
-                degreesToAdd = 180;
-            }
-
-            double offsetY = paddleLine.getStartY();
-
-            double paddleBot = paddleLine.getEndY() - offsetY;
-
-            final double ballCoordWithinPaddle = ball.getCenterY() - offsetY;
-
-            //should be a float number between -1 - 1
-            double normalizedBallPosOnPaddle = (ballCoordWithinPaddle / paddleBot) * 2 - 1;
-            if (Math.abs(normalizedBallPosOnPaddle) > 1) {
-                // Print error if not between -1 and 1
-                System.err.println("should be between -1 and 1: " + normalizedBallPosOnPaddle);
-            }
-
-            double degreeOnUnitCircle = normalizedBallPosOnPaddle * 70 + degreesToAdd;
-
-            Vector2D vectorToAdd = new Vector2D(Math.cos(degreeOnUnitCircle),Math.sin(degreeOnUnitCircle));
-            ball.setDirection(new Vector2D(-ball.getDirection().getX(), ball.getDirection().getY()));
-            //ball.getDirection().add(vectorToAdd).normalize();
-
-            ball.setSpeed(ball.getSpeed() + 0.01);
+            handlePaddleHit(leftPaddleLine, rightPaddleLine, leftHit);
         } else {
-            if (ball.getCenterY() < 0 || ball.getCenterY() > height) {
-                ball.getDirection().setY(-ball.getDirection().getY());
-            }
-
-            if (ball.getCenterX() < 0) {
-                scoreArr[1]++;
-                initializeGame();
-            } else if (width < ball.getCenterX()) {
-                scoreArr[0]++;
-                initializeGame();
-            }
+            handleBallHitWall();
+            handleScore();
         }
 
-        //############################################################
         ball.move();
         movePaddle(leftCompetitor.getGameMechanic(), leftPaddle);
         movePaddle(rightCompetitor.getGameMechanic(), rightPaddle);
+    }
+
+    private void handleScore() {
+        if (ball.getCenterX() < 0) {
+            scoreArr[1]++;
+            initializeGame();
+        } else if (width < ball.getCenterX()) {
+            scoreArr[0]++;
+            initializeGame();
+        }
+    }
+
+    private void handleBallHitWall() {
+        if (ball.getCenterY() < 0 || ball.getCenterY() > height) {
+            ball.getDirection().setY(-ball.getDirection().getY());
+        }
+    }
+
+    private void handlePaddleHit(Line leftPaddleLine, Line rightPaddleLine, boolean leftHit) {
+        Line paddleLine = rightPaddleLine;
+        int degreesToAdd = 0;
+
+        if (leftHit) {
+            paddleLine = leftPaddleLine;
+            degreesToAdd = 180;
+        }
+
+        double offsetY = paddleLine.getStartY();
+
+        double paddleBot = paddleLine.getEndY() - offsetY;
+
+        final double ballCoordWithinPaddle = ball.getCenterY() - offsetY;
+
+        //should be a float number between -1 - 1
+        double normalizedBallPosOnPaddle = (ballCoordWithinPaddle / paddleBot) * 2 - 1;
+        if (Math.abs(normalizedBallPosOnPaddle) > 1) {
+            // Print error if not between -1 and 1
+            //System.err.println("should be between -1 and 1: " + normalizedBallPosOnPaddle);
+        }
+
+        double degreeOnUnitCircle = normalizedBallPosOnPaddle * 70 + degreesToAdd;
+
+        Vector2D vectorToAdd = new Vector2D(Math.cos(degreeOnUnitCircle),Math.sin(degreeOnUnitCircle));
+        ball.setDirection(new Vector2D(-ball.getDirection().getX(), ball.getDirection().getY()));
+        //ball.getDirection().add(vectorToAdd).normalize();
+
+        ball.setSpeed(ball.getSpeed() + 0.01);
     }
 
     private void movePaddle(GameMechanic<PongGame, PongMove> paddleLogic, Rectangle paddle) {
@@ -170,7 +181,7 @@ public class PongGame implements Game<PongGame, PongMove> {
 
     @Override
     public boolean isGameOver() {
-        return roundsLeft <= 0;
+        return roundsLeft < 0;
     }
 
     @Override
